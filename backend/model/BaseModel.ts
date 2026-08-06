@@ -55,6 +55,7 @@ export default class BaseModel implements iBaseModel {
         return this._fields as RowDataPacket;
     }
 
+    // Valida se tem id para atualizar ou insere novo
     async Salvar() {
 
         let query;
