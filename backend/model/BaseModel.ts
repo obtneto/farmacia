@@ -76,6 +76,7 @@ export default class BaseModel implements iBaseModel {
         void await this._conn.query(query, fieldToSave);
     }
 
+    // Se não passar id, exclui o registro atual
     async Excluir(id?: number) {
 
         const deleteId = id || this._fields[this._primaryKey];
