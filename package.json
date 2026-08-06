@@ -1,0 +1,1 @@
+{"type":"module","scripts":{"mcp":"node mcp/farmacia-mcp.js"},"dependencies":{"@modelcontextprotocol/sdk":"^1.29.0","dotenv":"^17.4.2","mysql2":"^3.22.4","puppeteer":"^25.1.0","zod":"^4.4.3"}}

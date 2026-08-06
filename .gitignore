@@ -1,0 +1,16 @@
+
+# Codex local state
+.codex/
+.agents/
+memories/
+.gitmodules
+
+# Dependências e builds
+node_modules/
+dist/
+
+# Ambientes locais
+.env
+.env.*
+
+swagger.*

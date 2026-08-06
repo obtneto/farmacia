@@ -1,0 +1,227 @@
+[
+  {
+    "Codigo": 3034,
+    "Descricao": "GEREDMED",
+    "Consumo": "S"
+  },
+  {
+    "Codigo": 3039,
+    "Descricao": "COLETA",
+    "Consumo": "S"
+  },
+  {
+    "Codigo": 3040,
+    "Descricao": "AFERESE",
+    "Consumo": "S"
+  },
+  {
+    "Codigo": 3053,
+    "Descricao": "SOROLOGIA",
+    "Consumo": "S"
+  },
+  {
+    "Codigo": 3054,
+    "Descricao": "RASTREAMENTO E FATURAMENTO",
+    "Consumo": "S"
+  },
+  {
+    "Codigo": 3055,
+    "Descricao": "COORDENAÇÃO ADMINISTRATIVA",
+    "Consumo": "S"
+  },
+  {
+    "Codigo": 3339,
+    "Descricao": "TRANSFUSÃO",
+    "Consumo": "S"
+  },
+  {
+    "Codigo": 4039,
+    "Descricao": "FARMACIA",
+    "Consumo": "S"
+  },
+  {
+    "Codigo": 4040,
+    "Descricao": "LABORATORIO DE QUALIDADE",
+    "Consumo": "S"
+  },
+  {
+    "Codigo": 4041,
+    "Descricao": "GEPEDISP",
+    "Consumo": "S"
+  },
+  {
+    "Codigo": 4042,
+    "Descricao": "ALMOXARIFADO",
+    "Consumo": "N"
+  },
+  {
+    "Codigo": 4043,
+    "Descricao": "FISIOTERAPIA",
+    "Consumo": "S"
+  },
+  {
+    "Codigo": 8000,
+    "Descricao": "JOÃO VITOR DE JESUS OLIVEIRA",
+    "Consumo": "S"
+  },
+  {
+    "Codigo": 8001,
+    "Descricao": "BRENDAHA MAYARA DE OLIVA",
+    "Consumo": "S"
+  },
+  {
+    "Codigo": 8002,
+    "Descricao": "JONATHAN SANTOS DE SOUZA",
+    "Consumo": "S"
+  },
+  {
+    "Codigo": 8003,
+    "Descricao": "CLAUDIO ROGERIO SANTOS",
+    "Consumo": "S"
+  },
+  {
+    "Codigo": 8004,
+    "Descricao": "MATHEUS BARROSO CARDOSO",
+    "Consumo": "S"
+  },
+  {
+    "Codigo": 8005,
+    "Descricao": "VALDICLEIA SILVA",
+    "Consumo": "S"
+  },
+  {
+    "Codigo": 8006,
+    "Descricao": "VALDICLECIA SILVA",
+    "Consumo": "S"
+  },
+  {
+    "Codigo": 8007,
+    "Descricao": "SAMARA GONÇALVES RODRIGUES",
+    "Consumo": "S"
+  },
+  {
+    "Codigo": 8008,
+    "Descricao": "RODRIGO CAMPOS DOS SANTOS",
+    "Consumo": "S"
+  },
+  {
+    "Codigo": 8009,
+    "Descricao": "JOÃO VITOR DE JESUS OLIVEIRA",
+    "Consumo": "S"
+  },
+  {
+    "Codigo": 8010,
+    "Descricao": "CRISTIANA VITORIA DE OLIVEIRA DOS SANTOS",
+    "Consumo": "S"
+  },
+  {
+    "Codigo": 8011,
+    "Descricao": "MARIA LUCIA DOS SANTOS",
+    "Consumo": "S"
+  },
+  {
+    "Codigo": 8012,
+    "Descricao": "MOISES SANTOS DA CONCEICAO",
+    "Consumo": "S"
+  },
+  {
+    "Codigo": 8013,
+    "Descricao": "JOAO CARLOS DE JESUS OLIVEIRA",
+    "Consumo": "S"
+  },
+  {
+    "Codigo": 8070,
+    "Descricao": "EMILIA VITORIA CASTRO",
+    "Consumo": "S"
+  },
+  {
+    "Codigo": 8090,
+    "Descricao": "CASE",
+    "Consumo": "N"
+  },
+  {
+    "Codigo": 9090,
+    "Descricao": "HUSE - HOSPITAL DE URGENCIAS DE SERGIPE",
+    "Consumo": "N"
+  },
+  {
+    "Codigo": 9091,
+    "Descricao": "HOSPITAL CIRURGIA",
+    "Consumo": "N"
+  },
+  {
+    "Codigo": 9092,
+    "Descricao": "SAIDA VALIDADE VENCIDA",
+    "Consumo": "N"
+  },
+  {
+    "Codigo": 9093,
+    "Descricao": "HEMOMINAS",
+    "Consumo": "N"
+  },
+  {
+    "Codigo": 9094,
+    "Descricao": "CELOG",
+    "Consumo": "N"
+  },
+  {
+    "Codigo": 9095,
+    "Descricao": "HEMORIO",
+    "Consumo": "N"
+  },
+  {
+    "Codigo": 9096,
+    "Descricao": "UNIFESP",
+    "Consumo": "N"
+  },
+  {
+    "Codigo": 9097,
+    "Descricao": "UNICAMP",
+    "Consumo": "N"
+  },
+  {
+    "Codigo": 9098,
+    "Descricao": "DOAÇÃO ENTRADA",
+    "Consumo": "S"
+  },
+  {
+    "Codigo": 9099,
+    "Descricao": "DOAÇÃO SAIDA",
+    "Consumo": "S"
+  },
+  {
+    "Codigo": 9100,
+    "Descricao": "HEMOCENTRO PARAIBA",
+    "Consumo": "N"
+  },
+  {
+    "Codigo": 9101,
+    "Descricao": "HOSPITAL PRIMAVERA",
+    "Consumo": "N"
+  },
+  {
+    "Codigo": 9102,
+    "Descricao": "HOSPITAL SÃO LUCAS",
+    "Consumo": "N"
+  },
+  {
+    "Codigo": 9103,
+    "Descricao": "BLOQUEIO ANVISA",
+    "Consumo": "N"
+  },
+  {
+    "Codigo": 9104,
+    "Descricao": "MATERNIDADE NOSSA SENHORA DE LOURDES",
+    "Consumo": "N"
+  },
+  {
+    "Codigo": 9105,
+    "Descricao": "ACERTO ESTOQUE",
+    "Consumo": "N"
+  },
+  {
+    "Codigo": 9999,
+    "Descricao": "TRANSFERENCIA ENTRE DEPOSITOS",
+    "Consumo": "N"
+  }
+]

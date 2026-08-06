@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "skills": {
+    "codex-team": {
+      "source": "boshu2/agentops",
+      "sourceType": "github",
+      "skillPath": "skills/codex-team/SKILL.md",
+      "computedHash": "da077e477bf087c0837a8cafa05e6a13c32c3101f4106e317ea9fdf1167a1a11"
+    },
+    "context-engineering-collection": {
+      "source": "muratcankoylan/agent-skills-for-context-engineering",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "df67ded00f18bf31f65a782dbcdcbeaedc42b5aa65137784bb163abbad7c5952"
+    },
+    "react-best-practices": {
+      "source": "mastra-ai/mastra",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/react-best-practices/SKILL.md",
+      "computedHash": "843fe5bf8fc4be48944e6a556735cda0b2a84d2cafc8afa87e54059a03baf6ec"
+    },
+    "ui-ux-pro-max": {
+      "source": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/ui-ux-pro-max/SKILL.md",
+      "computedHash": "0a413bf988d06481f69bb81df2070741c3ba12dd9f1be2706d57f259c905992d"
+    }
+  }
+}

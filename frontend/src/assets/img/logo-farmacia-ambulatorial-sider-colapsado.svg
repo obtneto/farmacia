@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" role="img" aria-labelledby="title desc">
+  <title id="title">Farmácia Ambulatorial - Sider Colapsado</title>
+  <desc id="desc">Ícone quadrado para menu lateral colapsado.</desc>
+  <defs>
+    <linearGradient id="teal" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#00a890"/>
+      <stop offset="1" stop-color="#007f70"/>
+    </linearGradient>
+    <linearGradient id="leaf" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7ac943"/>
+      <stop offset="1" stop-color="#006f3c"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(18 18)">
+    <path d="M39 9h28a9 9 0 0 1 9 9v24h24a9 9 0 0 1 9 9v27a9 9 0 0 1-9 9H76v24a9 9 0 0 1-9 9H39a9 9 0 0 1-9-9V87H6a9 9 0 0 1-9-9V51a9 9 0 0 1 9-9h24V18a9 9 0 0 1 9-9z" fill="url(#teal)"/>
+    <g transform="translate(55 8) rotate(38 43 54)">
+      <rect x="8" y="8" width="86" height="112" rx="43" fill="url(#teal)"/>
+      <path d="M8 63h86v57H8z" fill="#ffffff"/>
+      <path d="M27 29c15-10 37-10 52 0" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round"/>
+      <line x1="8" y1="63" x2="94" y2="63" stroke="#ffffff" stroke-width="7"/>
+    </g>
+    <path d="M4 97c38 14 67 38 80 67-44 0-73-25-80-67z" fill="#79bf43"/>
+    <path d="M55 163c39-4 82-19 116-54-47 4-79 18-97 41-7 7-12 11-19 13z" fill="url(#leaf)"/>
+    <path d="M95 145c19-16 39-27 60-35" fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round"/>
+  </g>
+</svg>

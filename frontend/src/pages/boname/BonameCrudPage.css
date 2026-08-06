@@ -1,0 +1,2528 @@
+.main-layout__content-stack:has(.boname-page) {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.main-layout__content-stack:has(.boname-page) .main-layout__page-body {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.boname-page {
+  display: grid;
+  gap: 1.15rem;
+  height: 100%;
+  min-height: 0;
+  width: 100%;
+}
+
+.entradas-page {
+  grid-template-rows: auto minmax(0, 1fr);
+  align-content: start;
+}
+
+.entradas-page--history-only {
+  grid-template-rows: minmax(0, 1fr);
+}
+
+.pacientes-page {
+  grid-template-rows: auto minmax(0, 1fr);
+  align-content: start;
+}
+
+.boname-page__table-section,
+.boname-page__table-section > .rs-panel-body,
+.boname-page__table-section .page-section__body {
+  height: 100%;
+  min-height: 0;
+}
+
+.boname-page__table-section > .rs-panel-body,
+.boname-page__table-section .page-section__body {
+  display: flex;
+  flex-direction: column;
+}
+
+.boname-page__table-section .page-section__body > :not(.boname-page__table-footer) {
+  min-height: 0;
+}
+
+.boname-page__table-content {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+}
+
+.boname-page__inline-message {
+  border-radius: 1rem;
+  box-shadow: var(--shadow-soft);
+}
+
+.boname-page__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  width: 100%;
+}
+
+.boname-page__toolbar-actions {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.boname-page__search-input {
+  border-radius: 0.5rem;
+  width: min(22rem, 100%);
+}
+
+.boname-page__field {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.boname-page__field label {
+  color: var(--text-strong);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.boname-page__field small,
+.boname-page__table-footer p {
+  color: var(--text-muted);
+}
+
+.boname-page__field span {
+  color: #b91c1c;
+  font-size: 0.84rem;
+}
+
+.boname-page__table-wrap {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid #e3ebf4;
+  border-radius: 1.15rem;
+}
+
+.boname-page__table-wrap .rs-table-row-header,
+.boname-page__table-wrap .rs-table-row-header .rs-table-cell,
+.boname-page__table-wrap .rs-table-row-header .rs-table-cell-group-fixed-left,
+.boname-page__table-wrap .rs-table-row-header .rs-table-cell-group-fixed-right {
+  background:
+    linear-gradient(135deg, rgba(219, 234, 254, 0.96), rgba(204, 251, 241, 0.72)),
+    linear-gradient(180deg, rgba(15, 23, 42, 0.06), transparent);
+}
+
+.boname-page__table-wrap .rs-table-row-header .rs-table-cell {
+  border-bottom-color: rgba(15, 23, 42, 0.12);
+}
+
+.boname-page__table-wrap .rs-table-row-header .rs-table-cell-content {
+  color: #132341;
+  font-weight: 800;
+}
+
+.boname-page__row-actions {
+  height: 100%;
+  padding: 0.45rem;
+}
+
+.boname-page__row-actions--table {
+  align-items: center;
+  justify-content: center;
+  flex-wrap: nowrap;
+}
+
+.boname-page__row-actions--table .rs-btn {
+  min-width: 2.1rem;
+  min-height: 2.1rem;
+  padding: 0;
+}
+
+.boname-page__action-icon.rs-btn {
+  border: 1px solid rgba(148, 163, 184, 0.32);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(241, 245, 249, 0.96));
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+  color: #1e293b;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease,
+    background-color 180ms ease;
+}
+
+.boname-page__action-icon.rs-btn:hover,
+.boname-page__action-icon.rs-btn:focus-visible {
+  transform: translateY(-1px);
+  border-color: rgba(37, 99, 235, 0.28);
+  background: linear-gradient(180deg, rgba(239, 246, 255, 0.98), rgba(219, 234, 254, 0.94));
+  box-shadow: 0 14px 30px rgba(37, 99, 235, 0.14);
+  color: #1d4ed8;
+}
+
+.boname-page__action-icon--delete.rs-btn:hover,
+.boname-page__action-icon--delete.rs-btn:focus-visible {
+  border-color: rgba(220, 38, 38, 0.24);
+  background: linear-gradient(180deg, rgba(254, 242, 242, 0.98), rgba(254, 226, 226, 0.94));
+  box-shadow: 0 14px 30px rgba(220, 38, 38, 0.14);
+  color: #b91c1c;
+}
+
+.boname-page__row-actions--compact {
+  padding: 0;
+}
+
+.boname-page__card-list {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.boname-page__record-card {
+  border-radius: 1.2rem;
+  box-shadow: var(--shadow-soft);
+}
+
+.boname-page__record-card .rs-panel-body {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.boname-page__record-card-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.85rem;
+  align-items: flex-start;
+}
+
+.boname-page__record-card-top strong {
+  display: block;
+  color: var(--text-strong);
+  font-size: 1rem;
+}
+
+.boname-page__record-card-top p {
+  margin: 0.3rem 0 0;
+  color: var(--text-muted);
+  line-height: 1.55;
+}
+
+.boname-page__record-meta {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.boname-page__record-meta div {
+  padding: 0.85rem 0.9rem;
+  border: 1px solid var(--border-soft);
+  border-radius: 1rem;
+  background: rgba(248, 251, 255, 0.82);
+}
+
+.boname-page__record-meta dt,
+.boname-page__record-meta dd {
+  margin: 0;
+}
+
+.boname-page__record-meta dt {
+  color: var(--text-muted);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.boname-page__record-meta dd {
+  margin-top: 0.3rem;
+  color: var(--text-strong);
+  font-weight: 700;
+}
+
+.boname-page__table-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.boname-page__table-footer p {
+  margin: 0;
+}
+
+.boname-page__form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem 1.1rem;
+}
+
+.boname-page__record-modal.rs-modal {
+  --record-modal-width: min(56rem, 100%);
+  --record-modal-height: min(40rem, calc(100dvh - var(--main-layout-header-height) - 1.5rem));
+  width: min(var(--record-modal-width), 100%);
+  max-width: 100%;
+}
+
+.boname-page__modal-shell {
+  display: grid;
+  min-width: 0;
+  gap: 1.5rem;
+}
+
+.boname-page__form-panel {
+  display: grid;
+  align-content: start;
+  gap: 1rem;
+  min-width: 0;
+  min-height: 19.5rem;
+  padding: 1.05rem 0.9rem 1.05rem;
+  border: 1px solid rgba(165, 243, 252, 0.38);
+  border-radius: 1.15rem;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(247, 252, 255, 0.94)),
+    linear-gradient(135deg, rgba(34, 211, 238, 0.07), transparent 52%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.88),
+    0 18px 40px rgba(148, 163, 184, 0.1);
+}
+
+.medicamentos-page__record-modal.rs-modal {
+  --record-modal-width: min(76rem, 100%);
+  --record-modal-height: calc(100dvh - var(--main-layout-header-height) - 1rem);
+}
+
+.demandas-especificas-page__paciente-record-modal.rs-modal {
+  width: min(72rem, 100%);
+  max-width: min(72rem, 100%);
+}
+
+.demandas-especificas-page__paciente-record-modal .rs-modal-dialog {
+  width: 100%;
+  max-height: min(100%, 58rem);
+}
+
+.demandas-especificas-page__paciente-record-modal .rs-modal-content {
+  height: auto;
+  max-height: none;
+}
+
+.demandas-especificas-page__paciente-record-modal .rs-modal-body {
+  display: block;
+  flex: 0 0 auto;
+  overflow-y: visible;
+}
+
+.demandas-especificas-page__paciente-record-modal .app-modal__copy p {
+  white-space: nowrap;
+  max-width: none;
+}
+
+.demandas-especificas-page__paciente-record-modal .app-modal__body-content,
+.demandas-especificas-page__paciente-record-modal .boname-page__modal-shell {
+  height: auto;
+}
+
+.demandas-especificas-page__paciente-record-modal .boname-page__modal-shell {
+  align-content: start;
+  grid-auto-rows: max-content;
+}
+
+.demandas-especificas-page__paciente-record-modal .boname-page__control,
+.demandas-especificas-page__paciente-record-modal .boname-page__control.rs-input,
+.demandas-especificas-page__paciente-record-modal .boname-page__control.rs-picker,
+.demandas-especificas-page__paciente-record-modal .boname-page__control .rs-input,
+.demandas-especificas-page__paciente-record-modal .boname-page__control .rs-picker-toggle {
+  min-height: 44px;
+}
+
+.demandas-especificas-page__paciente-record-modal .app-modal__footer .rs-btn {
+  min-height: 44px;
+}
+
+.demandas-especificas-page__paciente-inline-grid {
+  grid-template-columns: minmax(10rem, 14rem) auto minmax(18rem, 1fr);
+  align-items: end;
+}
+
+.demandas-especificas-page .boname-page__form-panel {
+  min-height: 9rem;
+}
+
+.demandas-especificas-page__paciente-record-modal .boname-page__form-panel {
+  min-height: 7.5rem;
+  gap: 0.85rem;
+  padding-block: 0.9rem;
+}
+
+.demandas-especificas-page__paciente-record-modal .demandas-especificas-page__paciente-select-panel {
+  min-height: 0;
+  gap: 0.7rem;
+  padding-block: 0.75rem;
+}
+
+.demandas-especificas-page__patient-lookup-modal .demandas-especificas-page__patient-lookup-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  padding-top: 0.8rem;
+  padding-bottom: 0.85rem;
+}
+
+.demandas-especificas-page__patient-lookup-modal .demandas-especificas-page__patient-lookup-controls {
+  display: grid;
+  flex: 0 0 auto;
+  gap: 0.45rem;
+  padding: 0.7rem 0.75rem 0.8rem;
+  border: 1px solid rgba(191, 219, 254, 0.78);
+  border-radius: 1rem;
+  background: linear-gradient(180deg, rgba(248, 251, 255, 0.96), rgba(255, 255, 255, 0.98));
+}
+
+.demandas-especificas-page__patient-lookup-modal .demandas-especificas-page__patient-lookup-toolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 0.7rem;
+  min-width: 0;
+}
+
+.demandas-especificas-page__patient-lookup-modal .demandas-especificas-page__patient-lookup-panel .medicamentos-page__form-section-header {
+  gap: 0.1rem;
+}
+
+.demandas-especificas-page__patient-lookup-modal .demandas-especificas-page__patient-lookup-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.demandas-especificas-page__patient-lookup-modal .demandas-especificas-page__patient-lookup-actions .rs-btn {
+  min-height: 44px;
+}
+
+.demandas-especificas-page__patient-lookup-modal .demandas-especificas-page__patient-lookup-button.rs-btn {
+  min-width: 112px;
+  border-radius: 0.95rem;
+}
+
+.demandas-especificas-page__patient-lookup-modal .demandas-especificas-page__patient-lookup-input {
+  width: 100%;
+  min-width: 0;
+}
+
+.demandas-especificas-page__patient-lookup-modal .demandas-especificas-page__patient-lookup-input.rs-input,
+.demandas-especificas-page__patient-lookup-modal .demandas-especificas-page__patient-lookup-input .rs-input {
+  width: 100%;
+  min-height: 46px;
+  border-radius: 0.95rem;
+}
+
+.demandas-especificas-page__patient-lookup-modal .demandas-especificas-page__patient-lookup-hint {
+  color: var(--text-muted);
+  font-size: 0.76rem;
+  line-height: 1.4;
+}
+
+.demandas-especificas-page__patient-lookup-modal .demandas-especificas-page__patient-lookup-table-wrap {
+  flex: 1 1 auto;
+  margin-top: 0.15rem;
+}
+
+@media (max-width: 900px) {
+  .demandas-especificas-page__patient-lookup-modal .demandas-especificas-page__patient-lookup-toolbar {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: stretch;
+  }
+
+  .demandas-especificas-page__patient-lookup-modal .demandas-especificas-page__patient-lookup-actions {
+    justify-content: flex-start;
+  }
+
+  .demandas-especificas-page__patient-lookup-modal .demandas-especificas-page__patient-lookup-button.rs-btn {
+    min-width: 0;
+  }
+}
+
+.demandas-especificas-page__paciente-record-modal .demandas-especificas-page__patient-lookup-panel .boname-page__toolbar-actions {
+  justify-content: flex-end;
+  align-self: end;
+}
+
+.demandas-especificas-page__record-modal.rs-modal {
+  --record-modal-width: min(78rem, 100%);
+  --record-modal-height: min(54rem, calc(100dvh - var(--main-layout-header-height) - 0.5rem));
+}
+
+.demandas-especificas-page__record-modal .app-modal__body-content,
+.demandas-especificas-page__record-modal .boname-page__modal-shell,
+.demandas-especificas-page__record-modal .boname-page__form-panel {
+  min-height: 0;
+}
+
+.demandas-especificas-page__record-modal .app-modal__body-content,
+.demandas-especificas-page__record-modal .boname-page__modal-shell {
+  height: 100%;
+}
+
+.demandas-especificas-page__record-modal .rs-modal-body {
+  overflow: hidden;
+}
+
+.demandas-especificas-page__record-modal--empty .rs-modal-dialog,
+.demandas-especificas-page__record-modal--empty .app-modal__body-content,
+.demandas-especificas-page__record-modal--empty .boname-page__modal-shell {
+  height: auto;
+}
+
+.demandas-especificas-page__record-modal--empty .rs-modal-content {
+  height: auto;
+  max-height: none;
+}
+
+.demandas-especificas-page__record-modal--empty .rs-modal-body {
+  display: block;
+  flex: 0 0 auto;
+  overflow-y: visible;
+}
+
+.demandas-especificas-page__record-modal .boname-page__form-panel {
+  grid-template-rows: auto minmax(0, 1fr) auto;
+}
+
+.demandas-especificas-page__paciente-inline-grid .boname-page__field .rs-btn {
+  width: 100%;
+}
+
+.demandas-especificas-page__section-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.demandas-especificas-page__section-header-row .rs-btn {
+  flex: 0 0 auto;
+}
+
+.demandas-especificas-page__details-summary {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.8rem;
+  width: 100%;
+}
+
+.demandas-especificas-page__details-shell {
+  height: 100%;
+  align-content: start;
+  grid-template-rows: auto minmax(0, 1fr);
+  grid-auto-rows: minmax(0, 1fr);
+}
+
+.demandas-especificas-page__details-summary .summary-card {
+  position: relative;
+  min-height: 7.4rem;
+  align-content: start;
+  gap: 0.45rem;
+  padding: 0.95rem 1rem 0.9rem 1.15rem;
+  overflow: hidden;
+  border-color: rgba(203, 213, 225, 0.86);
+  border-radius: 1rem;
+  background:
+    radial-gradient(circle at top right, rgba(255, 255, 255, 0.86), transparent 38%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(247, 251, 255, 0.97));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.92),
+    0 12px 24px rgba(148, 163, 184, 0.1);
+}
+
+.demandas-especificas-page__details-empty-panel {
+  min-height: 18rem;
+}
+
+.demandas-especificas-page__details-empty-panel .data-state,
+.demandas-especificas-page__details-empty-panel .data-state--empty {
+  height: 100%;
+  min-height: 100%;
+  width: 100%;
+}
+
+.demandas-especificas-page__details-empty-panel .data-state--empty {
+  display: grid;
+  align-content: center;
+}
+
+.demandas-especificas-page__details-table-panel {
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.demandas-especificas-page__details-summary .summary-card::before {
+  content: '';
+  position: absolute;
+  top: 0.9rem;
+  left: 0.72rem;
+  bottom: 0.9rem;
+  width: 0.2rem;
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.78);
+}
+
+.demandas-especificas-page__details-summary .summary-card--teal::before {
+  background: rgba(13, 148, 136, 0.82);
+}
+
+.demandas-especificas-page__details-summary .summary-card--amber::before {
+  background: rgba(217, 119, 6, 0.82);
+}
+
+.demandas-especificas-page__details-summary .summary-card--slate::before {
+  background: rgba(71, 85, 105, 0.75);
+}
+
+.demandas-especificas-page__details-summary .summary-card__header span {
+  color: rgba(71, 85, 105, 0.94);
+  font-size: 0.68rem;
+}
+
+.demandas-especificas-page__details-summary .summary-card strong {
+  font-size: clamp(0.96rem, 0.7vw + 0.72rem, 1.45rem);
+  line-height: 1.12;
+  text-wrap: balance;
+}
+
+.demandas-especificas-page__details-summary .summary-card p {
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.demandas-especificas-page__item-record-modal.rs-modal {
+  --record-modal-width: min(36rem, 100%);
+  --record-modal-height: min(34rem, calc(100dvh - var(--main-layout-header-height) - 1rem));
+}
+
+.demandas-especificas-page__item-form-panel {
+  min-height: 0;
+  padding: 1.1rem 1rem 1rem;
+}
+
+.demandas-especificas-page__item-form-grid {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.9rem;
+}
+
+.demandas-especificas-page__item-form-grid .boname-page__field {
+  gap: 0.38rem;
+}
+
+.demandas-especificas-page__item-form-grid .boname-page__field label {
+  font-size: 0.84rem;
+}
+
+.demandas-especificas-page__item-control,
+.demandas-especificas-page__item-control.rs-input,
+.demandas-especificas-page__item-control.rs-input-number,
+.demandas-especificas-page__item-control.rs-picker,
+.demandas-especificas-page__item-control .rs-input,
+.demandas-especificas-page__item-control .rs-input-number-input,
+.demandas-especificas-page__item-control .rs-picker-toggle {
+  width: 100%;
+  min-height: 46px;
+}
+
+.demandas-especificas-page__item-control .rs-picker-toggle,
+.demandas-especificas-page__item-control .rs-input,
+.demandas-especificas-page__item-control.rs-input-number {
+  border-radius: 0.8rem;
+}
+
+.demandas-especificas-page__item-control .rs-picker-toggle-value,
+.demandas-especificas-page__item-control .rs-input,
+.demandas-especificas-page__item-control .rs-input-number-input {
+  font-size: 0.94rem;
+}
+
+.demandas-especificas-page__item-control.rs-input-number {
+  overflow: hidden;
+}
+
+.demandas-especificas-page__item-control.rs-input-number .rs-input-number-btn-group-vertical {
+  width: 2.4rem;
+  border-left: 1px solid var(--border-soft);
+}
+
+.demandas-especificas-page__item-control.rs-input-number .rs-input-number-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.demandas-especificas-page__item-control--readonly,
+.demandas-especificas-page__item-control--readonly.rs-input {
+  background: linear-gradient(180deg, rgba(248, 250, 252, 0.98), rgba(241, 245, 249, 0.96));
+}
+
+.demandas-especificas-page__item-control--readonly .rs-input {
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.demandas-especificas-page__items-table-wrap {
+  overflow-x: auto;
+}
+
+.demandas-especificas-page__modal-table-wrap {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+.demandas-especificas-page__modal-table-wrap .rs-table {
+  background: transparent;
+  flex: 1 1 auto;
+  width: 100%;
+}
+
+.demandas-especificas-page__modal-table-wrap .rs-table-cell-group-fixed-left,
+.demandas-especificas-page__modal-table-wrap .rs-table-cell-group-fixed-right {
+  width: 0 !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+}
+
+.demandas-especificas-page__modal-table-wrap .rs-table-cell-group-fixed-right-shadow,
+.demandas-especificas-page__modal-table-wrap .rs-table-cell-group-left-shadow {
+  display: none !important;
+}
+
+.demandas-especificas-page__modal-table-wrap .rs-table-scrollbar-horizontal {
+  display: none !important;
+}
+
+.demandas-especificas-page__modal-table-wrap .rs-table-cell-content {
+  padding-inline: 0.75rem;
+}
+
+.demandas-especificas-page__modal-items-grid {
+  display: grid;
+  grid-template-rows: 52px minmax(0, 1fr);
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.96);
+}
+
+.demandas-especificas-page__modal-items-head,
+.demandas-especificas-page__modal-items-row {
+  display: grid;
+  grid-template-columns: 4rem minmax(11rem, 1.15fr) minmax(11rem, 1.05fr) 5rem 7rem 6rem;
+  align-items: center;
+  min-width: 0;
+}
+
+.demandas-especificas-page__modal-items-head {
+  background: rgba(255, 255, 255, 0.96);
+  border-bottom: 1px solid rgba(15, 23, 42, 0.12);
+}
+
+.demandas-especificas-page__modal-items-head > div {
+  min-width: 0;
+  padding-inline: 0.75rem;
+  color: #132341;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.demandas-especificas-page__modal-items-body {
+  min-height: 0;
+  overflow: auto;
+}
+
+.demandas-especificas-page__modal-items-row {
+  min-height: 50px;
+  border-bottom: 1px solid #edf2f7;
+  background: rgba(255, 255, 255, 0.96);
+}
+
+.demandas-especificas-page__modal-items-cell {
+  min-width: 0;
+  padding-inline: 0.75rem;
+  color: #0f2240;
+  font-size: 0.86rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.demandas-especificas-page__modal-items-cell--center,
+.demandas-especificas-page__modal-items-head > div:nth-child(1),
+.demandas-especificas-page__modal-items-head > div:nth-child(n + 4) {
+  text-align: center;
+}
+
+.demandas-especificas-page__modal-items-cell--center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.demandas-especificas-page__items-table {
+  min-width: 100%;
+}
+
+.demandas-especificas-page__items-table .rs-table-cell-content {
+  padding-inline: 0.9rem;
+}
+
+.entradas-page__record-modal.rs-modal {
+  --record-modal-width: min(56rem, 100%);
+  --record-modal-height: min(40rem, calc(100dvh - var(--main-layout-header-height) - 1.5rem));
+}
+
+.entradas-page__history-record-modal.rs-modal {
+  --record-modal-width: min(76rem, 100%);
+}
+
+.entradas-page__history-record-modal .boname-page__table-wrap {
+  overflow-x: hidden;
+}
+
+.entradas-page__item-record-modal.rs-modal {
+  --record-modal-height: min(42rem, calc(100dvh - var(--main-layout-header-height) - 1rem));
+}
+
+.boname-page__record-modal .rs-modal-dialog {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 100%;
+  height: var(--record-modal-height);
+  max-height: calc(100dvh - var(--main-layout-header-height) - 0.5rem);
+  margin: 0;
+  overflow: hidden;
+}
+
+.boname-page__record-modal .rs-modal-header-close {
+  top: 1rem;
+  right: 1rem;
+  min-width: 2.5rem;
+  min-height: 2.5rem;
+  border-radius: 0.8rem;
+  color: rgba(100, 116, 139, 0.92);
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.boname-page__record-modal .rs-modal-header-close:hover,
+.boname-page__record-modal .rs-modal-header-close:focus-visible {
+  background: rgba(241, 245, 249, 0.96);
+  color: var(--text-strong);
+  transform: translateY(-1px);
+}
+
+.entradas-page__form-section .page-section__body,
+.entradas-page__draft-section .page-section__body {
+  gap: 1rem;
+}
+
+.entradas-page__header-section,
+.entradas-page__header-section > .rs-panel-body,
+.entradas-page__header-section .page-section__body {
+  height: auto;
+  min-height: 0;
+}
+
+.entradas-page__header-section {
+  align-self: start;
+}
+
+.entradas-page--merged-layout {
+  grid-template-rows: minmax(0, 1fr);
+}
+
+.entradas-page__header-section > .rs-panel-body {
+  padding: 0.75rem 0.85rem;
+}
+
+.entradas-page__header-section .page-section__body {
+  gap: 0.7rem;
+}
+
+.entradas-page__merged-section > .rs-panel-body {
+  padding: 0.75rem 0.85rem;
+}
+
+.entradas-page__merged-section,
+.entradas-page__merged-section > .rs-panel-body,
+.entradas-page__merged-section .page-section__body {
+  height: 100%;
+  min-height: 0;
+}
+
+.entradas-page__merged-section {
+  align-self: stretch;
+}
+
+.entradas-page__merged-section .page-section__body {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 1rem;
+}
+
+.entradas-page__merged-section .entradas-page__draft-content {
+  box-sizing: border-box;
+  padding: 0;
+}
+
+.entradas-page .boname-page__table-section,
+.entradas-page .boname-page__table-section > .rs-panel-body,
+.entradas-page .boname-page__table-section .page-section__body {
+  height: 100%;
+  min-height: 0;
+}
+
+.entradas-page .boname-page__table-section .page-section__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.entradas-page .boname-page__table-section .page-section__body > :not(.boname-page__table-footer) {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.entradas-page--history-only .boname-page__table-section {
+  flex: 1 1 auto;
+}
+
+.entradas-page__history-section,
+.entradas-page__history-section > .rs-panel-body,
+.entradas-page__history-section .page-section__body,
+.entradas-page__history-section .boname-page__table-content,
+.entradas-page__history-section .boname-page__table-wrap,
+.entradas-page__history-section .rs-table {
+  height: 100%;
+  min-height: 0;
+}
+
+.entradas-page__draft-content,
+.entradas-page__draft-content .boname-page__table-wrap,
+.entradas-page__draft-content .data-state {
+  height: 100%;
+  min-height: 0;
+  width: 100%;
+}
+
+.entradas-page__draft-content .data-state--empty {
+  display: grid;
+  align-content: center;
+  min-height: 100%;
+  width: 100%;
+}
+
+.entradas-page .boname-page__table-section .boname-page__table-footer {
+  margin-top: auto;
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  padding-top: 0.9rem;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.96) 22%, rgba(255, 255, 255, 0.99) 100%);
+}
+
+.entradas-page__header-actions {
+  justify-content: flex-end;
+}
+
+.entradas-page__workspace {
+  display: grid;
+  gap: 1.1rem;
+}
+
+.entradas-page__form-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.8fr) minmax(18rem, 0.9fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.entradas-page__hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 1rem;
+  align-items: start;
+  padding: 1.15rem;
+  border: 1px solid rgba(191, 219, 254, 0.85);
+  border-radius: 1.2rem;
+  background:
+    radial-gradient(circle at top left, rgba(219, 234, 254, 0.9), transparent 42%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(240, 249, 255, 0.92));
+  box-shadow: var(--shadow-soft);
+}
+
+.entradas-page__hero-copy {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.entradas-page__hero-kicker {
+  color: #2563eb;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.entradas-page__hero-copy h3,
+.entradas-page__hero-copy p {
+  margin: 0;
+}
+
+.entradas-page__hero-copy h3 {
+  color: var(--text-strong);
+  font-size: 1.1rem;
+  line-height: 1.3;
+}
+
+.entradas-page__hero-copy p {
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.entradas-page__hero-metrics {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.entradas-page__hero-metrics dd {
+  line-height: 1.35;
+}
+
+.entradas-page__composer-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 1rem;
+}
+
+.entradas-page__form-grid {
+  align-content: start;
+}
+
+.entradas-page__item-modal-grid {
+  gap: 1rem 1.1rem;
+}
+
+.entrada-demandas-page__entry-grid .entrada-demandas-page__paciente-row.boname-page__field--full {
+  grid-column: auto;
+}
+
+.entrada-demandas-page__entry-grid .entrada-demandas-page__paciente-row {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.entrada-demandas-page__paciente-row {
+  display: grid;
+  grid-template-columns: minmax(28rem, 55%);
+  align-items: end;
+  gap: 0.75rem 0.9rem;
+}
+
+.entrada-demandas-page__paciente-search-field .rs-btn {
+  width: 100%;
+}
+
+.entrada-demandas-page__item-record-modal .app-modal__body-content {
+  align-content: start;
+  gap: 0.75rem;
+  height: auto;
+}
+
+.entrada-demandas-page__item-record-modal .rs-modal-dialog {
+  max-height: min(90dvh, 40rem);
+}
+
+.entrada-demandas-page__item-record-modal .rs-modal-body {
+  padding: 0.85rem 0 1rem;
+}
+
+.entrada-demandas-page__item-record-modal .rs-modal-footer {
+  min-height: 3.9rem;
+  padding-top: 0.55rem;
+}
+
+.medicamentos-page__form-subgrid--metrics.entrada-demandas-page__entry-grid.requisicao-paciente-page__header-grid {
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 0.35rem 0.9rem;
+}
+
+.medicamentos-page__form-subgrid--metrics.entrada-demandas-page__entry-grid.requisicao-setor-page__header-grid {
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 0.35rem 0.9rem;
+}
+
+.requisicao-paciente-page__field--patient-id {
+  grid-column: span 2;
+}
+
+.requisicao-paciente-page__field--patient-search {
+  grid-column: span 1;
+}
+
+.requisicao-paciente-page__field--patient-search .rs-btn {
+  width: 44px;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.requisicao-paciente-page__field--patient-name {
+  grid-column: span 5;
+}
+
+.requisicao-paciente-page__field--request-type {
+  grid-column: span 4;
+}
+
+.requisicao-setor-page__field--setor {
+  grid-column: span 6;
+}
+
+.requisicao-setor-page__field--request-type {
+  grid-column: span 6;
+}
+
+.requisicao-paciente-page__field--local,
+.requisicao-paciente-page__field--deposito,
+.requisicao-paciente-page__field--date,
+.requisicao-setor-page__field--local,
+.requisicao-setor-page__field--deposito,
+.requisicao-setor-page__field--date {
+  grid-column: span 4;
+}
+
+.requisicao-paciente-page__date-control,
+.requisicao-setor-page__date-control {
+  --rs-input-group-border-radius: 0.5rem;
+}
+
+.requisicao-paciente-page__date-control.rs-picker,
+.requisicao-paciente-page__date-control .rs-input-group,
+.requisicao-paciente-page__date-control .rs-picker-toggle,
+.requisicao-paciente-page__date-control .rs-picker-toggle.rs-btn,
+.requisicao-paciente-page__date-control .rs-input-group-addon,
+.requisicao-setor-page__date-control.rs-picker,
+.requisicao-setor-page__date-control .rs-input-group,
+.requisicao-setor-page__date-control .rs-picker-toggle,
+.requisicao-setor-page__date-control .rs-picker-toggle.rs-btn,
+.requisicao-setor-page__date-control .rs-input-group-addon {
+  border-radius: 0.5rem !important;
+}
+
+.requisicao-paciente-page .entradas-page__merged-section .page-section__body,
+.requisicao-setor-page .entradas-page__merged-section .page-section__body {
+  grid-template-rows: auto minmax(0, 1fr) auto;
+}
+
+.requisicao-paciente-page .entradas-page__form-grid .medicamentos-page__form-section,
+.requisicao-setor-page .entradas-page__form-grid .medicamentos-page__form-section {
+  padding-bottom: 0;
+}
+
+.requisicao-paciente-page .entradas-page__merged-section .boname-page__table-footer,
+.requisicao-setor-page .entradas-page__merged-section .boname-page__table-footer {
+  margin-top: 0;
+}
+
+.requisicao-paciente-page__items-tabs,
+.requisicao-setor-page__items-tabs,
+.requisicao-paciente-page__items-tabs .rs-tabs,
+.requisicao-setor-page__items-tabs .rs-tabs,
+.requisicao-paciente-page__items-tabs .rs-tabs-content,
+.requisicao-setor-page__items-tabs .rs-tabs-content {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  width: 100%;
+}
+
+.requisicao-paciente-page__items-tabs .rs-tabs,
+.requisicao-setor-page__items-tabs .rs-tabs {
+  flex: 1 1 auto;
+  gap: 0.75rem;
+  overflow: hidden;
+  background: transparent;
+}
+
+.requisicao-paciente-page__items-tabs .rs-tabs-content,
+.requisicao-setor-page__items-tabs .rs-tabs-content,
+.requisicao-paciente-page__items-tabs .rs-tab-panel,
+.requisicao-setor-page__items-tabs .rs-tab-panel {
+  flex: 1 1 auto;
+}
+
+.requisicao-paciente-page__items-tabs .rs-tab-panel:not([hidden]),
+.requisicao-setor-page__items-tabs .rs-tab-panel:not([hidden]) {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  width: 100%;
+}
+
+.requisicao-paciente-page__items-tabs .rs-nav,
+.requisicao-setor-page__items-tabs .rs-nav {
+  flex: 0 0 auto;
+  min-height: 44px;
+  padding: 0;
+  border-bottom: 1px solid #cbd5e1;
+  background: transparent;
+}
+
+.requisicao-paciente-page__items-tabs .rs-nav[data-appearance=tabs][data-direction=horizontal] .rs-nav-bar,
+.requisicao-setor-page__items-tabs .rs-nav[data-appearance=tabs][data-direction=horizontal] .rs-nav-bar {
+  display: none;
+}
+
+.requisicao-paciente-page__items-tabs .rs-nav[data-appearance=tabs] .rs-nav-item,
+.requisicao-setor-page__items-tabs .rs-nav[data-appearance=tabs] .rs-nav-item {
+  position: relative;
+  min-height: 44px;
+  margin-bottom: -1px;
+  padding: 0.7rem 1rem;
+  border: 0;
+  border-radius: 0;
+  color: var(--text-muted);
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.requisicao-paciente-page__items-tabs .rs-nav[data-appearance=tabs] .rs-nav-item:hover,
+.requisicao-setor-page__items-tabs .rs-nav[data-appearance=tabs] .rs-nav-item:hover,
+.requisicao-paciente-page__items-tabs .rs-nav[data-appearance=tabs] .rs-nav-item:focus,
+.requisicao-setor-page__items-tabs .rs-nav[data-appearance=tabs] .rs-nav-item:focus {
+  background: transparent;
+  color: var(--text-strong);
+}
+
+.requisicao-paciente-page__items-tabs .rs-nav[data-appearance=tabs] .rs-nav-item[data-active=true],
+.requisicao-setor-page__items-tabs .rs-nav[data-appearance=tabs] .rs-nav-item[data-active=true] {
+  border: 0;
+  background: transparent;
+  color: #1d4ed8;
+}
+
+.requisicao-paciente-page__items-tabs .rs-nav[data-appearance=tabs] .rs-nav-item[data-active=true]::after,
+.requisicao-setor-page__items-tabs .rs-nav[data-appearance=tabs] .rs-nav-item[data-active=true]::after {
+  content: '';
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0;
+  left: 0.75rem;
+  height: 2px;
+  border-radius: 999px;
+  background: #0284c7;
+}
+
+.requisicao-paciente-page__items-tabs .rs-tabs-content,
+.requisicao-setor-page__items-tabs .rs-tabs-content {
+  min-height: 0;
+  padding: 0.75rem;
+  border: 1px solid #e3ebf4;
+  border-radius: 0.95rem;
+  background: rgba(255, 255, 255, 0.96);
+}
+
+.requisicao-paciente-page__items-tabs .rs-tab-panel,
+.requisicao-setor-page__items-tabs .rs-tab-panel {
+  overflow: hidden;
+}
+
+.requisicao-paciente-page__items-tabs .boname-page__table-wrap,
+.requisicao-setor-page__items-tabs .boname-page__table-wrap,
+.requisicao-paciente-page__items-tabs .boname-page__card-list,
+.requisicao-setor-page__items-tabs .boname-page__card-list,
+.requisicao-paciente-page__items-tabs .data-state,
+.requisicao-setor-page__items-tabs .data-state {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.requisicao-paciente-page__items-tabs .boname-page__table-wrap,
+.requisicao-setor-page__items-tabs .boname-page__table-wrap {
+  border-radius: 0.85rem;
+}
+
+.requisicao-paciente-page__observacao-field,
+.requisicao-setor-page__observacao-field {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  gap: 0.45rem;
+  min-height: 0;
+  width: 100%;
+}
+
+.requisicao-paciente-page__observacao-control,
+.requisicao-setor-page__observacao-control {
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 12rem;
+  border-radius: 0.85rem;
+  resize: vertical;
+}
+
+.entradas-page .requisicao-paciente-page__observacao-control.rs-input,
+.entradas-page .requisicao-setor-page__observacao-control.rs-input {
+  width: 100%;
+}
+
+.requisicao-paciente-page__medicamento-modal.rs-modal,
+.requisicao-setor-page__medicamento-modal.rs-modal,
+.requisicao-paciente-page__medicamento-modal .rs-modal-dialog,
+.requisicao-setor-page__medicamento-modal .rs-modal-dialog {
+  width: min(68rem, calc(100vw - 3rem));
+}
+
+.requisicao-paciente-page__patient-modal.rs-modal {
+  --record-modal-height: min(40rem, calc(100dvh - var(--main-layout-header-height) - 1rem));
+  --record-modal-width: min(66rem, calc(100vw - 3rem));
+}
+
+.requisicao-paciente-page__medicamento-modal.rs-modal,
+.requisicao-setor-page__medicamento-modal.rs-modal {
+  --record-modal-height: min(44rem, calc(100dvh - var(--main-layout-header-height) - 1rem));
+}
+
+.requisicao-paciente-page__patient-modal .rs-modal-body,
+.requisicao-paciente-page__medicamento-modal .rs-modal-body,
+.requisicao-setor-page__medicamento-modal .rs-modal-body {
+  height: 100%;
+  overflow-y: hidden !important;
+}
+
+.requisicao-paciente-page__patient-modal .app-modal__body-content,
+.requisicao-paciente-page__medicamento-modal .app-modal__body-content,
+.requisicao-setor-page__medicamento-modal .app-modal__body-content,
+.requisicao-paciente-page__patient-modal .boname-page__modal-shell,
+.requisicao-paciente-page__medicamento-modal .boname-page__modal-shell,
+.requisicao-setor-page__medicamento-modal .boname-page__modal-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.requisicao-paciente-page__modal-table-wrap,
+.requisicao-setor-page__modal-table-wrap {
+  display: flex;
+  flex: 1 1 auto;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.requisicao-paciente-page__modal-table-wrap .rs-table,
+.requisicao-setor-page__modal-table-wrap .rs-table {
+  flex: 1 1 auto;
+  width: 100%;
+  background: transparent;
+}
+
+.requisicao-paciente-page__modal-table-wrap .rs-table-scrollbar-horizontal,
+.requisicao-setor-page__modal-table-wrap .rs-table-scrollbar-horizontal {
+  display: none !important;
+}
+
+.requisicao-paciente-page__modal-table-wrap .rs-table-body-wheel-area,
+.requisicao-setor-page__modal-table-wrap .rs-table-body-wheel-area {
+  overflow-x: hidden !important;
+}
+
+.requisicao-paciente-page__modal-table-wrap .rs-table-cell-content,
+.requisicao-setor-page__modal-table-wrap .rs-table-cell-content,
+.requisicao-paciente-page__modal-table-wrap .rs-table-cell-header .rs-table-cell-content,
+.requisicao-setor-page__modal-table-wrap .rs-table-cell-header .rs-table-cell-content {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  line-height: 1.35;
+}
+
+.requisicao-paciente-page__quantity-input.rs-number-input,
+.requisicao-setor-page__quantity-input.rs-number-input,
+.requisicao-paciente-page__quantity-input.rs-input-number,
+.requisicao-setor-page__quantity-input.rs-input-number {
+  border-radius: 0.5rem !important;
+  width: 6.75rem !important;
+  min-width: 6.75rem !important;
+}
+
+.requisicao-paciente-page__quantity-input.rs-number-input,
+.requisicao-setor-page__quantity-input.rs-number-input,
+.requisicao-paciente-page__quantity-input.rs-input-number,
+.requisicao-setor-page__quantity-input.rs-input-number,
+.requisicao-paciente-page__quantity-input .rs-input,
+.requisicao-setor-page__quantity-input .rs-input,
+.requisicao-paciente-page__quantity-input .rs-input-number-input,
+.requisicao-setor-page__quantity-input .rs-input-number-input {
+  height: 2.4rem !important;
+  min-height: 2.4rem !important;
+}
+
+.requisicao-paciente-page__quantity-input .rs-input,
+.requisicao-setor-page__quantity-input .rs-input,
+.requisicao-paciente-page__quantity-input .rs-input-number-input,
+.requisicao-setor-page__quantity-input .rs-input-number-input {
+  border-radius: 0.5rem !important;
+  width: 100% !important;
+  padding-inline: 0.75rem !important;
+  text-align: left;
+}
+
+.requisicao-paciente-page__quantity-input .rs-input-number-btn-group,
+.requisicao-setor-page__quantity-input .rs-input-number-btn-group,
+.requisicao-paciente-page__quantity-input .rs-input-number-btn-group-vertical,
+.requisicao-setor-page__quantity-input .rs-input-number-btn-group-vertical,
+.requisicao-paciente-page__quantity-input .rs-input-number-touchspin,
+.requisicao-setor-page__quantity-input .rs-input-number-touchspin {
+  display: none !important;
+}
+
+.entrada-demandas-page__item-record-modal .boname-page__modal-shell,
+.entrada-demandas-page__item-record-modal .boname-page__form-panel {
+  gap: 0.75rem;
+}
+
+.entrada-demandas-page__item-record-modal .boname-page__modal-shell {
+  align-content: start;
+  height: auto;
+}
+
+.entrada-demandas-page__item-record-modal .boname-page__form-panel {
+  height: auto;
+  min-height: 0;
+  gap: 0.5rem;
+  padding: 0.55rem 0.55rem 0.6rem;
+}
+
+.entrada-demandas-page__item-section {
+  gap: 0.75rem;
+  padding: 0.8rem 0.95rem 0.45rem;
+}
+
+.entrada-demandas-page__item-section .medicamentos-page__form-section-header {
+  gap: 0.1rem;
+}
+
+.entrada-demandas-page__item-section .boname-page__form-grid {
+  gap: 0.8rem 1rem;
+}
+
+.entrada-demandas-page__validade-control {
+  --rs-input-group-border-radius: 0.5rem;
+}
+
+.entrada-demandas-page__validade-control.rs-picker,
+.entrada-demandas-page__validade-control .rs-input-group,
+.entrada-demandas-page__validade-control .rs-picker-toggle,
+.entrada-demandas-page__validade-control .rs-picker-toggle.rs-btn,
+.entrada-demandas-page__validade-control .rs-input-group-addon {
+  border-radius: 0.5rem !important;
+}
+
+.entradas-page__generated-doc-panel {
+  gap: 1rem;
+}
+
+.entradas-page__generated-doc-panel .boname-page__control.rs-input,
+.entradas-page__generated-doc-panel .boname-page__control .rs-input {
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.entradas-page__generated-doc-meta {
+  grid-template-columns: 1fr;
+}
+
+.entradas-page__generated-doc-feedback {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.entradas-page__composer-card {
+  align-content: start;
+}
+
+.entradas-page__draft-summary {
+  display: grid;
+  gap: 0.9rem;
+  padding: 1rem 1.05rem;
+  border: 1px solid var(--border-soft);
+  border-radius: 1.05rem;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 251, 255, 0.92) 100%);
+  box-shadow: var(--shadow-soft);
+}
+
+.entradas-page__draft-summary h3,
+.entradas-page__draft-summary p {
+  margin: 0;
+}
+
+.entradas-page__draft-summary h3 {
+  color: var(--text-strong);
+  font-size: 0.98rem;
+  font-weight: 800;
+}
+
+.entradas-page__draft-summary p {
+  color: var(--text-muted);
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.entradas-page__summary-grid {
+  grid-template-columns: 1fr;
+}
+
+.entradas-page__composer-actions,
+.entradas-page__draft-actions {
+  justify-content: flex-end;
+}
+
+.entradas-page__draft-overview {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.entradas-page__draft-metrics {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.entradas-page__draft-empty {
+  border: 1px dashed #bfd3eb;
+  border-radius: 1.15rem;
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(248, 251, 255, 0.82), rgba(255, 255, 255, 0.98));
+}
+
+.entradas-page__draft-empty-head {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) repeat(4, minmax(110px, 1fr));
+  gap: 0;
+  padding: 0.95rem 1rem;
+  border-bottom: 1px solid rgba(191, 219, 254, 0.82);
+  background: rgba(219, 234, 254, 0.46);
+}
+
+.entradas-page__draft-empty-head span {
+  color: #1e3a5f;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.entradas-page__draft-empty-body {
+  display: grid;
+  justify-items: center;
+  gap: 0.35rem;
+  padding: 1.6rem 1rem;
+  text-align: center;
+}
+
+.entradas-page__draft-empty-body strong,
+.entradas-page__draft-empty-body p {
+  margin: 0;
+}
+
+.entradas-page__draft-empty-body strong {
+  color: var(--text-strong);
+  font-size: 1rem;
+}
+
+.entradas-page__draft-empty-body p {
+  color: var(--text-muted);
+  line-height: 1.55;
+}
+
+.entradas-page__record-meta-secondary {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.entradas-page__history-filters {
+display: flex;
+gap: 10px;
+flex-wrap: wrap;
+}
+
+.entradas-page__history-toolbar-main {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.entradas-page__history-toolbar-main .boname-page__search-input {
+  flex: 1 1 22rem;
+  width: auto;
+}
+
+.entradas-page__history-search-field {
+  flex: 1 1 22rem;
+  min-width: 0;
+}
+
+.entradas-page__history-filters .boname-page__field {
+  min-width: 10rem;
+}
+
+.entradas-page__history-filters .boname-page__control {
+  --rs-input-group-border-radius: 0.5rem;
+}
+
+.entradas-page__history-filters .boname-page__control.rs-picker,
+.entradas-page__history-filters .boname-page__control .rs-input-group,
+.entradas-page__history-filters .boname-page__control .rs-picker-toggle,
+.entradas-page__history-filters .boname-page__control .rs-picker-toggle.rs-btn,
+.entradas-page__history-filters .boname-page__control .rs-input-group-addon {
+  border-radius: 0.5rem !important;
+}
+
+.entradas-page__history-toolbar {
+  box-sizing: border-box;
+  padding: 0.8rem 0.95rem;
+  border: 1px solid var(--border-soft);
+  border-radius: 1.05rem;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 251, 255, 0.92) 100%);
+}
+
+.entradas-page__history-section .page-section__header {
+  margin-bottom: 1rem;
+}
+
+.entradas-page__history-toolbar .boname-page__toolbar-actions {
+  align-self: flex-end;
+}
+
+.entradas-page__history-toolbar .boname-page__toolbar-actions .rs-btn {
+  min-height: 44px;
+}
+
+.estoque-page {
+grid-template-rows: auto minmax(0, 1fr);
+align-content: start;
+}
+
+.estoque-page--merged-layout {
+grid-template-rows: minmax(0, 1fr);
+}
+
+.estoque-page__filters-grid {
+  grid-template-columns: minmax(22rem, 1.8fr) minmax(11rem, 0.85fr) minmax(14rem, 1fr) auto;
+  align-items: start;
+  gap: 1rem;
+  border: 1px solid rgba(148, 163, 184, 0.32);
+  border-radius: 16px;
+  padding: 0.8rem 0.95rem;
+}
+
+.estoque-page__filters-section > .rs-panel-body {
+padding-bottom: 0.85rem;
+}
+
+.estoque-page__filter-field .boname-page__control,
+.estoque-page__filter-field .boname-page__control.rs-picker,
+.estoque-page__filter-field .boname-page__control .rs-picker-toggle {
+  width: 100%;
+}
+
+.estoque-page__filter-field .boname-page__control.rs-picker .rs-picker-toggle {
+  min-height: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+.estoque-page__filter-field,
+.estoque-page__actions-field {
+grid-template-rows: auto minmax(44px, auto) minmax(1.2rem, auto);
+align-content: start;
+}
+
+.estoque-page__actions-label {
+display: inline-flex;
+min-height: 1.35rem;
+align-items: center;
+color: transparent;
+user-select: none;
+}
+
+.estoque-page__actions-row {
+justify-content: flex-end;
+align-items: center;
+flex-wrap: nowrap;
+min-height: 44px;
+width: 100%;
+}
+
+.estoque-page__actions-row .rs-btn {
+min-height: 44px;
+white-space: nowrap;
+}
+
+.estoque-page__results-section .page-section__header {
+padding-bottom: 0.85rem;
+}
+
+.estoque-page__merged-section,
+.estoque-page__merged-section > .rs-panel-body,
+.estoque-page__merged-section .page-section__body {
+height: 100%;
+min-height: 0;
+}
+
+.estoque-page__merged-section {
+align-self: stretch;
+}
+
+.estoque-page__merged-section .page-section__body {
+display: grid;
+grid-template-rows: auto minmax(0, 1fr) auto;
+gap: 1rem;
+}
+
+.estoque-page__merged-section .boname-page__table-content,
+.estoque-page__merged-section .boname-page__table-wrap,
+.estoque-page__merged-section .rs-table,
+.estoque-page__merged-section .data-state {
+height: 100%;
+min-height: 0;
+}
+
+.aprovacao-entradas-page__filters-grid {
+grid-template-columns: minmax(9rem, 0.72fr) minmax(9rem, 0.72fr) minmax(20rem, 1.9fr) auto;
+align-items: start;
+gap: 1rem;
+border: 1px solid rgba(148, 163, 184, 0.32);
+border-radius: 16px;
+padding: 0.8rem 0.95rem;
+}
+
+.aprovacao-entradas-page__filters-section > .rs-panel-body {
+  padding-bottom: 0.85rem;
+}
+
+.aprovacao-entradas-page__merged-section .boname-page__table-content,
+.aprovacao-entradas-page__merged-section .boname-page__table-wrap,
+.aprovacao-entradas-page__merged-section .rs-table,
+.aprovacao-entradas-page__merged-section .data-state {
+  height: 100%;
+  min-height: 0;
+}
+
+.aprovacao-requisicao-page__section .page-section__header {
+  align-items: flex-start;
+}
+
+.aprovacao-requisicao-page__section .page-section__actions {
+  align-self: flex-start;
+  margin-top: 0;
+  width: auto;
+}
+
+.aprovacao-requisicao-page__section .page-section__body {
+  grid-template-rows: minmax(0, 1fr) auto;
+}
+
+.devolucao-medicamento-page__toolbar {
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.devolucao-medicamento-page__search-field {
+  flex: 0 1 22rem;
+}
+
+.devolucao-medicamento-page__toolbar-actions {
+  flex: 0 0 auto;
+  padding-top: 1.65rem;
+}
+
+.devolucao-medicamento-page__content .aprovacao-entradas-page__modal-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 410px;
+}
+
+.devolucao-medicamento-page__content .boname-page__card-list,
+.devolucao-medicamento-page__content .boname-page__table-wrap,
+.devolucao-medicamento-page__content .data-state {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.devolucao-medicamento-page__footer-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex: 0 0 auto;
+  margin-top: auto;
+  padding-top: 1rem;
+}
+
+.devolucao-medicamento-page__summary-person {
+  display: flex;
+  align-items: baseline;
+  gap: 0.65rem;
+  min-width: 0;
+}
+
+.devolucao-medicamento-page__summary-name {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.98rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.aprovacao-requisicao-page__section .boname-page__table-content,
+.aprovacao-requisicao-page__section .boname-page__table-wrap,
+.aprovacao-requisicao-page__section .rs-table,
+.aprovacao-requisicao-page__section .data-state {
+  height: 100%;
+  min-height: 0;
+  max-width: 100%;
+}
+
+.aprovacao-requisicao-page__section .boname-page__table-wrap {
+  overflow: auto;
+}
+
+.aprovacao-requisicao-page__section .rs-table-cell-content {
+  overflow: hidden;
+  padding-inline: 0.75rem;
+  text-overflow: ellipsis;
+}
+
+.aprovacao-requisicao-page__record-modal .aprovacao-entradas-page__modal-table-wrap {
+  overflow: auto;
+}
+
+.aprovacao-requisicao-page__record-modal .aprovacao-entradas-page__modal-table-wrap .rs-table-scrollbar-horizontal {
+  display: block !important;
+}
+
+.aprovacao-entradas-page__filter-field {
+  grid-template-rows: auto minmax(44px, auto) minmax(1.2rem, auto);
+  align-content: start;
+}
+
+.aprovacao-entradas-page__filter-field .boname-page__control,
+.aprovacao-entradas-page__filter-field .boname-page__control.rs-picker,
+.aprovacao-entradas-page__filter-field .boname-page__control .rs-picker-toggle {
+  width: 100%;
+}
+
+.aprovacao-entradas-page__filter-field .boname-page__control {
+  --rs-input-group-border-radius: 0.5rem;
+}
+
+.aprovacao-entradas-page__filter-field .boname-page__control.rs-picker,
+.aprovacao-entradas-page__filter-field .boname-page__control .rs-input-group,
+.aprovacao-entradas-page__filter-field .boname-page__control .rs-picker-toggle,
+.aprovacao-entradas-page__filter-field .boname-page__control .rs-picker-toggle.rs-btn,
+.aprovacao-entradas-page__filter-field .boname-page__control .rs-input-group-addon {
+  border-radius: 0.5rem !important;
+}
+
+.aprovacao-entradas-page__actions-field {
+  grid-template-rows: auto minmax(44px, auto) minmax(1.2rem, auto);
+  align-content: start;
+}
+
+.aprovacao-entradas-page__actions-label {
+  display: inline-flex;
+  min-height: 1.35rem;
+  align-items: center;
+  color: transparent;
+  user-select: none;
+}
+
+.aprovacao-entradas-page__actions-row {
+  justify-content: flex-end;
+  align-items: center;
+  flex-wrap: nowrap;
+  min-height: 44px;
+  width: 100%;
+}
+
+.aprovacao-entradas-page__actions-row .rs-btn {
+  min-height: 44px;
+  white-space: nowrap;
+}
+
+.aprovacao-entradas-page__results-section .page-section__header {
+  padding-bottom: 0.85rem;
+}
+
+.aprovacao-entradas-page__record-modal.rs-modal {
+  --record-modal-width: min(72rem, 100%);
+  --record-modal-height: min(50rem, calc(100dvh - var(--main-layout-header-height) - 0.75rem));
+}
+
+.aprovacao-requisicao-page__record-modal.rs-modal {
+  --record-modal-width: min(78rem, calc(100vw - 1rem));
+  --record-modal-height: min(52rem, calc(100dvh - var(--main-layout-header-height) - 0.5rem));
+}
+
+.aprovacao-entradas-page__record-modal .app-modal__body-content {
+  gap: 1.1rem;
+  min-height: 0;
+}
+
+.aprovacao-entradas-page__record-modal .app-modal__footer {
+  justify-content: space-between;
+  align-items: center;
+}
+
+.aprovacao-entradas-page__record-modal .rs-modal-body {
+  overflow: hidden;
+}
+
+.aprovacao-requisicao-page__record-modal .rs-modal-body,
+.aprovacao-requisicao-page__record-modal .app-modal__body-content {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.aprovacao-requisicao-page__record-modal .rs-modal-body {
+  height: 100%;
+  overflow-y: hidden !important;
+}
+
+.aprovacao-requisicao-page__record-modal .app-modal__body-content,
+.aprovacao-requisicao-page__record-modal .aprovacao-entradas-page__modal-shell {
+  height: 100%;
+}
+
+.aprovacao-requisicao-page__record-modal .aprovacao-entradas-page__modal-shell {
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.aprovacao-requisicao-page__record-modal .aprovacao-entradas-page__modal-panel {
+  height: 100%;
+}
+
+.aprovacao-requisicao-page__modal-footer-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.aprovacao-requisicao-page__modal-footer-actions .aprovacao-requisicao-page__modal-close-button {
+  border: 1px solid #cbd5e1 !important;
+  background: #ffffff;
+  color: #334155;
+}
+
+.aprovacao-requisicao-page__modal-footer-actions .aprovacao-requisicao-page__modal-close-button:hover,
+.aprovacao-requisicao-page__modal-footer-actions .aprovacao-requisicao-page__modal-close-button:focus-visible {
+  border-color: #94a3b8 !important;
+  background: #f8fafc !important;
+  color: #1e293b !important;
+}
+
+.aprovacao-entradas-page__modal-shell {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+}
+
+.aprovacao-entradas-page__modal-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.85rem;
+}
+
+.aprovacao-entradas-page__modal-summary-card {
+  display: grid;
+  gap: 0.35rem;
+  min-width: 0;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--border-soft);
+  border-radius: 1rem;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 250, 255, 0.94));
+}
+
+.aprovacao-entradas-page__modal-summary-card span {
+  color: var(--text-muted);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.aprovacao-entradas-page__modal-summary-card strong {
+  color: var(--text-strong);
+  font-size: 0.98rem;
+  line-height: 1.35;
+}
+
+.aprovacao-entradas-page__modal-summary-card .status-badge {
+  justify-self: start;
+}
+
+.aprovacao-entradas-page__modal-panel {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 0.95rem;
+  min-width: 0;
+  min-height: 0;
+  padding: 1rem;
+  border: 1px solid rgba(191, 219, 254, 0.9);
+  border-radius: 1.2rem;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(246, 250, 255, 0.96)),
+    linear-gradient(135deg, rgba(59, 130, 246, 0.05), transparent 55%);
+}
+
+.aprovacao-entradas-page__modal-panel-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.aprovacao-entradas-page__modal-panel-copy {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.aprovacao-entradas-page__modal-panel-copy h3 {
+  margin: 0;
+  color: var(--text-strong);
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.aprovacao-entradas-page__modal-panel-copy p {
+  margin: 0;
+  color: var(--text-muted);
+  line-height: 1.55;
+}
+
+.aprovacao-entradas-page__modal-table-wrap {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.86);
+  overflow: hidden;
+}
+
+.aprovacao-entradas-page__modal-table-wrap .rs-table {
+  background: transparent;
+  flex: 1 1 auto;
+  width: 100%;
+}
+
+.aprovacao-entradas-page__modal-table-wrap .rs-table-scrollbar-horizontal {
+  display: none !important;
+}
+
+.aprovacao-entradas-page__modal-table-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.aprovacao-entradas-page__modal-table-footer p {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.entradas-page .boname-page__control,
+.entradas-page .boname-page__control.rs-input,
+.entradas-page .boname-page__control.rs-input-number,
+.entradas-page .boname-page__control.rs-picker,
+.entradas-page .boname-page__control .rs-input,
+.entradas-page .boname-page__control .rs-input-number-input,
+.entradas-page .boname-page__control .rs-picker-toggle {
+  min-height: 44px;
+}
+
+.medicamentos-page__form-grid {
+  gap: 1.1rem;
+}
+
+.medicamentos-page__form-section {
+  display: grid;
+  gap: 0.95rem;
+  min-width: 0;
+  padding: 1rem 1.05rem;
+  border: 1px solid var(--border-soft);
+  border-radius: 1.05rem;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 251, 255, 0.92) 100%);
+}
+
+.medicamentos-page__form-section-header {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.medicamentos-page__form-section-header h3 {
+  margin: 0;
+  color: var(--text-strong);
+  font-size: 0.98rem;
+  font-weight: 800;
+}
+
+.medicamentos-page__form-section-header p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+.medicamentos-page__form-subgrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem 1.1rem;
+}
+
+.medicamentos-page__form-subgrid--single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.medicamentos-page__form-subgrid--metrics {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: start;
+}
+
+.medicamentos-page__form-subgrid--metrics.entrada-demandas-page__entry-grid {
+  grid-template-columns:
+    minmax(8rem, 11rem)
+    minmax(16rem, 1.45fr)
+    minmax(12rem, 1fr)
+    minmax(18rem, 1.65fr);
+}
+
+.medicamentos-page__form-subgrid--metrics .boname-page__field {
+  grid-template-rows: auto minmax(44px, auto) minmax(1.2rem, auto);
+  align-content: start;
+}
+
+.medicamentos-page__form-subgrid--metrics .boname-page__field > [role='alert'] {
+  line-height: 1.2;
+}
+
+.fornecedores-page__form-grid .boname-page__field {
+  grid-template-rows: auto minmax(44px, auto) minmax(1.2rem, auto);
+  align-content: start;
+}
+
+.fornecedores-page__form-grid .boname-page__field > [role='alert'] {
+  line-height: 1.2;
+}
+
+.medicamentos-page__status-fieldset {
+  padding: 1rem 1.05rem 0;
+  border: 1px solid var(--border-soft);
+  border-radius: 1.05rem;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 251, 255, 0.92) 100%);
+}
+
+.boname-page__field--full {
+  grid-column: 1 / -1;
+}
+
+.boname-page__status-fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.boname-page__status-fieldset legend {
+  margin: 0 0 0.45rem;
+  padding: 0;
+  color: var(--text-strong);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.boname-page__control,
+.boname-page__control .rs-input,
+.boname-page__control .rs-picker-toggle {
+  border-radius: 0.5rem;
+}
+
+.boname-page__control--compact {
+  align-self: start;
+  box-sizing: border-box;
+  height: 1.875rem;
+  min-height: 1.875rem;
+}
+
+.boname-page__record-modal .boname-page__control,
+.boname-page__record-modal .boname-page__control.rs-input,
+.boname-page__record-modal .boname-page__control.rs-input-number,
+.boname-page__record-modal .boname-page__control.rs-picker,
+.boname-page__record-modal .boname-page__control .rs-input,
+.boname-page__record-modal .boname-page__control .rs-input-number-input,
+.boname-page__record-modal .boname-page__control .rs-picker-toggle {
+  min-height: 44px;
+}
+
+.boname-page__record-modal .boname-page__control--compact,
+.boname-page__record-modal .boname-page__control--compact.rs-input {
+  height: 44px;
+}
+
+.boname-page__control--error,
+.boname-page__control--error .rs-input,
+.boname-page__control--error.rs-input-number,
+.boname-page__control--error .rs-picker-toggle {
+  border-color: rgba(239, 68, 68, 0.72) !important;
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.12) !important;
+}
+
+.boname-page__status-panel {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 0.85rem 0.95rem;
+  border: 1px solid var(--border-soft);
+  border-radius: 1rem;
+  background: rgba(248, 251, 255, 0.82);
+}
+
+.boname-page__status-copy {
+  display: grid;
+  gap: 0.45rem;
+  min-width: min(100%, 16rem);
+}
+
+.boname-page__status-copy .status-badge {
+  justify-self: start;
+}
+
+.boname-page__status-copy small {
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+.boname-page__status-actions {
+  display: flex;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.boname-page__record-modal .boname-page__status-actions .rs-btn {
+  min-height: 44px;
+}
+
+.boname-page__record-modal .app-modal__footer .rs-btn {
+  min-height: 44px;
+}
+
+.app-modal--delete .app-modal__footer .rs-btn {
+  min-height: 44px;
+}
+
+@media (max-width: 1200px) {
+  .demandas-especificas-page__details-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .main-layout__content-stack:has(.boname-page),
+  .main-layout__content-stack:has(.boname-page) .main-layout__page-body,
+  .boname-page__table-section,
+  .boname-page__table-section > .rs-panel-body,
+  .boname-page__table-section .page-section__body {
+    height: auto;
+    min-height: auto;
+  }
+
+  .boname-page__toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .boname-page__toolbar-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.65rem;
+    width: 100%;
+  }
+
+  .devolucao-medicamento-page__toolbar-actions {
+    padding-top: 0;
+  }
+
+  .devolucao-medicamento-page__footer-actions .rs-btn {
+    width: 100%;
+  }
+
+.boname-page__toolbar-actions .rs-btn {
+justify-content: center;
+min-height: 44px;
+width: 100%;
+}
+
+.estoque-page__filters-grid {
+grid-template-columns: 1fr;
+}
+
+.estoque-page__actions-label {
+color: var(--text-strong);
+}
+
+.estoque-page__actions-row {
+flex-wrap: wrap;
+}
+
+.estoque-page__actions-row .rs-btn {
+width: 100%;
+}
+
+.aprovacao-entradas-page__filters-grid {
+grid-template-columns: 1fr;
+}
+
+  .aprovacao-entradas-page__modal-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .aprovacao-entradas-page__record-modal .app-modal__footer {
+    justify-content: stretch;
+  }
+
+  .aprovacao-entradas-page__modal-table-footer {
+    align-items: stretch;
+  }
+
+  .aprovacao-entradas-page__modal-table-footer .rs-pagination {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .aprovacao-entradas-page__actions-label {
+    color: var(--text-strong);
+  }
+
+  .aprovacao-entradas-page__actions-row {
+    flex-wrap: wrap;
+  }
+
+  .aprovacao-entradas-page__actions-row .rs-btn {
+    width: 100%;
+  }
+
+  .boname-page__search-input {
+    width: 100%;
+  }
+
+  .boname-page__table-content {
+    display: block;
+    flex: 0 0 auto;
+    min-height: auto;
+  }
+
+  .boname-page__card-list {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    align-content: initial;
+  }
+
+  .boname-page__record-card {
+    height: auto;
+  }
+
+  .boname-page__record-card .rs-panel-body {
+    height: auto;
+  }
+
+  .boname-page__form-grid,
+  .boname-page__record-meta {
+    grid-template-columns: 1fr;
+  }
+
+  .entradas-page__workspace,
+  .entradas-page__form-layout,
+  .entradas-page__hero,
+  .entradas-page__composer-layout,
+  .entradas-page__record-meta-secondary,
+  .entrada-demandas-page__paciente-row {
+    grid-template-columns: 1fr;
+  }
+
+  .entradas-page__header-actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .entradas-page__header-actions .rs-btn {
+    width: 100%;
+  }
+
+  .entradas-page__composer-actions,
+  .entradas-page__draft-actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .entradas-page__composer-actions .rs-btn,
+  .entradas-page__draft-actions .rs-btn {
+    width: 100%;
+  }
+
+  .entradas-page__hero {
+    padding: 1rem;
+  }
+
+  .entradas-page__hero-metrics,
+  .entradas-page__draft-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .entradas-page__draft-empty-head {
+    display: none;
+  }
+
+  .entradas-page__draft-empty-body {
+    padding: 1.25rem 0.95rem;
+  }
+
+  .entradas-page__history-filters {
+    width: 100%;
+  }
+
+  .entradas-page__history-toolbar-main {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .entradas-page__history-filters .rs-picker {
+    flex: 1 1 100%;
+  }
+
+  .medicamentos-page__form-subgrid,
+  .medicamentos-page__form-subgrid--metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .requisicao-paciente-page__field--patient-id,
+  .requisicao-paciente-page__field--patient-search,
+  .requisicao-paciente-page__field--patient-name,
+  .requisicao-paciente-page__field--request-type,
+  .requisicao-paciente-page__field--local,
+  .requisicao-paciente-page__field--deposito,
+  .requisicao-paciente-page__field--date,
+  .requisicao-setor-page__field--setor,
+  .requisicao-setor-page__field--request-type,
+  .requisicao-setor-page__field--local,
+  .requisicao-setor-page__field--deposito,
+  .requisicao-setor-page__field--date {
+    grid-column: 1 / -1;
+  }
+
+  .boname-page__record-modal.rs-modal {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .boname-page__record-modal .rs-modal-dialog {
+    border: 0;
+    border-radius: 0;
+    min-height: 100%;
+  }
+
+  .requisicao-paciente-page__medicamento-modal.rs-modal,
+  .requisicao-paciente-page__medicamento-modal .rs-modal-dialog {
+    width: 100%;
+  }
+
+  .boname-page__form-panel {
+    padding: 0.95rem 0.9rem 1rem;
+    border-radius: 1rem;
+  }
+
+  .boname-page__record-modal .app-modal__footer {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .boname-page__record-modal .app-modal__footer .rs-btn {
+    width: 100%;
+  }
+
+  .boname-page__record-modal .app-modal__footer .rs-btn:only-child {
+    grid-column: 1 / -1;
+  }
+
+  .boname-page__table-footer {
+    align-items: stretch;
+  }
+
+  .boname-page__table-footer .rs-pagination {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .boname-page__table-footer .rs-pagination-btn,
+  .boname-page__table-footer .rs-pagination-group .rs-btn {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .boname-page__record-card-top {
+    flex-direction: column;
+  }
+
+  .boname-page__row-actions--compact {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .boname-page__row-actions--compact .rs-btn {
+    min-height: 44px;
+    width: 100%;
+    justify-content: center;
+  }
+}

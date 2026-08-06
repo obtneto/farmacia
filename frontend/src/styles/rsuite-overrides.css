@@ -1,0 +1,88 @@
+.rs-btn {
+  border-radius: 0.95rem;
+  font-weight: 700;
+}
+
+.rs-btn-primary {
+  background: linear-gradient(135deg, var(--brand-500), var(--brand-700));
+}
+
+.rs-input,
+.rs-input-group,
+.rs-picker-default .rs-picker-toggle,
+.rs-input-number-btn-group-vertical,
+.rs-input-number-input {
+  border-radius: 0.95rem;
+}
+
+.rs-input-group,
+.rs-picker-default .rs-picker-toggle,
+.rs-input-number {
+  border-color: var(--border-soft);
+  box-shadow: none;
+}
+
+.rs-input:focus,
+.rs-input-group:focus-within,
+.rs-picker-default.rs-picker-focused .rs-picker-toggle,
+.rs-input-number:focus-within {
+  border-color: rgba(37, 99, 235, 0.42);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+
+.rs-breadcrumb-item-active,
+.rs-breadcrumb-item a {
+  color: var(--text-muted);
+}
+
+.rs-breadcrumb-item-active {
+  color: var(--text-strong);
+  font-weight: 700;
+}
+
+.rs-panel-bordered {
+  border: 0;
+}
+
+.rs-table {
+  background: transparent;
+}
+
+.rs-table-body-wheel-area,
+.rs-table-cell-group,
+.rs-table-cell-group-fixed-left,
+.rs-table-cell-group-fixed-right {
+  background: transparent;
+}
+
+.rs-table-cell-group-fixed-right .rs-table-cell:last-child {
+  border-right-color: transparent;
+}
+
+.rs-table-row-header .rs-table-cell,
+.rs-table-row .rs-table-cell {
+  border-color: #e3ebf4;
+}
+
+.rs-table-row-header .rs-table-cell-content {
+  color: var(--text-strong);
+  font-weight: 700;
+  background: #f6f9fc;
+}
+
+.rs-table-row .rs-table-cell-content {
+  color: #243447;
+  background: rgba(255, 255, 255, 0.96);
+}
+
+.rs-pagination {
+  gap: 0.35rem;
+}
+
+.rs-pagination-btn {
+  border-radius: 0.8rem;
+}
+
+.rs-tag {
+  border-radius: 999px;
+}

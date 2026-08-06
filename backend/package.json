@@ -1,0 +1,35 @@
+{
+  "name": "apinode",
+  "version": "1.0.0",
+  "description": "API",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "swagger:docs": "node swagger/swagger-docs.js"
+  },
+  "author": "ovidio.neto",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "express-rate-limit": "^8.5.2",
+    "helmet": "^8.2.0",
+    "jsonwebtoken": "^9.0.2",
+    "mariadb": "^3.4.0",
+    "morgan": "^1.10.1",
+    "mysql2": "^3.22.2",
+    "pdfmake": "^0.3.9",
+    "swagger": "^0.0.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/morgan": "^1.9.10",
+    "@types/node": "^25.6.0",
+    "tsx": "^4.22.4",
+    "typescript": "^6.0.3"
+  }
+}

@@ -1,0 +1,54 @@
+.consulta-movimentacoes-page__filters-grid {
+  grid-template-columns: minmax(20rem, 1.7fr) minmax(11rem, 0.82fr) minmax(11rem, 0.82fr) minmax(14rem, 1fr) auto;
+  align-items: start;
+  gap: 1rem;
+}
+
+.consulta-movimentacoes-page__filters-grid .boname-page__control,
+.consulta-movimentacoes-page__filters-grid .boname-page__control.rs-picker,
+.consulta-movimentacoes-page__filters-grid .boname-page__control .rs-picker-toggle {
+  width: 100%;
+}
+
+.consulta-movimentacoes-page__filters-grid .boname-page__control.rs-picker .rs-picker-toggle {
+  min-height: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+.consulta-movimentacoes-page__record-meta {
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+
+.consulta-movimentacoes-page__table-copy {
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.15rem 0;
+}
+
+.consulta-movimentacoes-page__table-copy strong {
+  color: var(--text-strong);
+}
+
+.consulta-movimentacoes-page__table-copy span {
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+@media (max-width: 1280px) {
+  .consulta-movimentacoes-page__filters-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .consulta-movimentacoes-page__filters-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .consulta-movimentacoes-page .estoque-page__actions-row,
+  .consulta-movimentacoes-page .estoque-page__actions-row .rs-btn {
+    width: 100%;
+  }
+}

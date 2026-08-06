@@ -1,0 +1,180 @@
+.solicitacoes-transferencia-page .solicitacoes-transferencia-page__date-control {
+  --rs-input-group-border-radius: 0.5rem;
+}
+
+.solicitacoes-transferencia-page .solicitacoes-transferencia-page__date-control.rs-picker,
+.solicitacoes-transferencia-page .solicitacoes-transferencia-page__date-control .rs-input-group,
+.solicitacoes-transferencia-page .solicitacoes-transferencia-page__date-control .rs-input-group-addon,
+.solicitacoes-transferencia-page .solicitacoes-transferencia-page__date-control .rs-input,
+.solicitacoes-transferencia-page .solicitacoes-transferencia-page__date-control .rs-picker-toggle,
+.solicitacoes-transferencia-page .solicitacoes-transferencia-page__date-control.rs-picker .rs-picker-toggle,
+.solicitacoes-transferencia-page .solicitacoes-transferencia-page__date-control .rs-picker-toggle.rs-btn {
+  border-radius: 0.5rem !important;
+}
+
+.solicitacoes-transferencia-page__item-record-modal.rs-modal {
+  --record-modal-width: min(92rem, calc(100vw - 4rem));
+  --record-modal-height: min(48rem, calc(100dvh - var(--main-layout-header-height) - 1rem));
+}
+
+.solicitacoes-transferencia-page__item-record-modal .rs-modal-body {
+  height: 100%;
+  padding: 0.85rem 0 1rem;
+  overflow-y: hidden !important;
+}
+
+.solicitacoes-transferencia-page__item-record-modal .rs-modal-footer {
+  min-height: 3.9rem;
+  padding-top: 0.55rem;
+}
+
+.solicitacoes-transferencia-page__item-record-modal .app-modal__body-content,
+.solicitacoes-transferencia-page__item-record-modal .boname-page__modal-shell,
+.solicitacoes-transferencia-page__item-record-modal .boname-page__form-panel {
+  gap: 0.75rem;
+  align-content: start;
+}
+
+.solicitacoes-transferencia-page__item-record-modal .app-modal__body-content,
+.solicitacoes-transferencia-page__item-record-modal .boname-page__modal-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.solicitacoes-transferencia-page__item-record-modal .app-modal__body-content > * {
+  flex: 1 1 auto;
+  height: 100%;
+  min-height: 0;
+}
+
+.solicitacoes-transferencia-page__item-record-modal .boname-page__form-panel {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  height: 100%;
+  min-height: 0;
+  gap: 0.5rem;
+  padding-bottom: 0.85rem;
+}
+
+.solicitacoes-transferencia-page__item-record-modal .medicamentos-page__form-section {
+  flex: 1 1 auto;
+  grid-template-rows: auto minmax(0, 1fr);
+  height: 100%;
+  min-height: 0;
+}
+
+.solicitacoes-transferencia-page__item-record-modal .entradas-page__item-modal-grid {
+  grid-template-rows: auto minmax(0, 1fr);
+  height: 100%;
+  min-height: 0;
+}
+
+.solicitacoes-transferencia-page__item-record-modal .entradas-page__item-modal-grid > .boname-page__field--full:last-child {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.solicitacoes-transferencia-page__modal-table-wrap {
+  display: flex;
+  flex: 1 1 auto;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+.solicitacoes-transferencia-page__modal-table-wrap .rs-table {
+  background: transparent;
+  flex: 1 1 auto;
+  width: 100%;
+}
+
+.solicitacoes-transferencia-page__modal-table-wrap .rs-table-row-header {
+  background: #fff;
+}
+
+.solicitacoes-transferencia-page__modal-table-wrap .rs-table-cell-group-fixed-left,
+.solicitacoes-transferencia-page__modal-table-wrap .rs-table-cell-group-fixed-right {
+  width: 0 !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+}
+
+.solicitacoes-transferencia-page__modal-table-wrap .rs-table-cell-group-fixed-right-shadow,
+.solicitacoes-transferencia-page__modal-table-wrap .rs-table-cell-group-left-shadow {
+  display: none !important;
+}
+
+.solicitacoes-transferencia-page__modal-table-wrap .rs-table-scrollbar-horizontal {
+  display: none !important;
+}
+
+.solicitacoes-transferencia-page__stock-grid {
+  display: grid;
+  grid-template-rows: 52px;
+  grid-auto-rows: 56px;
+  align-content: start;
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background: rgba(255, 255, 255, 0.96);
+}
+
+.solicitacoes-transferencia-page__stock-grid-row {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 4fr) minmax(56px, 0.7fr) minmax(84px, 1fr) minmax(104px, 1fr) minmax(72px, 0.8fr) minmax(120px, 1.7fr);
+  width: 100%;
+  min-width: 0;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.solicitacoes-transferencia-page__stock-grid-row > [role='columnheader'],
+.solicitacoes-transferencia-page__stock-grid-row > [role='cell'] {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  min-height: 56px;
+  padding: 0.75rem;
+  color: #132341;
+}
+
+.solicitacoes-transferencia-page__stock-grid-row > [role='columnheader'] {
+  min-height: 52px;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.solicitacoes-transferencia-page__stock-grid-row > [role='columnheader']:not(:nth-child(2)),
+.solicitacoes-transferencia-page__stock-grid-row > [role='cell']:not(:nth-child(2)) {
+  justify-content: center;
+  text-align: center;
+}
+
+.solicitacoes-transferencia-page__modal-table-wrap .rs-table-cell-content,
+.solicitacoes-transferencia-page__modal-table-wrap .rs-table-cell-header .rs-table-cell-content {
+  display: flex;
+  align-items: center;
+  min-height: 100%;
+}
+
+.solicitacoes-transferencia-page__modal-checkbox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.solicitacoes-transferencia-page__modal-quantity-input.rs-input-number,
+.solicitacoes-transferencia-page__modal-quantity-input .rs-input-number-input {
+  width: 100%;
+  min-width: 0;
+}

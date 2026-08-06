@@ -1,0 +1,26 @@
+:root {
+  --app-bg: #edf3f8;
+  --app-bg-accent: rgba(14, 116, 144, 0.08);
+  --border-soft: #d8e2ee;
+  --border-strong: #c6d4e4;
+  --brand-500: #2563eb;
+  --brand-600: #1d4ed8;
+  --brand-700: #183b8c;
+  --brand-navy: #0f172a;
+  --card-bg: rgba(255, 255, 255, 0.92);
+  --card-bg-strong: #ffffff;
+  --shadow-soft: 0 18px 48px rgba(15, 23, 42, 0.08);
+  --shadow-strong: 0 24px 60px rgba(15, 23, 42, 0.12);
+  --success-500: #0f766e;
+  --text-muted: #5c6c80;
+  --text-strong: #102033;
+  --warning-500: #b45309;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+::selection {
+  background: rgba(37, 99, 235, 0.18);
+}

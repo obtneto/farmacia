@@ -1,0 +1,16 @@
+.dashboard-page__queue-card strong,
+.dashboard-page__guide strong,
+.placeholder-page strong {
+  color: var(--text-strong);
+}
+
+.placeholder-page .summary-card strong {
+  font-size: 1.35rem;
+}
+
+@media (max-width: 640px) {
+  .dashboard-page .rs-btn-group,
+  .dashboard-page .rs-stack {
+    width: 100%;
+  }
+}
