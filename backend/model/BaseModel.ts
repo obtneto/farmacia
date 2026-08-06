@@ -52,7 +52,7 @@ export default class BaseModel implements iBaseModel {
             this._found = false;
         }
 
-        return this._fields;
+        return this._fields as RowDataPacket;
     }
 
     async Salvar() {
