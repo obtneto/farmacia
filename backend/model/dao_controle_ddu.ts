@@ -80,13 +80,7 @@ export default class ControleDdu extends BaseModel implements iControleDduFields
             this._found = true;
         } else {
             this._found = false;
-            this.populateFromInitial({
-                cdd_id: 0,
-                cdd_date: null,
-                cdd_req_num: null,
-                cdd_status: null,
-                cdd_pac_id: null
-            });
+            this.populateFromInitial(this._initialFields);
         }
     }
 
