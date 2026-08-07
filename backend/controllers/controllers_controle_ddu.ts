@@ -246,18 +246,19 @@ export default class Controller_Controle_DDU {
             void await db.Connect();
             void await db.Begin();
 
+            //validações de front-end
             const req_num: string = String(req.body.req_num || '');
             const itens = req.body.itens as Array<{
                 med_id: string;
                 lote: string;
             }>;
 
+            //validações
             if (!Array.isArray(itens)) {
                 const error = new Error('Itens inválidos');
                 error.statusCode = 400;
                 throw error;
             }
-
 
             if (req_num == '') {
                 const error = new Error('Número da requisição não informado');
@@ -267,6 +268,7 @@ export default class Controller_Controle_DDU {
 
             const itensDDU = new ItensDDU(db.connection);
 
+            //verificar se tem quantidade disponivel para exclusão
             for (const item of itens) {
 
                 const med_id: string = String(item.med_id || '');
