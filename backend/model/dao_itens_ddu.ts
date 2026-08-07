@@ -7,7 +7,7 @@ export interface iItemDDUFields {
     ite_dd_med_id: number | null;
     ite_dd_lote: string | null;
     ite_dd_qtde: number;
-    ite_dd_qtde_retorno: number | null;
+    ite_dd_qtde_retorno: number;
 };
 
 export default class ItensDDU extends BaseModel implements iBaseModel, iItemDDUFields {
@@ -24,7 +24,7 @@ export default class ItensDDU extends BaseModel implements iBaseModel, iItemDDUF
             ite_dd_med_id: null,
             ite_dd_lote: null,
             ite_dd_qtde: 0,
-            ite_dd_qtde_retorno: null,
+            ite_dd_qtde_retorno: 0,
         };
 
         super(connection, 'tb_itens_ddu', initFields, 'ite_dd_id');
@@ -47,8 +47,8 @@ export default class ItensDDU extends BaseModel implements iBaseModel, iItemDDUF
     set ite_dd_qtde(qtde: number) { this._fields.ite_dd_qtde = qtde; }
     get ite_dd_qtde(): number { return this._fields.ite_dd_qtde; }
 
-    set ite_dd_qtde_retorno(qtde_retorno: number | null) { this._fields.ite_dd_qtde_retorno = qtde_retorno; }
-    get ite_dd_qtde_retorno(): number | null { return this._fields.ite_dd_qtde_retorno; }
+    set ite_dd_qtde_retorno(qtde_retorno: number) { this._fields.ite_dd_qtde_retorno = qtde_retorno; }
+    get ite_dd_qtde_retorno(): number { return this._fields.ite_dd_qtde_retorno; }
 
     async ListarItensPorRequisicao(pesq: string = '*', req_num: string): Promise<RowDataPacket[]> {
 
