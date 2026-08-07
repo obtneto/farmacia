@@ -270,7 +270,7 @@ export function DevolucaoMedicamentoPage() {
               }}
               onPressEnter={() => void handleSearch()}
             />
-            {inputError ? <span>{inputError}</span> : <small>Use o numero gerado da requisicao.</small>}
+            {inputError ? <span>{inputError}</span> : null}
           </div>
 
           <HStack className="boname-page__toolbar-actions devolucao-medicamento-page__toolbar-actions" spacing={10}>

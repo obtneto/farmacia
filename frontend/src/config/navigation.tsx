@@ -168,14 +168,14 @@ export const APP_SECTIONS: Record<SectionKey, SectionMeta> = {
   },
   'requisicoes/devolucao_medicamento': {
     breadcrumbItems: ['Inicio', 'Operacao', 'Requisicoes Medicamentos', 'Devolucao Medicamento'],
-    description: 'Area reservada para o fluxo de devolucao de medicamentos dentro das requisicoes.',
+    description: '',
     status: 'Modulo planejado',
     title: 'Devolucao Medicamento',
   },
   'requisicoes/controle_dose_domiciliar': {
     breadcrumbItems: ['Inicio', 'Operacao', 'Requisicoes Medicamentos', 'Controle Dose Domiciliar'],
-    description: 'Area reservada para o acompanhamento operacional do controle de dose domiciliar.',
-    status: 'Modulo planejado',
+    description: '',
+    status: 'Controle DDU',
     title: 'Controle Dose Domiciliar',
   },
   'operacao/entradas/nova': {

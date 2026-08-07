@@ -22,6 +22,7 @@ import router_pacientes from './routes/routes_pacientes.js';
 import router_itens_demandas from './routes/routes_itens_demandas.js';
 import router_solicitacoes from './routes/routes_solicitacoes.js';
 import router_itens_solicitacoes from './routes/routes_itens_solicitacoes.js';
+import router_controle_ddu from './routes/routes_controle_ddu.js';
 import morgan from 'morgan';
 import helmet from 'helmet';
 
@@ -129,6 +130,7 @@ app.use('/pacientes', router_pacientes);
 app.use('/itens-demandas', router_itens_demandas);
 app.use('/solicitacoes', router_solicitacoes);
 app.use('/itens-solicitacoes', router_itens_solicitacoes);
+app.use('/controle-ddu', router_controle_ddu);
 app.use('/settings', (req: Request, res: Response) => {
     const resdata: iresdata = { err: 0, msg: '', status: 200, data: null }
 

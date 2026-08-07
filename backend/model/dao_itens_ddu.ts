@@ -61,7 +61,7 @@ export default class ItensDDU extends BaseModel implements iBaseModel, iItemDDUF
                                 i.ite_dd_qtde_retorno,
                                 m.med_descr,
                                 m.med_descr_coml
-                              FROM itens_ddu i
+                              FROM tb_itens_ddu i
                               LEFT JOIN tb_medicamentos m ON i.ite_dd_med_id = m.med_id
                               WHERE i.ite_dd_req_num = :req_num`;
 
@@ -79,8 +79,8 @@ export default class ItensDDU extends BaseModel implements iBaseModel, iItemDDUF
 
     async BuscarPorRequisicao(req_num: string, med_id: number, lote: string): Promise<RowDataPacket> {
 
-        let query: string = `SELECT * FROM itens_ddu
-                              WHERE ite_dd_req_num = :req_num AND i.ite_dd_med_id = :med_id AND i.ite_dd_lote = :lote`;
+        let query: string = `SELECT * FROM tb_itens_ddu
+                              WHERE ite_dd_req_num = :req_num AND ite_dd_med_id = :med_id AND ite_dd_lote = :lote`;
 
         const [rows] = await this.ExecuteQuery(query, { req_num: req_num, med_id: med_id, lote: lote }) as [RowDataPacket[]];
 
@@ -94,5 +94,16 @@ export default class ItensDDU extends BaseModel implements iBaseModel, iItemDDUF
 
         return this._fields as RowDataPacket;
     }
+
+    async ValidarStatusRequisicao(req_num: string): Promise<Boolean> {
+
+        const sql: string = `SELECT COALESCE(SUM(ite_dd_qtde),0) - COALESCE(SUM(ite_dd_qtde_retorno),0) as qtde_restante FROM tb_itens_ddu
+                              WHERE ite_dd_req_num = :req_num`;
+
+        const [rows] = await this.ExecuteQuery(sql, { req_num: req_num }) as [RowDataPacket[]];
+
+        return Number(rows[0].qtde_restante) > 0 ? true : false;
+    }
+
 
 }

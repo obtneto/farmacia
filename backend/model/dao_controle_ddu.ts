@@ -46,7 +46,7 @@ export default class ControleDdu extends BaseModel implements iControleDduFields
     set cdd_pac_id(pac_id: number | null) { this._fields.cdd_pac_id = pac_id; }
     get cdd_pac_id(): number | null { return this._fields.cdd_pac_id; }
 
-    public async Listar(pesq: string = '*', data_ini: string, data_fin: string): Promise<RowDataPacket[]> {
+    public async Listar(pesq: string = '*', data_ini: string, data_fin: string, cdd_status: number): Promise<RowDataPacket[]> {
 
         let query: string = `SELECT ddu.cdd_id,
                                     ddu.cdd_req_num, 
@@ -59,10 +59,10 @@ export default class ControleDdu extends BaseModel implements iControleDduFields
                               WHERE (ddu.cdd_date >= :data_ini AND ddu.cdd_date <= :data_fin)`;
 
         if (pesq !== '*') {
-            query += ` AND ddu.cdd_status = 0 AND (MATCH(pac.nom_paciente) AGAINST(:pesq IN BOOLEAN MODE))`;
+            query += ` AND ddu.cdd_status = :cdd_status AND (MATCH(pac.nom_paciente) AGAINST(:pesq IN BOOLEAN MODE))`;
         }
 
-        const [rows] = await this.ExecuteQuery(query, { data_ini, data_fin, pesq }) as RowDataPacket[];
+        const [rows] = await this.ExecuteQuery(query, { data_ini, data_fin, pesq, cdd_status }) as RowDataPacket[];
 
         return rows as RowDataPacket[];
 
