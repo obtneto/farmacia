@@ -109,6 +109,10 @@
   min-height: 2.5rem;
 }
 
+.controle-dose-domiciliar-page__disabled-action {
+  pointer-events: none;
+}
+
 .controle-dose-domiciliar-page__delete-button.rs-btn {
   min-width: 2.35rem;
   min-height: 2.35rem;

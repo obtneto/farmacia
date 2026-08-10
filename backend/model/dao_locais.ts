@@ -1,4 +1,4 @@
-import { Connection,RowDataPacket } from 'mysql2/promise';
+import { Connection, RowDataPacket } from 'mysql2/promise';
 import BaseModel, { iBaseModel } from './BaseModel.js';
 
 enum eAtivo {
@@ -7,15 +7,15 @@ enum eAtivo {
 }
 
 export interface iLocaisFields {
-    local_id : number,
-    local_descr : string | null,
-    local_ativo : eAtivo | null,
+    local_id: number,
+    local_descr: string | null,
+    local_ativo: eAtivo | null,
 }
 
-export default class Locais extends BaseModel implements iBaseModel,iLocaisFields {
-    
-    constructor(connection : Connection) {
-    
+export default class Locais extends BaseModel implements iBaseModel, iLocaisFields {
+
+    constructor(connection: Connection) {
+
         if (!connection) {
             throw new Error("Conexão com o banco de dados não estabelecida.");
         }
@@ -30,40 +30,40 @@ export default class Locais extends BaseModel implements iBaseModel,iLocaisField
 
     }
 
-    get found(): boolean {return this._found;}
+    get found(): boolean { return this._found; }
 
-    set local_id(id : number) { this._fields.local_id = id;}
-    get local_id() :number {return this._fields.local_id;}
+    set local_id(id: number) { this._fields.local_id = id; }
+    get local_id(): number { return this._fields.local_id; }
 
-    set local_descr(descr : string | null) { this._fields.local_descr = descr;}
-    get local_descr() :string | null {return this._fields.local_descr;}
+    set local_descr(descr: string | null) { this._fields.local_descr = descr; }
+    get local_descr(): string | null { return this._fields.local_descr; }
 
-    set local_ativo(ativo : eAtivo | null) { this._fields.local_ativo = ativo;}
-    get local_ativo() : eAtivo | null {return this._fields.local_ativo;}
+    set local_ativo(ativo: eAtivo | null) { this._fields.local_ativo = ativo; }
+    get local_ativo(): eAtivo | null { return this._fields.local_ativo; }
 
-    public async Listar(pesq : string = '') : Promise<iLocaisFields[]>{
+    public async Listar(pesq: string = ''): Promise<iLocaisFields[]> {
 
-        let query : string = "SELECT * FROM tb_locais";
+        let query: string = "SELECT * FROM tb_locais";
 
         if (pesq !== '*') {
             query += " WHERE local_descr LIKE :pesq";
         }
 
-        const [rows] = await this.ExecuteQuery(query, {pesq: `%${pesq}%`}) as [iLocaisFields[]];
+        const [rows] = await this.ExecuteQuery(query, { pesq: `%${pesq}%` }) as [iLocaisFields[]];
 
         return rows;
 
     }
 
-    public async ListarAtivos(pesq : string = '') : Promise<iLocaisFields[]>{
+    public async ListarAtivos(pesq: string = ''): Promise<iLocaisFields[]> {
 
-        let query : string = "SELECT * FROM tb_locais";
+        let query: string = "SELECT * FROM tb_locais";
 
         if (pesq !== '*') {
-            query += " WHERE local_descr LIKE :pesq AND local_ativo = 1";
+            query += " WHERE MATCH(local_descr) AGAINST(:pesq IN NATURAL LANGUAGE MODE) AND local_ativo = 1";
         }
 
-        const [rows] = await this.ExecuteQuery(query, {pesq: `%${pesq}%`}) as [iLocaisFields[]];
+        const [rows] = await this.ExecuteQuery(query, { pesq }) as [iLocaisFields[]];
 
         return rows;
 

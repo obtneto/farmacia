@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import EditIcon from '@rsuite/icons/Edit'
 import ReloadIcon from '@rsuite/icons/Reload'
 import SearchIcon from '@rsuite/icons/Search'
+import VisibleIcon from '@rsuite/icons/Visible'
 import { Button, Checkbox, HStack, IconButton, Input, InputNumber, Pagination, SelectPicker, Panel, Tooltip, useMediaQuery, Whisper } from 'rsuite'
 import { Cell, Column, HeaderCell, Table } from 'rsuite-table'
 import { AppModal, DataState, PageSection, StatusBadge } from '../../../components/ui'
@@ -62,6 +63,8 @@ type ExcluirControlePayload = {
   itens: ExcluirItemPayload[]
   req_num: string
 }
+
+type ModalMode = 'edit' | 'view'
 
 export interface ControleDoseDomiciliarPageProps {
   pageSize?: number
@@ -131,6 +134,10 @@ function normalizeSearch(value: string): string {
 
 function normalizeReqNum(value?: number | string | null): string {
   return String(value ?? '').trim()
+}
+
+function isControleEncerrado(status?: number | null): boolean {
+  return Number(status ?? 0) === 1
 }
 
 function validateFilters(values: FilterValues): FilterErrors {
@@ -252,6 +259,7 @@ export function ControleDoseDomiciliarPage({
   const [submittedFilters, setSubmittedFilters] = useState<FilterValues>(getDefaultFilterValues)
   const [activePage, setActivePage] = useState(1)
   const [selectedControle, setSelectedControle] = useState<ControleDDURecord | null>(null)
+  const [modalMode, setModalMode] = useState<ModalMode>('edit')
   const [selectedItemIds, setSelectedItemIds] = useState<number[]>([])
   const [digitadas, setDigitadas] = useState<Record<number, number>>({})
 
@@ -333,6 +341,18 @@ export function ControleDoseDomiciliarPage({
   }
 
   const handleOpenEditModal = (record: ControleDDURecord) => {
+    if (isControleEncerrado(record.cdd_status)) {
+      return
+    }
+
+    setModalMode('edit')
+    setSelectedControle(record)
+    setSelectedItemIds([])
+    setDigitadas({})
+  }
+
+  const handleOpenViewModal = (record: ControleDDURecord) => {
+    setModalMode('view')
     setSelectedControle(record)
     setSelectedItemIds([])
     setDigitadas({})
@@ -445,38 +465,64 @@ export function ControleDoseDomiciliarPage({
   }
 
   const renderStatus = (status?: number | null) => {
-    if (Number(status ?? 0) === 1) {
+    if (isControleEncerrado(status)) {
       return <StatusBadge tone="success">Encerrado</StatusBadge>
     }
 
     return <StatusBadge tone="warning">Aberto</StatusBadge>
   }
 
-  const renderRowActions = (rowData: ControleDDURecord, compact = false) => (
-    <HStack
-      spacing={8}
-      wrap={compact}
-      className={`boname-page__row-actions ${compact ? 'boname-page__row-actions--compact' : 'boname-page__row-actions--table'}`.trim()}
-    >
-      {compact ? (
-        <Button appearance="subtle" size="xs" startIcon={<EditIcon />} onClick={() => handleOpenEditModal(rowData)}>
-          Editar DDU
-        </Button>
-      ) : (
-        <Whisper placement="top" trigger={['hover', 'focus']} controlId={`controle-ddu-edit-${rowData.cdd_id}`} speaker={<Tooltip>Editar DDU</Tooltip>}>
-          <IconButton
-            appearance="subtle"
-            size="xs"
-            circle
-            className="boname-page__action-icon boname-page__action-icon--edit"
-            icon={<EditIcon />}
-            aria-label="Editar DDU"
-            onClick={() => handleOpenEditModal(rowData)}
-          />
-        </Whisper>
-      )}
-    </HStack>
-  )
+  const renderRowActions = (rowData: ControleDDURecord, compact = false) => {
+    const editDisabled = isControleEncerrado(rowData.cdd_status)
+    const editTooltip = editDisabled ? 'DDU encerrado' : 'Editar DDU'
+
+    return (
+      <HStack
+        spacing={8}
+        wrap={compact}
+        className={`boname-page__row-actions ${compact ? 'boname-page__row-actions--compact' : 'boname-page__row-actions--table'}`.trim()}
+      >
+        {compact ? (
+          <>
+            <Button appearance="subtle" size="xs" startIcon={<VisibleIcon />} onClick={() => handleOpenViewModal(rowData)}>
+              Visualizar itens
+            </Button>
+            <Button appearance="subtle" size="xs" startIcon={<EditIcon />} disabled={editDisabled} onClick={() => handleOpenEditModal(rowData)}>
+              Editar DDU
+            </Button>
+          </>
+        ) : (
+          <>
+            <Whisper placement="top" trigger={['hover', 'focus']} controlId={`controle-ddu-view-${rowData.cdd_id}`} speaker={<Tooltip>Visualizar itens</Tooltip>}>
+              <IconButton
+                appearance="subtle"
+                size="xs"
+                circle
+                className="boname-page__action-icon boname-page__action-icon--view"
+                icon={<VisibleIcon />}
+                aria-label="Visualizar itens"
+                onClick={() => handleOpenViewModal(rowData)}
+              />
+            </Whisper>
+            <Whisper placement="top" trigger={['hover', 'focus']} controlId={`controle-ddu-edit-${rowData.cdd_id}`} speaker={<Tooltip>{editTooltip}</Tooltip>}>
+              <span>
+                <IconButton
+                  appearance="subtle"
+                  size="xs"
+                  circle
+                  disabled={editDisabled}
+                  className={`boname-page__action-icon boname-page__action-icon--edit ${editDisabled ? 'controle-dose-domiciliar-page__disabled-action' : ''}`.trim()}
+                  icon={<EditIcon />}
+                  aria-label="Editar DDU"
+                  onClick={() => handleOpenEditModal(rowData)}
+                />
+              </span>
+            </Whisper>
+          </>
+        )}
+      </HStack>
+    )
+  }
 
   return (
     <section className="boname-page estoque-page estoque-page--merged-layout controle-dose-domiciliar-page">
@@ -649,8 +695,8 @@ export function ControleDoseDomiciliarPage({
                       <Cell>{(rowData: ControleDDURecord) => renderStatus(rowData.cdd_status)}</Cell>
                     </Column>
 
-                    <Column width={118} fixed="right">
-                      <HeaderCell>Acao</HeaderCell>
+                    <Column width={132} fixed="right">
+                      <HeaderCell>Acoes</HeaderCell>
                       <Cell>{(rowData: ControleDDURecord) => renderRowActions(rowData)}</Cell>
                     </Column>
                   </Table>
@@ -687,28 +733,34 @@ export function ControleDoseDomiciliarPage({
         backdrop="static"
         className="boname-page__record-modal controle-dose-domiciliar-page__edit-modal"
         footer={(
-          <>
-            <Button appearance="subtle" disabled={updateMutation.isPending} onClick={handleCloseEditModal}>
-              Cancelar
+          modalMode === 'edit' ? (
+            <>
+              <Button appearance="subtle" disabled={updateMutation.isPending} onClick={handleCloseEditModal}>
+                Cancelar
+              </Button>
+              <Button
+                appearance="primary"
+                color="red"
+                disabled={!itensQuery.isPending && selectedItems.length === 0}
+                loading={deleteItemMutation.isPending}
+                onClick={() => void handleRequestDeleteSelectedItems()}
+              >
+                Excluir
+              </Button>
+              <Button
+                appearance="primary"
+                disabled={!itensQuery.isPending && selectedItems.length === 0}
+                loading={updateMutation.isPending}
+                onClick={() => void handleSave()}
+              >
+                Salvar
+              </Button>
+            </>
+          ) : (
+            <Button appearance="primary" onClick={handleCloseEditModal}>
+              Fechar
             </Button>
-            <Button
-              appearance="primary"
-              color="red"
-              disabled={!itensQuery.isPending && selectedItems.length === 0}
-              loading={deleteItemMutation.isPending}
-              onClick={() => void handleRequestDeleteSelectedItems()}
-            >
-              Excluir
-            </Button>
-            <Button
-              appearance="primary"
-              disabled={!itensQuery.isPending && selectedItems.length === 0}
-              loading={updateMutation.isPending}
-              onClick={() => void handleSave()}
-            >
-              Salvar
-            </Button>
-          </>
+          )
         )}
         intent="edit"
         intentVisible={false}
@@ -716,7 +768,7 @@ export function ControleDoseDomiciliarPage({
         onClose={handleCloseEditModal}
         size={isCompactLayout ? 'full' : 'lg'}
         subtitle={selectedControle?.cdd_req_num ? `Requisicao ${mask.requisitionNumber(selectedControle.cdd_req_num) || selectedControle.cdd_req_num}` : undefined}
-        title="Editar DDU"
+        title={modalMode === 'edit' ? 'Editar DDU' : 'Visualizar itens do DDU'}
       >
         {selectedControle ? (
           <div className="controle-dose-domiciliar-page__edit-summary">
@@ -730,7 +782,7 @@ export function ControleDoseDomiciliarPage({
             </div>
             <div className="controle-dose-domiciliar-page__edit-summary-item">
               <span>Itens</span>
-              <strong>{selectedItemIds.length} de {itens.length}</strong>
+              <strong>{modalMode === 'edit' ? `${selectedItemIds.length} de ${itens.length}` : itens.length}</strong>
             </div>
           </div>
         ) : null}
@@ -768,22 +820,24 @@ export function ControleDoseDomiciliarPage({
                 headerHeight={52}
                 autoHeight={false}
               >
-                <Column width={72} align="center">
-                  <HeaderCell>Sel.</HeaderCell>
-                  <Cell>
-                    {(rowData: ControleDDUItemRecord) => {
-                      const itemId = getItemId(rowData)
+                {modalMode === 'edit' ? (
+                  <Column width={72} align="center">
+                    <HeaderCell>Sel.</HeaderCell>
+                    <Cell>
+                      {(rowData: ControleDDUItemRecord) => {
+                        const itemId = getItemId(rowData)
 
-                      return (
-                        <Checkbox
-                          aria-label={`Selecionar item ${itemId}`}
-                          checked={selectedItemIds.includes(itemId)}
-                          onChange={(_, checked) => handleToggleItem(itemId, checked)}
-                        />
-                      )
-                    }}
-                  </Cell>
-                </Column>
+                        return (
+                          <Checkbox
+                            aria-label={`Selecionar item ${itemId}`}
+                            checked={selectedItemIds.includes(itemId)}
+                            onChange={(_, checked) => handleToggleItem(itemId, checked)}
+                          />
+                        )
+                      }}
+                    </Cell>
+                  </Column>
+                ) : null}
 
                 <Column width={96}>
                   <HeaderCell>Codigo</HeaderCell>
@@ -810,28 +864,30 @@ export function ControleDoseDomiciliarPage({
                   <Cell>{(rowData: ControleDDUItemRecord) => formatNumber(getItemQuantidadeDigitada(rowData))}</Cell>
                 </Column>
 
-                <Column width={170}>
-                  <HeaderCell>Qtde a Retornar</HeaderCell>
-                  <Cell>
-                    {(rowData: ControleDDUItemRecord) => {
-                      const itemId = getItemId(rowData)
-                      const maxValue = getItemLimiteRetorno(rowData)
+                {modalMode === 'edit' ? (
+                  <Column width={170}>
+                    <HeaderCell>Qtde a Retornar</HeaderCell>
+                    <Cell>
+                      {(rowData: ControleDDUItemRecord) => {
+                        const itemId = getItemId(rowData)
+                        const maxValue = getItemLimiteRetorno(rowData)
 
-                      return (
-                        <InputNumber
-                          min={0}
-                          max={maxValue}
-                          step={1}
-                          controls={false}
-                          className="boname-page__control controle-dose-domiciliar-page__quantity-input"
-                          value={normalizeQuantidadeRetorno(digitadas[itemId], maxValue)}
-                          onChange={(value) => handleChangeDigitada(itemId, value, maxValue)}
-                          onBlur={(event) => handleChangeDigitada(itemId, event.currentTarget.value, maxValue)}
-                        />
-                      )
-                    }}
-                  </Cell>
-                </Column>
+                        return (
+                          <InputNumber
+                            min={0}
+                            max={maxValue}
+                            step={1}
+                            controls={false}
+                            className="boname-page__control controle-dose-domiciliar-page__quantity-input"
+                            value={normalizeQuantidadeRetorno(digitadas[itemId], maxValue)}
+                            onChange={(value) => handleChangeDigitada(itemId, value, maxValue)}
+                            onBlur={(event) => handleChangeDigitada(itemId, event.currentTarget.value, maxValue)}
+                          />
+                        )
+                      }}
+                    </Cell>
+                  </Column>
+                ) : null}
 
               </Table>
             </div>
