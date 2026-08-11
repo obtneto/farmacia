@@ -13,9 +13,9 @@ export interface iItensInventarioFields {
 }
 
 export default class ItensInventario extends BaseModel implements iBaseModel, iItensInventarioFields {
-    
+
     constructor(connection: Connection) {
-    
+
         if (!connection) {
             throw new Error("Conexão com o banco de dados não estabelecida.");
         }
@@ -35,31 +35,31 @@ export default class ItensInventario extends BaseModel implements iBaseModel, iI
 
     }
 
-    get found(): boolean {return this._found;}
+    get found(): boolean { return this._found; }
 
-    set iti_id(id: number) { this._fields.iti_id = id;}
-    get iti_id(): number {return this._fields.iti_id;}
+    set iti_id(id: number) { this._fields.iti_id = id; }
+    get iti_id(): number { return this._fields.iti_id; }
 
-    set iti_inv_id(inv_id: number | null) { this._fields.iti_inv_id = inv_id;}
-    get iti_inv_id(): number | null {return this._fields.iti_inv_id;}
+    set iti_inv_id(inv_id: number | null) { this._fields.iti_inv_id = inv_id; }
+    get iti_inv_id(): number | null { return this._fields.iti_inv_id; }
 
-    set iti_med_id(med_id: number | null) { this._fields.iti_med_id = med_id;}
-    get iti_med_id(): number | null {return this._fields.iti_med_id;}
+    set iti_med_id(med_id: number | null) { this._fields.iti_med_id = med_id; }
+    get iti_med_id(): number | null { return this._fields.iti_med_id; }
 
-    set iti_lote(lote: string | null) { this._fields.iti_lote = lote;}
-    get iti_lote(): string | null {return this._fields.iti_lote;}
+    set iti_lote(lote: string | null) { this._fields.iti_lote = lote; }
+    get iti_lote(): string | null { return this._fields.iti_lote; }
 
-    set iti_validade(validade: Date | null) { this._fields.iti_validade = validade;}
-    get iti_validade(): Date | null {return this._fields.iti_validade;}
+    set iti_validade(validade: Date | null) { this._fields.iti_validade = validade; }
+    get iti_validade(): Date | null { return this._fields.iti_validade; }
 
-    set iti_qtde_estoque(qtde_estoque: number) { this._fields.iti_qtde_estoque = qtde_estoque;}
-    get iti_qtde_estoque(): number | null {return this._fields.iti_qtde_estoque;}
+    set iti_qtde_estoque(qtde_estoque: number) { this._fields.iti_qtde_estoque = qtde_estoque; }
+    get iti_qtde_estoque(): number | null { return this._fields.iti_qtde_estoque; }
 
-    set iti_qtde_invent(qtde_invent: number | null) { this._fields.iti_qtde_invent = qtde_invent;}
-    get iti_qtde_invent(): number | null {return this._fields.iti_qtde_invent;}
+    set iti_qtde_invent(qtde_invent: number | null) { this._fields.iti_qtde_invent = qtde_invent; }
+    get iti_qtde_invent(): number | null { return this._fields.iti_qtde_invent; }
 
-    set iti_qtde_dif(qtde_dif: number | null) { this._fields.iti_qtde_dif = qtde_dif;}
-    get iti_qtde_dif(): number | null {return this._fields.iti_qtde_dif;}
+    set iti_qtde_dif(qtde_dif: number | null) { this._fields.iti_qtde_dif = qtde_dif; }
+    get iti_qtde_dif(): number | null { return this._fields.iti_qtde_dif; }
 
     public async ListarPorInventario(inv_id: number): Promise<iItensInventarioFields[]> {
 
@@ -82,16 +82,7 @@ export default class ItensInventario extends BaseModel implements iBaseModel, iI
             this._found = true;
         } else {
             this._found = false;
-            this.populateFromInitial({
-                iti_id: 0,
-                iti_inv_id: null,
-                iti_med_id: null,
-                iti_lote: null,
-                iti_validade: null,
-                iti_qtde_estoque: null,
-                iti_qtde_invent: null,
-                iti_qtde_dif: null,
-            });
+            this.populateFromInitial(this._initialFields);
         }
 
         return this._fields;
