@@ -145,7 +145,7 @@ export default class Controller_Controle_DDU {
             const req_num: string = String(req.body.req_num || '');
 
             const itens = req.body.itens as Array<{
-                med_id: string;
+                med_id: number;
                 lote: string;
                 qtde_retorno: number;
             }>;
@@ -168,7 +168,7 @@ export default class Controller_Controle_DDU {
 
             for (const item of itens) {
 
-                if (item.med_id == '') {
+                if (item.med_id <= 0) {
                     const error = new Error('ID do medicamento não informado');
                     error.statusCode = 400;
                     throw error;
@@ -249,7 +249,7 @@ export default class Controller_Controle_DDU {
             //validações de front-end
             const req_num: string = String(req.body.req_num || '');
             const itens = req.body.itens as Array<{
-                med_id: string;
+                med_id: number;
                 lote: string;
             }>;
 
@@ -271,10 +271,10 @@ export default class Controller_Controle_DDU {
             //verificar se tem quantidade disponivel para exclusão
             for (const item of itens) {
 
-                const med_id: string = String(item.med_id || '');
-                const lote: string = String(item.lote || '');
+                const med_id: number = item.med_id;
+                const lote: string = item.lote;
 
-                if (med_id == '') {
+                if (med_id <= 0) {
                     const error = new Error('ID do medicamento não informado');
                     error.statusCode = 400;
                     throw error;
