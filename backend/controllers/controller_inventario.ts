@@ -128,6 +128,12 @@ export default class Controller_Inventarios {
                 throw error;
             }
 
+            if (depositos.dep_bloqueado === 1) {
+                const error = new Error('Depósito bloqueado');
+                error.statusCode = 409;
+                throw error;
+            }
+
             const inventarios = new Inventarios(db.connection);
             const medicamentos = new Medicamentos(db.connection);
             const itens_inventarios = new ItensInventario(db.connection);
@@ -145,6 +151,10 @@ export default class Controller_Inventarios {
             inventarios.inv_status = eStatus.Aberto;
 
             await inventarios.Salvar();
+
+            depositos.dep_bloqueado = 1;
+
+            await depositos.Salvar();
 
             //percorre os itens do inventário
             for (const item of itens) {
