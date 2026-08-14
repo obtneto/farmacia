@@ -18,6 +18,7 @@ import {
   RiHistoryLine,
   RiHomeHeartLine,
   RiInboxArchiveLine,
+  RiListCheck3,
   RiNodeTree,
   RiMapPinLine,
   RiPriceTag3Line,
@@ -54,6 +55,7 @@ export type SectionKey =
   | 'operacao/entradas/listar'
   | 'operacao/entradas/demandas'
   | 'operacao/entradas/aprovacao'
+  | 'operacao/inventarios/novo'
   | 'parametros/boname'
   | 'parametros/depositos'
   | 'parametros/fornecedores'
@@ -201,6 +203,12 @@ export const APP_SECTIONS: Record<SectionKey, SectionMeta> = {
     description: '',
     status: 'Fluxo de aprovacao',
     title: 'Aprovacao Entrada',
+  },
+  'operacao/inventarios/novo': {
+    breadcrumbItems: ['Inicio', 'Operacao', 'Inventarios', 'Novo'],
+    description: '',
+    status: 'Inventario de estoque',
+    title: 'Novo Inventario',
   },
   'parametros/boname': {
     breadcrumbItems: ['Inicio', 'Cadastros', 'Boname'],
@@ -361,6 +369,17 @@ export const NAVIGATION_GROUPS: NavigationGroup[] = [
       {
         children: [
           {
+            eventKey: 'operacao/inventarios/novo',
+            icon: <RiAddLine size={18} />,
+            label: 'Novo',
+          },
+        ],
+        icon: <RiListCheck3 size={18} />,
+        label: 'Inventarios',
+      },
+      {
+        children: [
+          {
             eventKey: 'requisicoes/por_paciente',
             icon: <RiUserLine size={18} />,
             label: 'Por Paciente',
@@ -451,6 +470,7 @@ export const QUICK_ACTIONS: Array<{ eventKey: SectionKey; label: string }> = [
   { eventKey: 'operacao/entradas/listar', label: 'Abrir listagem de entradas' },
   { eventKey: 'operacao/entradas/demandas', label: 'Abrir entrada de mercadoria demandas' },
   { eventKey: 'operacao/entradas/aprovacao', label: 'Abrir aprovacao de entrada' },
+  { eventKey: 'operacao/inventarios/novo', label: 'Criar inventario' },
   { eventKey: 'parametros/boname', label: 'Abrir cadastro de Boname' },
   { eventKey: 'parametros/depositos', label: 'Abrir cadastro de Depositos' },
   { eventKey: 'parametros/fornecedores', label: 'Abrir cadastro de Fornecedores' },

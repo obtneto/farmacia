@@ -1,4 +1,4 @@
-import Database, {iDatabase} from "../connections/dbconn.js";
+import Database, { iDatabase } from "../connections/dbconn.js";
 import { Request, Response } from "express";
 import { applyControllerError } from "../utils/controllerError.js";
 import { iresdata } from "./interface_controllers.js";
@@ -10,14 +10,14 @@ export default class Controller_Itens_Solicitacoes {
 
         const db: iDatabase = new Database('fsph_farmacia');
 
-        const resdata: iresdata = {err: 0, msg: '', status: 200, data: []};
+        const resdata: iresdata = { err: 0, msg: '', status: 200, data: [] };
 
         try {
 
             await db.Connect();
 
             const iso_id = Number(req.params.iso_id);
-            
+
             if (isNaN(iso_id)) {
                 const error = new Error("Parâmetro 'iso_id' inválido.");
                 error.statusCode = 400;
@@ -37,7 +37,7 @@ export default class Controller_Itens_Solicitacoes {
             resdata.data = result;
 
         } catch (error: any) {
-            applyControllerError(error, resdata,'Controller_Itens_Solicitacoes.BuscarPorId');
+            applyControllerError(error, resdata, 'Controller_Itens_Solicitacoes.BuscarPorId');
         }
 
         await db.Disconnect();
@@ -50,14 +50,14 @@ export default class Controller_Itens_Solicitacoes {
 
         const db: iDatabase = new Database('fsph_farmacia');
 
-        const resdata: iresdata = {err: 0, msg: '', status: 200, data: []};
+        const resdata: iresdata = { err: 0, msg: '', status: 200, data: [] };
 
         try {
 
             await db.Connect();
 
             const iso_sol_id = Number(req.params.iso_sol_id);
-            
+
             if (isNaN(iso_sol_id)) {
                 const error = new Error("Parâmetro 'iso_sol_id' inválido.");
                 error.statusCode = 400;
@@ -71,7 +71,7 @@ export default class Controller_Itens_Solicitacoes {
             resdata.data = result;
 
         } catch (error: any) {
-            applyControllerError(error, resdata,'Controller_Itens_Solicitacoes.ListarItensSolicitacoes');
+            applyControllerError(error, resdata, 'Controller_Itens_Solicitacoes.ListarItensSolicitacoes');
         }
 
         await db.Disconnect();
@@ -84,7 +84,7 @@ export default class Controller_Itens_Solicitacoes {
 
         const db: iDatabase = new Database('fsph_farmacia');
 
-        const resdata: iresdata = {err: 0, msg: '', status: 200, data: []};
+        const resdata: iresdata = { err: 0, msg: '', status: 200, data: [] };
 
         try {
 
@@ -131,7 +131,7 @@ export default class Controller_Itens_Solicitacoes {
             resdata.msg = "Item de solicitação salvo com sucesso.";
 
         } catch (error: any) {
-            applyControllerError(error, resdata,'Controller_Itens_Solicitacoes.SalvarItemSolicitacao');
+            applyControllerError(error, resdata, 'Controller_Itens_Solicitacoes.SalvarItemSolicitacao');
         }
 
         await db.Disconnect();
@@ -143,14 +143,14 @@ export default class Controller_Itens_Solicitacoes {
 
         const db: iDatabase = new Database('fsph_farmacia');
 
-        const resdata: iresdata = {err: 0, msg: '', status: 200, data: []};
+        const resdata: iresdata = { err: 0, msg: '', status: 200, data: [] };
 
         try {
 
             await db.Connect();
 
             const iso_id = Number(req.params.iso_id);
-            
+
             if (isNaN(iso_id)) {
                 const error = new Error("Parâmetro 'iso_id' inválido.");
                 error.statusCode = 400;
@@ -172,7 +172,7 @@ export default class Controller_Itens_Solicitacoes {
             resdata.msg = "Item de solicitação excluído com sucesso.";
 
         } catch (error: any) {
-            applyControllerError(error, resdata,'Controller_Itens_Solicitacoes.ExcluirItemSolicitacao');
+            applyControllerError(error, resdata, 'Controller_Itens_Solicitacoes.ExcluirItemSolicitacao');
         }
 
         await db.Disconnect();

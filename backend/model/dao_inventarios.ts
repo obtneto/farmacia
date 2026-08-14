@@ -12,7 +12,10 @@ export interface iInventariosFields {
     inv_dep_id: number | null,
     inv_med_tipo_codigo: string | null,
     inv_status: eStatus | null,
-    inv_tipo: string | null
+    inv_tipo: string | null,
+    inv_num: string | null,
+    tipo_descr?: string | null,
+    dep_descr?: string | null,
 }
 
 export default class Inventarios extends BaseModel implements iBaseModel, iInventariosFields {
@@ -30,6 +33,7 @@ export default class Inventarios extends BaseModel implements iBaseModel, iInven
             inv_med_tipo_codigo: null,
             inv_status: null,
             inv_tipo: null,
+            inv_num: null,
         };
 
         super(connection, 'tb_inventarios', initFields, 'inv_id');
@@ -56,9 +60,15 @@ export default class Inventarios extends BaseModel implements iBaseModel, iInven
     set inv_tipo(tipo: string | null) { this._fields.inv_tipo = tipo; }
     get inv_tipo(): string | null { return this._fields.inv_tipo; }
 
-    public async ListarPorPeriodo(date_ini: String, date_fin: String, dep_id: number): Promise<RowDataPacket[]> {
+    set inv_num(num: string | null) { this._fields.inv_num = num; }
+    get inv_num(): string | null { return this._fields.inv_num; }
 
-        const query: string = `SELECT d.dep_descr,i.inv_id,i.inv_date,t.tipo_descr,inv_status FROM 
+    get tipo_descr(): string | null { return this._fields.tipo_descr; }
+    get dep_descr(): string | null { return this._fields.dep_descr; }
+
+    public async ListarPorPeriodo(date_ini: String, date_fin: String, dep_id: number): Promise<iInventariosFields[]> {
+
+        const query: string = `SELECT d.dep_descr,i.inv_id,i.inv_date,t.tipo_descr,i.inv_status,i.inv_tipo FROM 
             tb_inventarios i
             LEFT JOIN tb_depositos d ON d.dep_id = i.inv_dep_id
             LEFT JOIN tb_tipos_medicamentos t ON t.tipo_id = i.inv_med_tipo_codigo
@@ -66,10 +76,35 @@ export default class Inventarios extends BaseModel implements iBaseModel, iInven
 
         const params: any = { date_ini, date_fin, dep_id };
 
-        const [rows] = await this.ExecuteQuery(query, params) as [RowDataPacket[]];
+        const [rows] = await this.ExecuteQuery(query, params) as [iInventariosFields[]];
 
-        return rows;
+        return rows as iInventariosFields[];
 
+    }
+
+    public async BuscarPorNum(inv_num: string): Promise<iInventariosFields> {
+
+        const query: string = `
+            SELECT 
+                d.dep_descr,i.inv_id,i.inv_num,i.inv_date,t.tipo_descr,i.inv_status,i.inv_tipo 
+            FROM 
+                tb_inventarios i
+                LEFT JOIN tb_depositos d ON d.dep_id = i.inv_dep_id
+                LEFT JOIN tb_tipos_medicamentos t ON t.tipo_id = i.inv_med_tipo_codigo
+            WHERE 
+                i.inv_num = :inv_num`;
+
+        const [rows] = await this.ExecuteQuery(query, { inv_num }) as [iInventariosFields[]];
+
+        if (rows && rows.length > 0) {
+            this.populateFromRow(rows[0]);
+            this._found = true;
+        } else {
+            this.populateFromInitial(this._initialFields);
+            this._found = false;
+        }
+
+        return this._fields;
     }
 
 }

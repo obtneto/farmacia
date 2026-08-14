@@ -3,13 +3,14 @@ import BaseModel, { iBaseModel } from './BaseModel.js';
 
 export interface iItensInventarioFields {
     iti_id: number,
-    iti_inv_id: number | null,
+    iti_inv_num: string | null,
     iti_med_id: number | null,
     iti_lote: string | null,
     iti_validade: Date | string | null,
     iti_qtde_estoque: number | null,
     iti_qtde_invent: number | null,
     iti_qtde_dif: number | null,
+    med_descr?: string | null
 }
 
 export default class ItensInventario extends BaseModel implements iBaseModel, iItensInventarioFields {
@@ -22,7 +23,7 @@ export default class ItensInventario extends BaseModel implements iBaseModel, iI
 
         const initFields: iItensInventarioFields = {
             iti_id: 0,
-            iti_inv_id: null,
+            iti_inv_num: null,
             iti_med_id: null,
             iti_lote: null,
             iti_validade: null,
@@ -40,8 +41,8 @@ export default class ItensInventario extends BaseModel implements iBaseModel, iI
     set iti_id(id: number) { this._fields.iti_id = id; }
     get iti_id(): number { return this._fields.iti_id; }
 
-    set iti_inv_id(inv_id: number | null) { this._fields.iti_inv_id = inv_id; }
-    get iti_inv_id(): number | null { return this._fields.iti_inv_id; }
+    set iti_inv_num(inv_num: string | null) { this._fields.iti_inv_num = inv_num; }
+    get iti_inv_num(): string | null { return this._fields.iti_inv_num; }
 
     set iti_med_id(med_id: number | null) { this._fields.iti_med_id = med_id; }
     get iti_med_id(): number | null { return this._fields.iti_med_id; }
@@ -61,21 +62,32 @@ export default class ItensInventario extends BaseModel implements iBaseModel, iI
     set iti_qtde_dif(qtde_dif: number | null) { this._fields.iti_qtde_dif = qtde_dif; }
     get iti_qtde_dif(): number | null { return this._fields.iti_qtde_dif; }
 
-    public async ListarPorInventario(inv_id: number): Promise<iItensInventarioFields[]> {
+    get med_descr(): string | null { return this._fields.med_descr; }
 
-        const query: string = "SELECT * FROM tb_itens_inventario WHERE iti_inv_id = :inv_id";
+    public async ListarPorInventario(inv_num: string): Promise<iItensInventarioFields[]> {
 
-        const [rows] = await this.ExecuteQuery(query, { inv_id }) as [iItensInventarioFields[]];
+        const query: string = `
+            SELECT i.*, m.med_descr FROM tb_itens_inventario i
+            LEFT JOIN tb_medicamentos m ON i.iti_med_id = m.med_id
+            WHERE i.iti_inv_num = :inv_num
+            ORDER BY m.med_descr
+        `;
+
+        const [rows] = await this.ExecuteQuery(query, { inv_num }) as [iItensInventarioFields[]];
 
         return rows;
 
     }
 
-    public async BuscarPorItem(inv_id: number, med_id: number, lote: string): Promise<iItensInventarioFields> {
+    public async BuscarPorItem(inv_num: string, med_id: number, lote: string): Promise<iItensInventarioFields> {
 
-        const query: string = "SELECT * FROM tb_itens_inventario WHERE iti_inv_id = :inv_id AND iti_med_id = :med_id AND iti_lote = :lote";
+        const query: string = `
+            SELECT i.*, m.med_descr FROM tb_itens_inventario i
+            LEFT JOIN tb_medicamentos m ON i.iti_med_id = m.med_id
+            WHERE i.iti_inv_num = :inv_num AND i.iti_med_id = :med_id AND i.iti_lote = :lote
+        `;
 
-        const [rows] = await this.ExecuteQuery(query, { inv_id, med_id, lote }) as [iItensInventarioFields[]];
+        const [rows] = await this.ExecuteQuery(query, { inv_num, med_id, lote }) as [iItensInventarioFields[]];
 
         if (rows && rows.length > 0) {
             this.populateFromRow(rows[0]);

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import DetailIcon from '@rsuite/icons/Detail'
 import ReloadIcon from '@rsuite/icons/Reload'
@@ -181,6 +181,8 @@ export function SolicitacoesEncerradasPage({
   const [submittedFilters, setSubmittedFilters] = useState<FilterValues | null>(null)
   const [activePage, setActivePage] = useState(1)
   const [selectedSolicitacao, setSelectedSolicitacao] = useState<SolicitacaoEncerradaRecord | null>(null)
+  const detailTableWrapRef = useRef<HTMLDivElement | null>(null)
+  const [detailTableWidth, setDetailTableWidth] = useState(0)
 
   const listQuery = useQuery({
     queryKey: ['solicitacoes-encerradas', submittedFilters],
@@ -210,8 +212,37 @@ export function SolicitacoesEncerradasPage({
   const hasRecords = records.length > 0
   const tableHeight = isCompactLayout ? 360 : 470
   const detailTableHeight = isCompactLayout ? 420 : 460
+  const detailsModalOpen = selectedSolicitacao !== null
+  const effectiveDetailTableWidth = detailsModalOpen ? detailTableWidth : 0
   const tableLabelStart = hasRecords ? pageStart + 1 : 0
   const tableLabelEnd = hasRecords ? pageStart + paginatedRecords.length : 0
+
+  useLayoutEffect(() => {
+    if (!detailsModalOpen || itens.length === 0) {
+      return
+    }
+
+    const container = detailTableWrapRef.current
+
+    if (!container) {
+      return
+    }
+
+    const updateTableWidth = () => {
+      setDetailTableWidth(Math.max(0, Math.round(container.getBoundingClientRect().width)))
+    }
+
+    updateTableWidth()
+
+    const resizeObserver = new ResizeObserver(updateTableWidth)
+    resizeObserver.observe(container)
+    window.addEventListener('resize', updateTableWidth)
+
+    return () => {
+      resizeObserver.disconnect()
+      window.removeEventListener('resize', updateTableWidth)
+    }
+  }, [detailsModalOpen, isCompactLayout, itens.length])
 
   const handleSubmitFilters = async () => {
     const nextErrors = validateFilters(filterValues)
@@ -245,6 +276,7 @@ export function SolicitacoesEncerradasPage({
 
   const handleCloseDetailsModal = () => {
     setSelectedSolicitacao(null)
+    setDetailTableWidth(0)
   }
 
   const renderRowActions = (rowData: SolicitacaoEncerradaRecord, compact = false) => (
@@ -514,7 +546,7 @@ export function SolicitacoesEncerradasPage({
       </PageSection>
 
       <AppModal
-        open={selectedSolicitacao !== null}
+        open={detailsModalOpen}
         backdrop="static"
         className="boname-page__record-modal solicitacoes-encerradas-page__details-modal"
         footer={(
@@ -587,12 +619,14 @@ export function SolicitacoesEncerradasPage({
         ) : null}
 
         {!itensQuery.isPending && !itensQuery.isError && itens.length > 0 ? (
-          <div className="boname-page__table-wrap solicitacoes-encerradas-page__details-table-wrap">
+          <div ref={detailTableWrapRef} className="boname-page__table-wrap solicitacoes-encerradas-page__details-table-wrap">
             <Table
+              key={`${selectedSolicitacao?.sol_id ?? 'sem-solicitacao'}-${effectiveDetailTableWidth}`}
               data={itens}
               height={detailTableHeight}
+              width={effectiveDetailTableWidth || undefined}
+              fillHeight
               bordered
-              virtualized
               rowHeight={58}
               headerHeight={52}
               autoHeight={false}

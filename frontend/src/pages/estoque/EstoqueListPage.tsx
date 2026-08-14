@@ -1,10 +1,12 @@
 import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { Button, HStack, Input, Pagination, Panel, SelectPicker, useMediaQuery } from 'rsuite'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { Button, HStack, IconButton, Input, InputNumber, Pagination, Panel, SelectPicker, Tooltip, useMediaQuery, Whisper } from 'rsuite'
+import LockIcon from '@rsuite/icons/Lock'
+import UnlockIcon from '@rsuite/icons/legacy/Unlock'
 import SearchIcon from '@rsuite/icons/Search'
 import ReloadIcon from '@rsuite/icons/Reload'
 import { Cell, Column, HeaderCell, Table } from 'rsuite-table'
-import { DataState, PageSection, StatusBadge } from '../../components/ui'
+import { AppModal, DataState, PageSection, StatusBadge } from '../../components/ui'
 import { useMessage } from '../../hooks/useMessage'
 import { getApiBaseUrl } from '../../lib/api-base-url'
 import '../boname/BonameCrudPage.css'
@@ -39,8 +41,10 @@ export interface EstoqueRecord {
   descricao: string | null
   descricao_comercial: string | null
   dias_para_validade: number | string | null
+  est_id: number
   id: number
   lote: string | null
+  medicamento_id: number | null
   saldo_bloqueado: number
   saldo_disponivel: number
   unidade: string | null
@@ -54,6 +58,14 @@ interface FilterValues {
 }
 
 type FilterErrors = Partial<Record<keyof FilterValues, string>>
+
+type AjustarSaldoAction = 'bloquear' | 'desbloquear'
+
+interface AjustarSaldoPayload {
+  action: AjustarSaldoAction
+  estId: number
+  quantidade: number
+}
 
 export interface EstoqueListPageProps {
   apiBaseUrl?: string
@@ -242,17 +254,40 @@ async function listarEstoque(
   )
 }
 
+async function ajustarSaldoEstoque(
+  baseUrl: string,
+  payload: AjustarSaldoPayload,
+  authToken?: string | null,
+): Promise<void> {
+  const isBloqueio = payload.action === 'bloquear'
+
+  await requestEstoque<Record<string, never>>(
+    baseUrl,
+    `/estoque/${payload.action}/${payload.estId}`,
+    {
+      method: 'PATCH',
+      body: JSON.stringify(isBloqueio ? { est_bloquear: payload.quantidade } : { est_desbloquear: payload.quantidade }),
+    },
+    authToken,
+  )
+}
+
 export function EstoqueListPage({
   apiBaseUrl = getApiBaseUrl(),
   authToken,
 }: EstoqueListPageProps) {
   const [isCompactLayout] = useMediaQuery('(max-width: 768px)')
+  const queryClient = useQueryClient()
   const message = useMessage()
   const resolvedAuthToken = authToken ?? getStoredToken()
   const [filterValues, setFilterValues] = useState<FilterValues>(DEFAULT_FILTER_VALUES)
   const [filterErrors, setFilterErrors] = useState<FilterErrors>({})
   const [submittedFilters, setSubmittedFilters] = useState<FilterValues | null>(null)
   const [activePage, setActivePage] = useState(1)
+  const [selectedBlockItem, setSelectedBlockItem] = useState<EstoqueRecord | null>(null)
+  const [saldoAction, setSaldoAction] = useState<AjustarSaldoAction>('bloquear')
+  const [blockQuantity, setBlockQuantity] = useState<number | null>(null)
+  const [blockQuantityError, setBlockQuantityError] = useState<string | undefined>()
 
   const depositosQuery = useQuery({
     queryKey: ['estoque-depositos', apiBaseUrl, resolvedAuthToken],
@@ -296,6 +331,40 @@ export function EstoqueListPage({
   const tableLabelStart = hasRecords ? pageStart + 1 : 0
   const tableLabelEnd = hasRecords ? pageStart + paginatedRecords.length : 0
   const hasFiltersDependencyError = depositosQuery.isError || tiposMedicamentosQuery.isError
+  const selectedSaldoLimit = Number(
+    saldoAction === 'bloquear' ? selectedBlockItem?.saldo_disponivel || 0 : selectedBlockItem?.saldo_bloqueado || 0,
+  )
+  const saldoActionLabel = saldoAction === 'bloquear' ? 'Bloquear Saldo' : 'Desbloquear Saldo'
+  const saldoActionFieldLabel = saldoAction === 'bloquear' ? 'Quantidade a bloquear' : 'Quantidade a desbloquear'
+  const saldoActionErrorLabel = saldoAction === 'bloquear' ? 'bloqueio' : 'desbloqueio'
+  const canSubmitBlock =
+    selectedBlockItem !== null &&
+    Number(selectedBlockItem.est_id || 0) > 0 &&
+    blockQuantity !== null &&
+    blockQuantity > 0 &&
+    blockQuantity <= selectedSaldoLimit &&
+    !blockQuantityError
+
+  const blockMutation = useMutation({
+    mutationFn: (payload: AjustarSaldoPayload) => ajustarSaldoEstoque(apiBaseUrl, payload, resolvedAuthToken),
+    onSuccess: async (_data, payload) => {
+      await queryClient.invalidateQueries({ queryKey: ['estoque-list'] })
+      setSelectedBlockItem(null)
+      setSaldoAction('bloquear')
+      setBlockQuantity(null)
+      setBlockQuantityError(undefined)
+      await message.success(
+        payload.action === 'bloquear' ? 'Saldo bloqueado' : 'Saldo desbloqueado',
+        payload.action === 'bloquear' ? 'O saldo foi bloqueado com sucesso.' : 'O saldo foi desbloqueado com sucesso.',
+      )
+    },
+    onError: async (error, payload) => {
+      await message.error(
+        payload.action === 'bloquear' ? 'Falha ao bloquear saldo' : 'Falha ao desbloquear saldo',
+        error instanceof Error ? error.message : 'Erro ao processar saldo.',
+      )
+    },
+  })
 
   const handleSubmitFilters = async () => {
     const nextErrors = validateFilters(filterValues)
@@ -327,8 +396,73 @@ export function EstoqueListPage({
     await Promise.all([depositosQuery.refetch(), tiposMedicamentosQuery.refetch()])
   }
 
+  const handleOpenBlockModal = (record: EstoqueRecord, action: AjustarSaldoAction) => {
+    setSelectedBlockItem(record)
+    setSaldoAction(action)
+    setBlockQuantity(null)
+    setBlockQuantityError(undefined)
+  }
+
+  const handleCloseBlockModal = () => {
+    if (blockMutation.isPending) {
+      return
+    }
+
+    setSelectedBlockItem(null)
+    setSaldoAction('bloquear')
+    setBlockQuantity(null)
+    setBlockQuantityError(undefined)
+  }
+
+  const handleChangeBlockQuantity = async (value: number | string | null) => {
+    const parsedValue = Number(value || 0)
+
+    if (parsedValue > selectedSaldoLimit) {
+      setBlockQuantity(null)
+      setBlockQuantityError(`Informe uma quantidade menor ou igual ao saldo para ${saldoActionErrorLabel}.`)
+      await message.warning('Saldo insuficiente', `A quantidade para ${saldoActionErrorLabel} nao pode ser maior que o saldo permitido.`)
+      return
+    }
+
+    setBlockQuantity(parsedValue > 0 ? parsedValue : null)
+    setBlockQuantityError(undefined)
+  }
+
+  const handleSubmitBlock = async () => {
+    if (!selectedBlockItem) {
+      return
+    }
+
+    const quantidade = Number(blockQuantity || 0)
+    const estId = Number(selectedBlockItem.est_id || 0)
+
+    if (estId <= 0) {
+      await message.error(
+        saldoAction === 'bloquear' ? 'Falha ao bloquear saldo' : 'Falha ao desbloquear saldo',
+        'Atualize a listagem para carregar o ID real do estoque.',
+      )
+      return
+    }
+
+    if (quantidade <= 0) {
+      setBlockQuantityError('Informe uma quantidade maior que zero.')
+      return
+    }
+
+    if (quantidade > selectedSaldoLimit) {
+      setBlockQuantityError(`Informe uma quantidade menor ou igual ao saldo para ${saldoActionErrorLabel}.`)
+      return
+    }
+
+    await blockMutation.mutateAsync({
+      action: saldoAction,
+      estId,
+      quantidade,
+    })
+  }
+
   return (
-    <section className="boname-page estoque-page estoque-page--merged-layout">
+    <section className="boname-page estoque-page estoque-list-page estoque-page--merged-layout">
       <PageSection
         className="estoque-page__filters-section estoque-page__merged-section"
       >
@@ -481,10 +615,6 @@ export function EstoqueListPage({
 
                       <dl className="boname-page__record-meta estoque-page__record-meta">
                         <div>
-                          <dt>ID</dt>
-                          <dd>{rowData.id}</dd>
-                        </div>
-                        <div>
                           <dt>Unidade</dt>
                           <dd>{rowData.unidade || '-'}</dd>
                         </div>
@@ -509,6 +639,27 @@ export function EstoqueListPage({
                           <dd>{formatNumber(rowData.saldo_bloqueado)}</dd>
                         </div>
                       </dl>
+
+                      <HStack spacing={10} className="boname-page__toolbar-actions estoque-list-page__card-actions">
+                        <Button
+                          appearance="subtle"
+                          size="xs"
+                          startIcon={<LockIcon />}
+                          disabled={Number(rowData.saldo_disponivel || 0) <= 0}
+                          onClick={() => handleOpenBlockModal(rowData, 'bloquear')}
+                        >
+                          Bloquear Saldo
+                        </Button>
+                        <Button
+                          appearance="subtle"
+                          size="xs"
+                          startIcon={<UnlockIcon />}
+                          disabled={Number(rowData.saldo_bloqueado || 0) <= 0}
+                          onClick={() => handleOpenBlockModal(rowData, 'desbloquear')}
+                        >
+                          Desbloquear Saldo
+                        </Button>
+                      </HStack>
                     </Panel>
                   ))}
                 </div>
@@ -580,6 +731,50 @@ export function EstoqueListPage({
                         {(rowData: EstoqueRecord) => formatNumber(rowData.saldo_bloqueado)}
                       </Cell>
                     </Column>
+
+                    <Column width={132} fixed="right">
+                      <HeaderCell>Acoes</HeaderCell>
+                      <Cell>
+                        {(rowData: EstoqueRecord) => (
+                          <HStack spacing={8} justifyContent="center" className="boname-page__row-actions boname-page__row-actions--table">
+                            <Whisper
+                              placement="top"
+                              trigger={['hover', 'focus']}
+                              controlId={`estoque-bloquear-${rowData.est_id}`}
+                              speaker={<Tooltip>Bloquear saldo</Tooltip>}
+                            >
+                              <IconButton
+                                appearance="subtle"
+                                size="xs"
+                                circle
+                                className="boname-page__action-icon boname-page__action-icon--edit"
+                                icon={<LockIcon />}
+                                aria-label="Bloquear saldo"
+                                disabled={Number(rowData.saldo_disponivel || 0) <= 0}
+                                onClick={() => handleOpenBlockModal(rowData, 'bloquear')}
+                              />
+                            </Whisper>
+                            <Whisper
+                              placement="top"
+                              trigger={['hover', 'focus']}
+                              controlId={`estoque-desbloquear-${rowData.est_id}`}
+                              speaker={<Tooltip>Desbloquear saldo</Tooltip>}
+                            >
+                              <IconButton
+                                appearance="subtle"
+                                size="xs"
+                                circle
+                                className="boname-page__action-icon boname-page__action-icon--view"
+                                icon={<UnlockIcon />}
+                                aria-label="Desbloquear saldo"
+                                disabled={Number(rowData.saldo_bloqueado || 0) <= 0}
+                                onClick={() => handleOpenBlockModal(rowData, 'desbloquear')}
+                              />
+                            </Whisper>
+                          </HStack>
+                        )}
+                      </Cell>
+                    </Column>
                   </Table>
                 </div>
               )}
@@ -608,6 +803,92 @@ export function EstoqueListPage({
           </>
         ) : null}
       </PageSection>
+
+      <AppModal
+        open={selectedBlockItem !== null}
+        backdrop="static"
+        intent="edit"
+        intentVisible={false}
+        title={saldoActionLabel}
+        className="boname-page__record-modal estoque-list-page__block-modal"
+        onClose={handleCloseBlockModal}
+        size={isCompactLayout ? 'full' : 'md'}
+        footer={
+          <>
+            <Button appearance="subtle" disabled={blockMutation.isPending} onClick={handleCloseBlockModal}>
+              Fechar
+            </Button>
+            <Button
+              appearance="primary"
+              loading={blockMutation.isPending}
+              disabled={!canSubmitBlock}
+              onClick={() => void handleSubmitBlock()}
+            >
+              {saldoActionLabel}
+            </Button>
+          </>
+        }
+      >
+        <div className="boname-page__modal-shell">
+          <section className="boname-page__form-panel" aria-label="Dados do item de estoque">
+            <dl className="boname-page__record-meta estoque-list-page__block-meta">
+              <div>
+                <dt>Medicamento</dt>
+                <dd>{selectedBlockItem?.descricao || '-'}</dd>
+              </div>
+              <div>
+                <dt>Descricao comercial</dt>
+                <dd>{selectedBlockItem?.descricao_comercial || '-'}</dd>
+              </div>
+              <div>
+                <dt>Unidade</dt>
+                <dd>{selectedBlockItem?.unidade || '-'}</dd>
+              </div>
+              <div>
+                <dt>Lote</dt>
+                <dd>{selectedBlockItem?.lote || '-'}</dd>
+              </div>
+              <div>
+                <dt>Validade</dt>
+                <dd>{selectedBlockItem ? renderValidityBadge(selectedBlockItem.validade, selectedBlockItem.alerta_validade) : '-'}</dd>
+              </div>
+              <div>
+                <dt>Saldo disponivel</dt>
+                <dd>{formatNumber(selectedBlockItem?.saldo_disponivel ?? 0)}</dd>
+              </div>
+              <div className="estoque-list-page__block-input-card">
+                <dt>{saldoActionFieldLabel}</dt>
+                <dd>
+                  <InputNumber
+                    id={saldoAction === 'bloquear' ? 'estoque-bloquear-saldo' : 'estoque-desbloquear-saldo'}
+                    min={1}
+                    max={selectedSaldoLimit}
+                    step={1}
+                    size="sm"
+                    controls={false}
+                    className={blockQuantityError ? 'boname-page__control boname-page__control--error' : 'boname-page__control'}
+                    value={blockQuantity}
+                    onChange={(value) => void handleChangeBlockQuantity(value)}
+                  />
+                  {blockQuantityError ? <span className="boname-page__field-error">{blockQuantityError}</span> : null}
+                </dd>
+              </div>
+              <div>
+                <dt>Saldo bloqueado</dt>
+                <dd>
+                  <InputNumber
+                    value={selectedBlockItem?.saldo_bloqueado ?? 0}
+                    size="sm"
+                    controls={false}
+                    readOnly
+                    className="boname-page__control"
+                  />
+                </dd>
+              </div>
+            </dl>
+          </section>
+        </div>
+      </AppModal>
     </section>
   )
 }

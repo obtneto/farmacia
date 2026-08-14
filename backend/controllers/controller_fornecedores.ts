@@ -173,16 +173,16 @@ export default class Controller_Fornecedores {
             void await db.Begin();
 
             const for_id = Number(req.body.for_id || 0);
-            const for_razao_social = String(req.body.for_razao_social || null).trim().toLocaleUpperCase('pt-BR');
-            const for_nome_fantasia = String(req.body.for_nome_fantasia || null).trim().toLocaleUpperCase('pt-BR');
-            const for_cnpj =  String(req.body.for_cnpj || null).replace(/\D/g, '').slice(0, 14);
-            const for_logradouro = String(req.body.for_logradouro || null).trim().toLocaleUpperCase('pt-BR');
-            const for_numero = String(req.body.for_numero || null).trim().toLocaleUpperCase('pt-BR').slice(0, 10);
-            const for_bairro = String(req.body.for_bairro || null).trim().toLocaleUpperCase('pt-BR');
-            const for_cidade = String(req.body.for_cidade || null).trim().toLocaleUpperCase('pt-BR');
-            const for_uf = String(req.body.for_uf || '').trim().toLocaleUpperCase('pt-BR').slice(0, 2);
-            const for_telefone = String(req.body.for_telefone || null).replace(/\D/g, '').slice(0, 11);
-            const for_email = String(req.body.for_email || null).trim().toLocaleLowerCase('pt-BR').slice(0, 120);
+            const for_razao_social = String(req.body.for_razao_social).trim().toLocaleUpperCase('pt-BR');
+            const for_nome_fantasia = String(req.body.for_nome_fantasia).trim().toLocaleUpperCase('pt-BR');
+            const for_cnpj = String(req.body.for_cnpj).replace(/\D/g, '').slice(0, 14);
+            const for_logradouro = String(req.body.for_logradouro).trim().toLocaleUpperCase('pt-BR');
+            const for_numero = String(req.body.for_numero).trim().toLocaleUpperCase('pt-BR').slice(0, 10);
+            const for_bairro = String(req.body.for_bairro).trim().toLocaleUpperCase('pt-BR');
+            const for_cidade = String(req.body.for_cidade).trim().toLocaleUpperCase('pt-BR');
+            const for_uf = String(req.body.for_uf).trim().toLocaleUpperCase('pt-BR').slice(0, 2);
+            const for_telefone = String(req.body.for_telefone).replace(/\D/g, '').slice(0, 11);
+            const for_email = String(req.body.for_email).trim().toLocaleLowerCase('pt-BR').slice(0, 120);
             const for_ativo: 0 | 1 = Number(req.body.for_ativo || 0) === 1 ? 1 : 0;
 
             if (!for_razao_social) {

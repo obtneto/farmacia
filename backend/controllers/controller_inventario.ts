@@ -6,6 +6,7 @@ import Medicamentos from "../model/dao_medicamentos.js";
 import { iresdata } from "./interface_controllers.js";
 import { Request, Response } from "express";
 import { applyControllerError } from "../utils/controllerError.js";
+import GeraNumeroReq from "../utils/GeraNumero.js";
 
 // Controla o CRUD de inventários com validacao e persistencia transacional.
 export default class Controller_Inventarios {
@@ -131,12 +132,16 @@ export default class Controller_Inventarios {
             const medicamentos = new Medicamentos(db.connection);
             const itens_inventarios = new ItensInventario(db.connection);
 
+            const geraNumero = new GeraNumeroReq();
+            const inv_num = `INV${geraNumero.proximoId()}`;
+
             await inventarios.BuscarPorId(0);
 
             inventarios.inv_date = new Date(inv_date);
             inventarios.inv_dep_id = dep_id;
             inventarios.inv_med_tipo_codigo = med_tipo_codigo;
             inventarios.inv_tipo = inv_tipo;
+            inventarios.inv_num = inv_num;
             inventarios.inv_status = eStatus.Aberto;
 
             await inventarios.Salvar();
@@ -152,7 +157,7 @@ export default class Controller_Inventarios {
                     throw error;
                 }
 
-                await itens_inventarios.BuscarPorItem(inventarios.inv_id, Number(item.iti_med_id), String(item.iti_lote));
+                await itens_inventarios.BuscarPorItem(inv_num, Number(item.iti_med_id), String(item.iti_lote));
 
                 if (itens_inventarios.found) {
                     const error = new Error('Item já cadastrado no inventário');
@@ -160,12 +165,11 @@ export default class Controller_Inventarios {
                     throw error;
                 }
 
-                itens_inventarios.iti_inv_id = inventarios.inv_id;
+                itens_inventarios.iti_inv_num = inv_num;
                 itens_inventarios.iti_med_id = Number(item.iti_med_id);
                 itens_inventarios.iti_lote = String(item.iti_lote);
                 itens_inventarios.iti_validade = new Date(String(item.iti_validade));
                 itens_inventarios.iti_qtde_estoque = Number(item.iti_qtde_estoque);
-                itens_inventarios.iti_qtde_dif = Number(item.iti_qtde_dif);
 
                 await itens_inventarios.Salvar();
 
@@ -173,7 +177,7 @@ export default class Controller_Inventarios {
 
             void await db.Commit();
 
-            resdata.msg = `Inventário ${inventarios.inv_id} aberto com sucesso`;
+            resdata.msg = `Inventário ${inv_num} aberto com sucesso`;
 
         } catch (error: any) {
             void await db.Rollback();
@@ -195,20 +199,20 @@ export default class Controller_Inventarios {
 
             void await db.Connect();
 
-            const inv_id: number = Number(req.params.inv_id ?? 0);
+            const inv_num: string = String(req.params.inv_num ?? '');
 
             const inventarios = new Inventarios(db.connection);
             const itens_inventarios = new ItensInventario(db.connection);
 
-            const dados_inventario = await inventarios.BuscarPorId(inv_id);
+            const dados_inventario = await inventarios.BuscarPorNum(inv_num);
 
-            if (dados_inventario.inv_id === 0) {
+            if (!inventarios.found) {
                 const error = new Error('Inventário não encontrado');
                 error.statusCode = 404;
                 throw error;
             }
 
-            const itens = await itens_inventarios.ListarPorInventario(inv_id);
+            const itens = await itens_inventarios.ListarPorInventario(inv_num);
 
             resdata.data = {
                 inventario: dados_inventario,
@@ -225,7 +229,7 @@ export default class Controller_Inventarios {
 
     }
 
-    static async Fechar(req: Request, res: Response) {
+    static async Fechar(req: Request, res: Response) { // deve ser refeito depois
 
         const db: iDatabase = new Database();
         const resdata: iresdata = { err: 0, msg: '', status: 200, data: {} }
@@ -235,32 +239,32 @@ export default class Controller_Inventarios {
             void await db.Connect();
             void await db.Begin();
 
-            const inv_id: number = Number(req.params.inv_id ?? 0);
+            const inv_num: string = String(req.params.inv_num ?? '');
 
             const inventarios = new Inventarios(db.connection);
 
-            const dados_inventario = await inventarios.BuscarPorId(inv_id);
+            const dados_inventario = await inventarios.BuscarPorNum(inv_num);
 
-            if (dados_inventario.inv_id === 0) {
+            if (!inventarios.found) {
                 const error = new Error('Inventário não encontrado');
                 error.statusCode = 404;
                 throw error;
             }
 
-            if (dados_inventario.inv_status !== 'Aberto') {
+            if (inventarios.inv_status !== eStatus.Aberto) {
                 const error = new Error('Inventário não está aberto');
                 error.statusCode = 400;
                 throw error;
             }
 
-            inventarios.inv_id = inv_id;
+            inventarios.inv_num = inv_num;
             inventarios.inv_status = eStatus.Fechado;
 
             void await inventarios.Salvar();
 
             void await db.Commit();
 
-            resdata.msg = `Inventário ${inv_id} fechado com sucesso`;
+            resdata.msg = `Inventário ${inv_num} fechado com sucesso`;
 
         } catch (error: any) {
             void await db.Rollback();

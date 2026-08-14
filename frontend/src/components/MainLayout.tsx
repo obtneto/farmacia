@@ -2,7 +2,6 @@ import { useEffect, useState, type CSSProperties, type ReactNode } from 'react'
 import {
   Avatar,
   Badge,
-  Breadcrumb,
   Button,
   Container,
   Content,
@@ -298,7 +297,6 @@ const NOTIFICATIONS = [
 
 export function MainLayout({
   activeSidebarKey,
-  breadcrumbItems = ['Inicio', 'Workspace', 'Dashboard'],
   children,
   onQuickActionSelect,
   onSidebarSelect,
@@ -703,21 +701,13 @@ export function MainLayout({
             <div className="main-layout__content-stack">
               <Panel
                 bordered
-                className={`main-layout__page-banner ${pageBannerCompact ? 'main-layout__page-banner--compact' : ''}`.trim()}
+                className={`main-layout__page-shell ${pageBannerCompact ? 'main-layout__page-shell--compact' : ''}`.trim()}
               >
-                <div className="main-layout__page-banner-grid">
-                  <VStack spacing={8} alignItems="flex-start" className="main-layout__page-copy">
-                    <Breadcrumb>
-                      {breadcrumbItems.slice(0, -1).map((item) => (
-                        <Breadcrumb.Item key={item}>{item}</Breadcrumb.Item>
-                      ))}
-                      <Breadcrumb.Item active>{breadcrumbItems[breadcrumbItems.length - 1] ?? pageTitle}</Breadcrumb.Item>
-                    </Breadcrumb>
-                    <div>
-                      <h3>{pageTitle}</h3>
-                      {pageDescription ? <p>{pageDescription}</p> : null}
-                    </div>
-                  </VStack>
+                <div className="main-layout__page-header">
+                  <div className="main-layout__page-copy">
+                    <h3>{pageTitle}</h3>
+                    {pageDescription ? <p>{pageDescription}</p> : null}
+                  </div>
 
                   {pageMetaVisible ? (
                     <div className="main-layout__page-meta">
@@ -732,9 +722,9 @@ export function MainLayout({
                     </div>
                   ) : null}
                 </div>
-              </Panel>
 
-              <div className="main-layout__page-body">{children}</div>
+                <div className="main-layout__page-body">{children}</div>
+              </Panel>
             </div>
           </Content>
         </Container>

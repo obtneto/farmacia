@@ -19,6 +19,7 @@ import LocaisRequisicaoPage from './pages/LocaisRequisicaoPage'
 import MedicamentosPage from './pages/MedicamentosPage'
 import ModulePlaceholderPage from './pages/ModulePlaceholderPage'
 import NovaSolicitacaoTransferenciaPage from './pages/NovaSolicitacaoTransferenciaPage'
+import NovoInventarioPage from './pages/inventarios'
 import PacientesAmbulatorioPage from './pages/PacientesAmbulatorioPage'
 import AprovacaoRequisicaoPage from './pages/requisicoes/aprovacao'
 import ControleDoseDomiciliarPage from './pages/requisicoes/controle-dose-domiciliar'
@@ -47,6 +48,7 @@ function App() {
     || activeSectionKey === 'operacao/entradas/listar'
     || activeSectionKey === 'operacao/entradas/demandas'
     || activeSectionKey === 'operacao/entradas/aprovacao'
+    || activeSectionKey === 'operacao/inventarios/novo'
     || activeSectionKey === 'estoque/listar'
     || activeSectionKey === 'estoque/transferencia_depositos/nova_solicitacao'
     || activeSectionKey === 'estoque/transferencia_depositos/solicitacoes_abertas'
@@ -121,6 +123,8 @@ function App() {
         <EntradaMercadoriaDemandasPage />
       ) : activeSectionKey === 'operacao/entradas/aprovacao' ? (
         <AprovacaoEntradaPage />
+      ) : activeSectionKey === 'operacao/inventarios/novo' ? (
+        <NovoInventarioPage />
       ) : activeSectionKey === 'estoque/listar' ? (
         <EstoquePage />
       ) : activeSectionKey === 'estoque/transferencia_depositos/nova_solicitacao' ? (

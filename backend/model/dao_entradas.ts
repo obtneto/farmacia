@@ -12,7 +12,10 @@ export interface iEntradaFields {
     ent_user_digit: string | null,
     ent_dt_digit: Date | string | null,
     ent_user_aprov: string | null,
-    ent_dt_aprov: Date | string | null
+    ent_dt_aprov: Date | string | null,
+    nom_paciente?: string | null,
+    dep_descr?: string | null,
+    for_razao_social?: string | null
 }
 
 export default class Entradas extends BaseModel implements iEntradaFields, iBaseModel {
@@ -75,7 +78,11 @@ export default class Entradas extends BaseModel implements iEntradaFields, iBase
     set ent_dt_aprov(ent_dt_aprov: Date | string | null) { this._fields.ent_dt_aprov = ent_dt_aprov; }
     get ent_dt_aprov(): Date | string | null { return this._fields.ent_dt_aprov; }
 
-    async ListarPeriodo(pesq: string, data_inicio: String, data_fim: String): Promise<RowDataPacket[]> {
+    get nom_paciente(): string | null { return this._fields.nom_paciente; }
+    get dep_descr(): string | null { return this._fields.dep_descr; }
+    get for_razao_social(): string | null { return this._fields.for_razao_social; }
+
+    async ListarPeriodo(pesq: string, data_inicio: String, data_fim: String): Promise<iEntradaFields[]> {
 
         let query = `SELECT
                         e.ent_id AS id,
@@ -83,6 +90,7 @@ export default class Entradas extends BaseModel implements iEntradaFields, iBase
                         e.ent_doc AS documento,
                         f.for_razao_social AS fornecedor,
                         e.ent_status AS status,
+                        p.nom_paciente AS paciente,
                         d.dep_descr AS deposito,
                         e.ent_user_digit AS user_digitacao,
                         e.ent_dt_digit AS dt_digitacao,
@@ -111,10 +119,10 @@ export default class Entradas extends BaseModel implements iEntradaFields, iBase
             data_fim
         });
 
-        return rows as RowDataPacket[];
+        return rows as iEntradaFields[];
     }
 
-    async ListarEntradasNaoAprovados(pesq: string, data_inicio: String, data_fim: String, dep_id: number): Promise<RowDataPacket[]> {
+    async ListarEntradasNaoAprovados(pesq: string, data_inicio: String, data_fim: String, dep_id: number): Promise<iEntradaFields[]> {
 
         let query = `SELECT
                         e.ent_id AS id,
@@ -139,7 +147,7 @@ export default class Entradas extends BaseModel implements iEntradaFields, iBase
             dep_id
         });
 
-        return rows as RowDataPacket[];
+        return rows as iEntradaFields[];
 
     }
 

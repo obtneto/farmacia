@@ -59,7 +59,7 @@ export default class Estoque extends BaseModel implements iEstoqueFields, iBaseM
 
   async ListarAtivos(pesq: string = '', dep_id: number, med_tipo_codigo: string): Promise<RowDataPacket[]> {
 
-    let query = `SELECT m.med_id AS id,m.med_descr AS descricao,m.med_descr_coml AS descricao_comercial,
+    let query = `SELECT e.est_id AS id,e.est_id AS est_id,m.med_id AS medicamento_id,m.med_descr AS descricao,m.med_descr_coml AS descricao_comercial,
                   m.med_und AS unidade, e.est_lote AS lote,e.est_saldo_bloqueado AS saldo_bloqueado,
                   e.est_saldo_disponivel AS saldo_disponivel, e.est_validade AS validade,m.med_alert AS alerta_validade,
                 CASE

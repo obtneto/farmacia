@@ -757,15 +757,10 @@ export function NovaSolicitacaoTransferenciaPage({
       <PageSection className="entradas-page__header-section entradas-page__merged-section">
         <div className="boname-page__form-grid entradas-page__form-grid">
           <section
-            className="medicamentos-page__form-section boname-page__field--full"
+            className="medicamentos-page__form-section boname-page__field--full solicitacoes-transferencia-page__header-card"
             aria-label="Cabecalho da solicitacao"
-            style={{ gap: '0.7rem', padding: '0.8rem 0.95rem' }}
           >
-            <div className="medicamentos-page__form-section-header">
-              <h3>Nova Solicitacao</h3>
-            </div>
-
-            <div className="medicamentos-page__form-subgrid medicamentos-page__form-subgrid--metrics" style={{ gap: '0.75rem 0.9rem' }}>
+            <div className="medicamentos-page__form-subgrid medicamentos-page__form-subgrid--metrics solicitacoes-transferencia-page__header-grid">
               <div className="boname-page__field">
                 <label htmlFor="solicitacao-data">Data da solicitacao</label>
                 <DatePicker

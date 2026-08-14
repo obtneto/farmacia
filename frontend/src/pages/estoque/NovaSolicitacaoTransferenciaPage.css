@@ -2,6 +2,19 @@
   --rs-input-group-border-radius: 0.5rem;
 }
 
+.solicitacoes-transferencia-page__header-card {
+  gap: 0.45rem;
+  padding: 0.75rem 0.95rem 0.35rem;
+}
+
+.solicitacoes-transferencia-page__header-grid {
+  gap: 0.65rem 0.9rem;
+}
+
+.solicitacoes-transferencia-page__header-grid .boname-page__field {
+  grid-template-rows: auto minmax(44px, auto) minmax(0.25rem, auto);
+}
+
 .solicitacoes-transferencia-page .solicitacoes-transferencia-page__date-control.rs-picker,
 .solicitacoes-transferencia-page .solicitacoes-transferencia-page__date-control .rs-input-group,
 .solicitacoes-transferencia-page .solicitacoes-transferencia-page__date-control .rs-input-group-addon,
