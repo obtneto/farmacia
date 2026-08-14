@@ -118,8 +118,12 @@ export default class Controller_Inventarios {
                 throw error;
             }
 
+            const inventarios = new Inventarios(db.connection);
+            const medicamentos = new Medicamentos(db.connection);
+            const itens_inventarios = new ItensInventario(db.connection);
             const depositos = new Depositos(db.connection);
 
+            //busca o depósito
             await depositos.BuscarPorId(dep_id);
 
             if (!depositos.found) {
@@ -134,13 +138,11 @@ export default class Controller_Inventarios {
                 throw error;
             }
 
-            const inventarios = new Inventarios(db.connection);
-            const medicamentos = new Medicamentos(db.connection);
-            const itens_inventarios = new ItensInventario(db.connection);
-
+            //gerar número do inventário
             const geraNumero = new GeraNumeroReq();
             const inv_num = `INV${geraNumero.proximoId()}`;
 
+            //Buscar por id 0 para adicionar um novo registro
             await inventarios.BuscarPorId(0);
 
             inventarios.inv_date = new Date(inv_date);
@@ -152,29 +154,39 @@ export default class Controller_Inventarios {
 
             await inventarios.Salvar();
 
+            //bloqueia o depósito para não permitir novas movimentações e salva
             depositos.dep_bloqueado = 1;
 
             await depositos.Salvar();
 
+<<<<<<< HEAD
             //percorre os itens do inventário e processa cada um
             for (const item of itens) {
+=======
+            for (const item of itens) {//percorre os itens do inventário e processa cada um
+>>>>>>> e3aeb8a (feat: implement inventory opening logic with deposit locking and item validation)
 
+                //busca o medicamento pelo id
                 await medicamentos.BuscarPorId(Number(item.iti_med_id ?? 0));
 
+                //verifica se o medicamento foi encontrado
                 if (!medicamentos.found) {
-                    const error = new Error('Medicamento não encontrado');
+                    const error = new Error(`Medicamento ${item.iti_med_id} não encontrado`);
                     error.statusCode = 404;
                     throw error;
                 }
 
+                //busca o item do inventário pelo número do inventário, id do medicamento e lote
                 await itens_inventarios.BuscarPorItem(inv_num, Number(item.iti_med_id), String(item.iti_lote));
 
+                //verifica se o item foi encontrado
                 if (itens_inventarios.found) {
-                    const error = new Error('Item já cadastrado no inventário');
+                    const error = new Error(`Item ${item.iti_med_id} já cadastrado no inventário`);
                     error.statusCode = 409;
                     throw error;
                 }
 
+                //atribui os valores ao item do inventário e salva
                 itens_inventarios.iti_inv_num = inv_num;
                 itens_inventarios.iti_med_id = Number(item.iti_med_id);
                 itens_inventarios.iti_lote = String(item.iti_lote);
@@ -185,6 +197,7 @@ export default class Controller_Inventarios {
 
             }
 
+            //confirma as alterações no banco de dados
             void await db.Commit();
 
             resdata.msg = `Inventário ${inv_num} aberto com sucesso`;
