@@ -156,7 +156,7 @@ export default class Controller_Inventarios {
 
             await depositos.Salvar();
 
-            //percorre os itens do inventário
+            //percorre os itens do inventário e processa cada um
             for (const item of itens) {
 
                 await medicamentos.BuscarPorId(Number(item.iti_med_id ?? 0));
