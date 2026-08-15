@@ -159,12 +159,7 @@ export default class Controller_Inventarios {
 
             await depositos.Salvar();
 
-<<<<<<< HEAD
-            //percorre os itens do inventário e processa cada um
-            for (const item of itens) {
-=======
-            for (const item of itens) {//percorre os itens do inventário e processa cada um
->>>>>>> e3aeb8a (feat: implement inventory opening logic with deposit locking and item validation)
+            for (const item of itens) { //percorre os itens do inventário e processa cada um
 
                 //busca o medicamento pelo id
                 await medicamentos.BuscarPorId(Number(item.iti_med_id ?? 0));
