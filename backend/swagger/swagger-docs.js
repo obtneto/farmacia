@@ -492,6 +492,7 @@ function buildOperation({ method, routePath, fullPath }) {
   const requestBodySchema = REQUEST_BODY_SCHEMAS[`${method.toUpperCase()} ${fullPath}`];
   const isPdfInlineRoute = method === 'get' && [
     '/demandas-especificas/imprimir-recibo/{ent_id}',
+    '/inventarios/imprimir/{inv_num}',
     '/requisicoes/imprimir/{req_id}',
     '/solicitacoes/imprimir/{sol_id}',
   ].includes(fullPath);

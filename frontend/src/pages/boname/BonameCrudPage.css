@@ -304,7 +304,14 @@
 }
 
 .inventario-page__footer {
+  align-self: end;
+  justify-content: flex-end;
+  margin-top: auto;
   padding-top: 1rem;
+}
+
+.inventario-page__footer .boname-page__toolbar-actions {
+  justify-content: flex-end;
 }
 
 .inventario-page .estoque-page__merged-section .data-state {
@@ -321,30 +328,28 @@
   grid-template-rows: auto minmax(44px, auto) auto;
 }
 
-.inventario-page .estoque-page__filter-field .boname-page__control.rs-picker-date,
-.inventario-page .estoque-page__filter-field .boname-page__control[data-picker='date'],
-.inventario-page .estoque-page__filter-field .boname-page__control.rs-picker-date .rs-input-group,
-.inventario-page .estoque-page__filter-field .boname-page__control.rs-picker-date .rs-input,
-.inventario-page .estoque-page__filter-field .boname-page__control.rs-picker-date .rs-input-group-addon,
-.inventario-page .estoque-page__filter-field .boname-page__control.rs-picker-date .rs-picker-toggle,
-.inventario-page .estoque-page__filter-field .boname-page__control.rs-picker-date .rs-picker-toggle.rs-btn,
-.inventario-page .estoque-page__filter-field .boname-page__control[data-picker='date'] .rs-picker-toggle,
-.inventario-page .estoque-page__filter-field .boname-page__control[data-picker='date'] .rs-picker-toggle.rs-btn {
-  height: 44px;
-  min-height: 44px;
+.inventario-page .estoque-page__filter-field .inventario-page__date-control,
+.inventario-page .estoque-page__filter-field .inventario-page__date-control .rs-input-group,
+.inventario-page .estoque-page__filter-field .inventario-page__date-control .rs-input,
+.inventario-page .estoque-page__filter-field .inventario-page__date-control .rs-input-group-addon,
+.inventario-page .estoque-page__filter-field .inventario-page__date-control .rs-picker-toggle,
+.inventario-page .estoque-page__filter-field .inventario-page__date-control .rs-picker-textbox {
+  --rs-input-group-input-height: 44px;
+  --rs-picker-input-height: 44px;
+  height: 44px !important;
+  min-height: 44px !important;
 }
 
-.inventario-page .estoque-page__filter-field .boname-page__control.rs-picker-date .rs-input,
-.inventario-page .estoque-page__filter-field .boname-page__control.rs-picker-date .rs-picker-toggle,
-.inventario-page .estoque-page__filter-field .boname-page__control[data-picker='date'] .rs-picker-toggle {
+.inventario-page .estoque-page__filter-field .inventario-page__date-control .rs-input,
+.inventario-page .estoque-page__filter-field .inventario-page__date-control .rs-input-group-addon,
+.inventario-page .estoque-page__filter-field .inventario-page__date-control .rs-picker-toggle {
   display: flex;
   align-items: center;
 }
 
-.inventario-page .estoque-page__filter-field .boname-page__control.rs-picker-date .rs-picker-toggle-textbox,
-.inventario-page .estoque-page__filter-field .boname-page__control.rs-picker-date .rs-picker-toggle-value,
-.inventario-page .estoque-page__filter-field .boname-page__control[data-picker='date'] .rs-picker-toggle-textbox,
-.inventario-page .estoque-page__filter-field .boname-page__control[data-picker='date'] .rs-picker-toggle-value {
+.inventario-page .estoque-page__filter-field .inventario-page__date-control .rs-picker-toggle-textbox,
+.inventario-page .estoque-page__filter-field .inventario-page__date-control .rs-picker-toggle-value,
+.inventario-page .estoque-page__filter-field .inventario-page__date-control .rs-picker-textbox {
   line-height: 42px;
 }
 

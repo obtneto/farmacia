@@ -7,9 +7,72 @@ import { iresdata } from "./interface_controllers.js";
 import { Request, Response } from "express";
 import { applyControllerError } from "../utils/controllerError.js";
 import GeraNumeroReq from "../utils/GeraNumero.js";
+import pdfMake from "pdfmake/build/pdfmake.js";
+import pdfFonts from "pdfmake/build/vfs_fonts.js";
+
+pdfMake.addVirtualFileSystem(pdfFonts);
 
 // Controla o CRUD de inventários com validacao e persistencia transacional.
 export default class Controller_Inventarios {
+
+    private static readonly PAGE_MARGIN_HORIZONTAL = 24;
+    private static readonly PAGE_CONTENT_WIDTH = 595 - Controller_Inventarios.PAGE_MARGIN_HORIZONTAL * 2;
+
+    private static async buildPdfBuffer(docDefinition: object): Promise<Buffer> {
+        const pdfDocument = pdfMake.createPdf(docDefinition);
+        const pdfBlob = await pdfDocument.getBlob();
+        const pdfArrayBuffer = await pdfBlob.arrayBuffer();
+
+        return Buffer.from(pdfArrayBuffer);
+    }
+
+    private static formatText(value: unknown, fallback = '-'): string {
+        const text = String(value ?? '').trim();
+
+        return text || fallback;
+    }
+
+    private static formatDate(value: Date | string | null): string {
+        if (!value) {
+            return '-';
+        }
+
+        const date = value instanceof Date ? value : new Date(value);
+
+        if (Number.isNaN(date.getTime())) {
+            return '-';
+        }
+
+        return date.toLocaleDateString('pt-BR', { timeZone: 'America/Maceio' });
+    }
+
+    private static formatQuantity(value: unknown): string {
+        if (value === null || value === undefined || value === '') {
+            return '';
+        }
+
+        const numberValue = Number(value);
+
+        if (Number.isNaN(numberValue) || numberValue === 0) {
+            return '';
+        }
+
+        return numberValue.toLocaleString('pt-BR');
+    }
+
+    private static formatInventarioNumero(value: unknown): string {
+        const text = String(value ?? '').replace(/[^A-Za-z0-9]/g, '').toLocaleUpperCase();
+
+        if (text.length <= 3) {
+            return text;
+        }
+
+        return [
+            text.slice(0, 3),
+            text.slice(3, 7),
+            text.slice(7, 11),
+        ].filter(Boolean).join('-');
+    }
 
     static async Listar(req: Request, res: Response) {
 
@@ -196,6 +259,10 @@ export default class Controller_Inventarios {
             void await db.Commit();
 
             resdata.msg = `Inventário ${inv_num} aberto com sucesso`;
+            resdata.data = {
+                inv_id: inventarios.inv_id,
+                inv_num,
+            };
 
         } catch (error: any) {
             void await db.Rollback();
@@ -244,6 +311,262 @@ export default class Controller_Inventarios {
         void await db.Disconnect();
 
         res.status(resdata.status).json(resdata);
+
+    }
+
+    static async Imprimir(req: Request, res: Response) {
+
+        const db: iDatabase = new Database();
+        const resdata: iresdata = { err: 0, msg: '', status: 200, data: {} }
+
+        try {
+
+            void await db.Connect();
+
+            const inv_num: string = String(req.params.inv_num ?? '').trim();
+
+            if (!inv_num) {
+                const error = new Error('Número do inventário deve ser informado.');
+                error.statusCode = 400;
+                throw error;
+            }
+
+            const inventarios = new Inventarios(db.connection);
+            const itens_inventarios = new ItensInventario(db.connection);
+
+            const inventario = await inventarios.BuscarPorNum(inv_num);
+
+            if (!inventarios.found) {
+                const error = new Error('Inventário não encontrado');
+                error.statusCode = 404;
+                throw error;
+            }
+
+            const itens = await itens_inventarios.ListarPorInventario(inv_num);
+            const emitidoEm = new Date().toLocaleString('pt-BR', { timeZone: 'America/Maceio' });
+            const tipoMedicamento = Controller_Inventarios.formatText(
+                inventario.tipo_descr || inventario.inv_med_tipo_codigo,
+            );
+            const inventarioNumeroFormatado = Controller_Inventarios.formatInventarioNumero(inventario.inv_num);
+            const inventarioDataFormatada = Controller_Inventarios.formatDate(inventario.inv_date);
+
+            const tableBody = [
+                [
+                    { text: 'ID', style: 'tableHeader' },
+                    { text: 'Descrição', style: 'tableHeader' },
+                    { text: 'Unidade', style: 'tableHeader' },
+                    { text: 'Lote', style: 'tableHeader' },
+                    { text: 'Qtde Inv', style: 'tableHeader' },
+                ],
+                ...itens.map((item) => [
+                    { text: Controller_Inventarios.formatText(item.iti_med_id), style: 'tableCellCenter' },
+                    { text: Controller_Inventarios.formatText(item.med_descr), style: 'tableCell' },
+                    { text: Controller_Inventarios.formatText(item.med_und), style: 'tableCellCenter' },
+                    { text: Controller_Inventarios.formatText(item.iti_lote), style: 'tableCellCenter' },
+                    { text: Controller_Inventarios.formatQuantity(item.iti_qtde_invent), style: 'tableCellCenter' },
+                ]),
+            ];
+
+            const docDefinition = {
+                info: {
+                    title: 'Ficha de Inventario',
+                    author: 'Farmacia Ambulatorial',
+                    subject: `Inventario ${inv_num}`,
+                },
+                pageSize: 'A4',
+                pageMargins: [24, 132, 24, 28],
+                header: (currentPage: number, pageCount: number) => ({
+                    margin: [24, 18, 24, 0],
+                    stack: [
+                        {
+                            columns: [
+                                {
+                                    width: '*',
+                                    stack: [
+                                        { text: 'FARMACIA AMBULATORIAL HOSPITALAR', style: 'eyebrow' },
+                                        { text: 'Ficha de Inventario', style: 'reportTitle', margin: [0, 3, 0, 0] },
+                                        { text: 'Documento operacional de contagem de estoque', style: 'reportSubtitle', margin: [0, 2, 0, 0] },
+                                    ],
+                                },
+                                {
+                                    width: 170,
+                                    alignment: 'right',
+                                    stack: [
+                                        { text: inventarioNumeroFormatado, style: 'headerBadge' },
+                                        { text: `Pagina ${currentPage} de ${pageCount}`, style: 'headerMeta', margin: [0, 8, 0, 0] },
+                                    ],
+                                },
+                            ],
+                        },
+                        {
+                            canvas: [
+                                { type: 'line', x1: 0, y1: 12, x2: Controller_Inventarios.PAGE_CONTENT_WIDTH, y2: 12, lineWidth: 1.1, lineColor: '#b7c4d1' },
+                            ],
+                        },
+                        {
+                            margin: [0, 10, 0, 0],
+                            table: {
+                                widths: ['*', '*', '*', '*'],
+                                body: [
+                                    [
+                                        {
+                                            stack: [
+                                                { text: 'Data do Inventario', style: 'headerFlowLabel' },
+                                                { text: inventarioDataFormatada, style: 'headerFlowValue', margin: [0, 4, 0, 0] },
+                                            ],
+                                        },
+                                        {
+                                            stack: [
+                                                { text: 'Numero do Inventario', style: 'headerFlowLabel' },
+                                                { text: inventarioNumeroFormatado, style: 'headerFlowValue', margin: [0, 4, 0, 0] },
+                                            ],
+                                        },
+                                        {
+                                            stack: [
+                                                { text: 'Deposito', style: 'headerFlowLabel' },
+                                                { text: Controller_Inventarios.formatText(inventario.dep_descr), style: 'headerFlowValue', margin: [0, 4, 0, 0] },
+                                            ],
+                                        },
+                                        {
+                                            stack: [
+                                                { text: 'Tipo Medicamento', style: 'headerFlowLabel' },
+                                                { text: tipoMedicamento, style: 'headerFlowValue', margin: [0, 4, 0, 0] },
+                                            ],
+                                        },
+                                    ],
+                                ],
+                            },
+                            layout: {
+                                fillColor: () => '#f8fbfc',
+                                hLineWidth: (index: number, node: any) => {
+                                    if (index === 0 || index === node.table.body.length) {
+                                        return 1;
+                                    }
+
+                                    return index === 1 ? 1 : 0;
+                                },
+                                vLineWidth: () => 1,
+                                hLineColor: () => '#b7c4d1',
+                                vLineColor: () => '#b7c4d1',
+                                paddingLeft: (index: number) => index === 0 ? 14 : 12,
+                                paddingRight: (index: number, node: any) => index === node.table.widths.length - 1 ? 14 : 12,
+                                paddingTop: () => 10,
+                                paddingBottom: () => 12,
+                            },
+                        },
+                    ],
+                }),
+                footer: (currentPage: number, pageCount: number) => ({
+                    margin: [24, 0, 24, 14],
+                    columns: [
+                        { text: 'Sistema de Farmacia Ambulatorial', style: 'footerMeta' },
+                        { text: `Inventario ${inventarioNumeroFormatado}`, style: 'footerMeta', alignment: 'center' },
+                        { text: `Pagina ${currentPage}/${pageCount}`, style: 'footerMeta', alignment: 'right' },
+                    ],
+                }),
+                content: [
+                    {
+                        table: {
+                            headerRows: 1,
+                            dontBreakRows: true,
+                            keepWithHeaderRows: 1,
+                            widths: [48, '*', 44, 78, 112],
+                            body: tableBody,
+                        },
+                        layout: {
+                            fillColor: (rowIndex: number) => {
+                                if (rowIndex === 0) {
+                                    return '#174a5a';
+                                }
+
+                                return rowIndex % 2 === 0 ? '#f7fafc' : '#ffffff';
+                            },
+                            hLineWidth: (index: number, node: any) => index === 1 || index === node.table.body.length ? 0.9 : 0,
+                            vLineWidth: () => 0.5,
+                            hLineColor: (index: number) => index === 1 ? '#174a5a' : '#b7c4d1',
+                            vLineColor: () => '#b7c4d1',
+                            paddingLeft: (index: number) => index === 0 ? 8 : 10,
+                            paddingRight: (index: number, node: any) => index === node.table.widths.length - 1 ? 8 : 10,
+                            paddingTop: (index: number) => index === 0 ? 7 : 6,
+                            paddingBottom: (index: number) => index === 0 ? 7 : 6,
+                        },
+                    },
+                ],
+                styles: {
+                    eyebrow: {
+                        fontSize: 8,
+                        bold: true,
+                        color: '#0f766e',
+                    },
+                    reportTitle: {
+                        fontSize: 16,
+                        bold: true,
+                        color: '#0f172a',
+                    },
+                    reportSubtitle: {
+                        fontSize: 9,
+                        color: '#64748b',
+                    },
+                    headerBadge: {
+                        fontSize: 8,
+                        bold: true,
+                        color: '#174a5a',
+                        fillColor: '#e6f4f1',
+                        alignment: 'right',
+                    },
+                    headerMeta: {
+                        fontSize: 9,
+                        color: '#475569',
+                    },
+                    headerFlowLabel: {
+                        fontSize: 7,
+                        bold: true,
+                        color: '#64748b',
+                    },
+                    headerFlowValue: {
+                        fontSize: 8,
+                        color: '#0f172a',
+                    },
+                    tableHeader: {
+                        fontSize: 8,
+                        bold: true,
+                        color: '#ffffff',
+                        alignment: 'center',
+                        margin: [0, 1, 0, 0],
+                    },
+                    tableCell: {
+                        fontSize: 8.5,
+                        color: '#1f2937',
+                    },
+                    tableCellCenter: {
+                        fontSize: 8.5,
+                        color: '#334155',
+                        alignment: 'center',
+                    },
+                    footerMeta: {
+                        fontSize: 8,
+                        color: '#64748b',
+                    },
+                },
+                defaultStyle: {
+                    font: 'Roboto',
+                    fontSize: 9,
+                    color: '#1f2937',
+                },
+            };
+
+            const pdfBuffer = await Controller_Inventarios.buildPdfBuffer(docDefinition);
+
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', `inline; filename=\"ficha-inventario-${inv_num}.pdf\"`);
+            res.status(200).send(pdfBuffer);
+
+        } catch (error: any) {
+            applyControllerError(resdata, error, 'Controller Inventarios.Imprimir');
+            res.status(resdata.status).json(resdata);
+        }
+
+        void await db.Disconnect();
 
     }
 

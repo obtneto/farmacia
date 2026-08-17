@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
+import PrintIcon from '@rsuite/icons/legacy/Print'
 import SearchIcon from '@rsuite/icons/Search'
 import { Button, Checkbox, DatePicker, HStack, Input, InputGroup, Pagination, Panel, SelectPicker, useMediaQuery } from 'rsuite'
 import { Cell, Column, HeaderCell, Table } from 'rsuite-table'
@@ -174,6 +175,40 @@ async function requestInventario<T>(
   return payload.data
 }
 
+async function requestInventarioBlob(
+  baseUrl: string,
+  path: string,
+  authToken?: string | null,
+): Promise<Blob> {
+  const headers = new Headers()
+
+  if (authToken) {
+    headers.set('Authorization', `Bearer ${authToken}`)
+  }
+
+  const response = await fetch(buildUrl(baseUrl, path), {
+    method: 'GET',
+    headers,
+  })
+
+  if (!response.ok) {
+    let message = `Falha ao processar requisicao (${response.status}).`
+
+    try {
+      const payload = (await response.json()) as ApiResponse<unknown>
+      if (payload?.msg) {
+        message = payload.msg
+      }
+    } catch {
+      // O backend de impressao responde com PDF em caso de sucesso.
+    }
+
+    throw new Error(message)
+  }
+
+  return await response.blob()
+}
+
 function validateForm(values: FormValues, selectedCount: number): FormErrors {
   const errors: FormErrors = {}
 
@@ -238,6 +273,28 @@ function toInventarioItem(item: EstoqueRecord) {
   }
 }
 
+async function imprimirFichaInventario(baseUrl: string, invNum: string, authToken?: string | null): Promise<void> {
+  const pdfBlob = await requestInventarioBlob(
+    baseUrl,
+    `/inventarios/imprimir/${encodeURIComponent(invNum)}`,
+    authToken,
+  )
+
+  const pdfUrl = window.URL.createObjectURL(pdfBlob)
+  const openedWindow = window.open(pdfUrl, '_blank', 'noopener,noreferrer')
+
+  if (!openedWindow) {
+    const anchor = document.createElement('a')
+    anchor.href = pdfUrl
+    anchor.download = `ficha-inventario-${invNum}.pdf`
+    anchor.click()
+  }
+
+  window.setTimeout(() => {
+    window.URL.revokeObjectURL(pdfUrl)
+  }, 60_000)
+}
+
 export interface NovoInventarioPageProps {
   apiBaseUrl?: string
   authToken?: string | null
@@ -260,6 +317,7 @@ export function NovoInventarioPage({
   const [selectedKeys, setSelectedKeys] = useState<Set<string>>(() => new Set())
   const [searchValue, setSearchValue] = useState('')
   const [activePage, setActivePage] = useState(1)
+  const [lastCreatedInventario, setLastCreatedInventario] = useState<SaveInventarioResponse | null>(null)
 
   const depositosQuery = useQuery({
     queryKey: ['inventario-depositos', apiBaseUrl, resolvedAuthToken],
@@ -304,6 +362,13 @@ export function NovoInventarioPage({
     ? new Set(estoqueRecords.map(getItemKey))
     : selectedKeys
   const selectedRecords = estoqueRecords.filter((item) => effectiveSelectedKeys.has(getItemKey(item)))
+  const canCreateInventario = Boolean(
+    formValues.dataInventario
+    && formValues.depositoId
+    && formValues.tipoMedicamentoCodigo
+    && formValues.tipoInventario
+    && selectedRecords.length > 0,
+  )
   const normalizedSearchValue = normalizeSearchText(searchValue)
   const filteredRecords = normalizedSearchValue
     ? estoqueRecords.filter((item) => {
@@ -332,7 +397,8 @@ export function NovoInventarioPage({
       },
       resolvedAuthToken,
     ),
-    onSuccess: async () => {
+    onSuccess: async (data) => {
+      setLastCreatedInventario(data)
       await message.success('Inventario criado', 'Inventario aberto com sucesso.')
       setSelectedKeys(new Set())
       await estoqueQuery.refetch()
@@ -373,6 +439,7 @@ export function NovoInventarioPage({
 
   const handleToggleItem = (item: EstoqueRecord, checked: boolean) => {
     const itemKey = getItemKey(item)
+    setLastCreatedInventario(null)
     setSelectedKeys((current) => {
       const nextKeys = new Set(current)
 
@@ -403,17 +470,23 @@ export function NovoInventarioPage({
     saveMutation.mutate()
   }
 
-  const handleFechar = () => {
-    setFormValues({
-      dataInventario: new Date(),
-      depositoId: null,
-      tipoInventario: 'Parcial',
-      tipoMedicamentoCodigo: null,
-    })
-    setFormErrors({})
-    setSelectedKeys(new Set())
-    setSearchValue('')
-  }
+  const printMutation = useMutation({
+    mutationFn: async () => {
+      const invNum = lastCreatedInventario?.inv_num?.trim()
+
+      if (!invNum) {
+        throw new Error('Nenhum inventario disponivel para impressao.')
+      }
+
+      await imprimirFichaInventario(apiBaseUrl, invNum, resolvedAuthToken)
+    },
+    onSuccess: () => {
+      message.success('Impressao gerada', 'A ficha de inventario foi aberta em uma nova guia.')
+    },
+    onError: (error: Error) => {
+      message.error('Erro ao imprimir inventario', getErrorMessage(error))
+    },
+  })
 
   return (
     <section className="boname-page estoque-page estoque-page--merged-layout inventario-page">
@@ -424,11 +497,12 @@ export function NovoInventarioPage({
             <DatePicker
               aria-labelledby="inventario-data-label"
               cleanable={false}
-              className={formErrors.dataInventario ? 'boname-page__control boname-page__control--error' : 'boname-page__control'}
+              className={formErrors.dataInventario ? 'boname-page__control inventario-page__date-control boname-page__control--error' : 'boname-page__control inventario-page__date-control'}
               format="dd/MM/yyyy"
               oneTap
               value={formValues.dataInventario}
               onChange={(value) => {
+                setLastCreatedInventario(null)
                 setFormValues((current) => ({
                   ...current,
                   dataInventario: value ?? new Date(),
@@ -451,6 +525,7 @@ export function NovoInventarioPage({
               searchable
               value={formValues.depositoId}
               onChange={(value) => {
+                setLastCreatedInventario(null)
                 setFormValues((current) => ({
                   ...current,
                   depositoId: value == null ? null : Number(value),
@@ -476,6 +551,7 @@ export function NovoInventarioPage({
               searchable
               value={formValues.tipoMedicamentoCodigo}
               onChange={(value) => {
+                setLastCreatedInventario(null)
                 setFormValues((current) => ({
                   ...current,
                   tipoMedicamentoCodigo: typeof value === 'string' ? value : null,
@@ -499,6 +575,7 @@ export function NovoInventarioPage({
               searchable={false}
               value={formValues.tipoInventario}
               onChange={(value) => {
+                setLastCreatedInventario(null)
                 setFormValues((current) => ({
                   ...current,
                   tipoInventario: value === 'Total' ? 'Total' : 'Parcial',
@@ -727,13 +804,19 @@ export function NovoInventarioPage({
         ) : null}
 
         <div className="boname-page__table-footer inventario-page__footer">
-          <span />
           <HStack spacing={10} className="boname-page__toolbar-actions">
-            <Button appearance="subtle" onClick={handleFechar}>
-              Fechar
+            <Button
+              appearance="ghost"
+              disabled={!lastCreatedInventario?.inv_num || printMutation.isPending}
+              loading={printMutation.isPending}
+              startIcon={<PrintIcon />}
+              onClick={() => printMutation.mutate()}
+            >
+              Impressão
             </Button>
             <Button
               appearance="primary"
+              disabled={!canCreateInventario || saveMutation.isPending}
               loading={saveMutation.isPending}
               onClick={() => void handleCriarInventario()}
             >

@@ -10,7 +10,8 @@ export interface iItensInventarioFields {
     iti_qtde_estoque: number | null,
     iti_qtde_invent: number | null,
     iti_qtde_dif: number | null,
-    med_descr?: string | null
+    med_descr?: string | null,
+    med_und?: string | null,
 }
 
 export default class ItensInventario extends BaseModel implements iBaseModel, iItensInventarioFields {
@@ -67,7 +68,7 @@ export default class ItensInventario extends BaseModel implements iBaseModel, iI
     public async ListarPorInventario(inv_num: string): Promise<iItensInventarioFields[]> {
 
         const query: string = `
-            SELECT i.*, m.med_descr FROM tb_itens_inventario i
+            SELECT i.*, m.med_descr, m.med_und FROM tb_itens_inventario i
             LEFT JOIN tb_medicamentos m ON i.iti_med_id = m.med_id
             WHERE i.iti_inv_num = :inv_num
             ORDER BY m.med_descr
@@ -82,7 +83,7 @@ export default class ItensInventario extends BaseModel implements iBaseModel, iI
     public async BuscarPorItem(inv_num: string, med_id: number, lote: string): Promise<iItensInventarioFields> {
 
         const query: string = `
-            SELECT i.*, m.med_descr FROM tb_itens_inventario i
+            SELECT i.*, m.med_descr, m.med_und FROM tb_itens_inventario i
             LEFT JOIN tb_medicamentos m ON i.iti_med_id = m.med_id
             WHERE i.iti_inv_num = :inv_num AND i.iti_med_id = :med_id AND i.iti_lote = :lote
         `;

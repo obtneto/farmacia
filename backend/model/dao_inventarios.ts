@@ -34,6 +34,8 @@ export default class Inventarios extends BaseModel implements iBaseModel, iInven
             inv_status: null,
             inv_tipo: null,
             inv_num: null,
+            tipo_descr: null,
+            dep_descr: null,
         };
 
         super(connection, 'tb_inventarios', initFields, 'inv_id');
@@ -68,10 +70,10 @@ export default class Inventarios extends BaseModel implements iBaseModel, iInven
 
     public async ListarPorPeriodo(date_ini: String, date_fin: String, dep_id: number): Promise<iInventariosFields[]> {
 
-        const query: string = `SELECT d.dep_descr,i.inv_id,i.inv_date,t.tipo_descr,i.inv_status,i.inv_tipo FROM 
+        const query: string = `SELECT d.dep_descr,i.inv_id,i.inv_num,i.inv_date,i.inv_med_tipo_codigo,t.tipo_descr,i.inv_status,i.inv_tipo FROM 
             tb_inventarios i
             LEFT JOIN tb_depositos d ON d.dep_id = i.inv_dep_id
-            LEFT JOIN tb_tipos_medicamentos t ON t.tipo_id = i.inv_med_tipo_codigo
+            LEFT JOIN tb_tipos_medicamentos t ON t.tipo_codigo = i.inv_med_tipo_codigo
             WHERE i.inv_dep_id = :dep_id AND STR_TO_DATE(:date_ini, '%Y/%m/%d') <= i.inv_date AND STR_TO_DATE(:date_fin, '%Y/%m/%d') >= i.inv_date`;
 
         const params: any = { date_ini, date_fin, dep_id };
@@ -86,11 +88,11 @@ export default class Inventarios extends BaseModel implements iBaseModel, iInven
 
         const query: string = `
             SELECT 
-                d.dep_descr,i.inv_id,i.inv_num,i.inv_date,t.tipo_descr,i.inv_status,i.inv_tipo 
+                d.dep_descr,i.inv_id,i.inv_num,i.inv_date,i.inv_med_tipo_codigo,t.tipo_descr,i.inv_status,i.inv_tipo 
             FROM 
                 tb_inventarios i
                 LEFT JOIN tb_depositos d ON d.dep_id = i.inv_dep_id
-                LEFT JOIN tb_tipos_medicamentos t ON t.tipo_id = i.inv_med_tipo_codigo
+                LEFT JOIN tb_tipos_medicamentos t ON t.tipo_codigo = i.inv_med_tipo_codigo
             WHERE 
                 i.inv_num = :inv_num`;
 
