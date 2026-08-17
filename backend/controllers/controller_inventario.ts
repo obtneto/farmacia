@@ -647,7 +647,7 @@ export default class Controller_Inventarios {
 
     }
 
-    static async Fechar(req: Request, res: Response) { // deve ser refeito depois
+    static async Fechar(req: Request, res: Response) {
 
         const db: iDatabase = new Database();
         const resdata: iresdata = { err: 0, msg: '', status: 200, data: {} }
