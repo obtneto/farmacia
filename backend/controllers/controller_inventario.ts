@@ -697,6 +697,7 @@ export default class Controller_Inventarios {
                 estoque.est_dep_id = Number(inventarios.inv_dep_id);
                 estoque.est_med_id = Number(item.iti_med_id);
                 estoque.est_lote = String(item.iti_lote);
+                estoque.est_validade = item.iti_validade;
                 estoque.est_saldo_disponivel = Number(item.iti_qtde_invent);
 
                 void await estoque.Salvar();
