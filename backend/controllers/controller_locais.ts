@@ -1,5 +1,5 @@
 import Database, { iDatabase } from '../connections/dbconn.js';
-import Locais, {iLocaisFields}  from '../model/dao_locais.js';
+import Locais, { iLocaisFields } from '../model/dao_locais.js';
 import { Request, Response } from 'express';
 import { iresdata } from './interface_controllers.js';
 import { applyControllerError } from "../utils/controllerError.js";
@@ -9,9 +9,9 @@ export default class Controller_Locais {
 
     static async Buscar(req: Request, res: Response) {
 
-        // Inicializa infraestrutura da requisicao e o envelope padrao da resposta.
-        const db : iDatabase = new Database();
-        const resdata :iresdata = {
+        // Inicializa infraestrutura da requisicao e o envelope padrao da resposta
+        const db: iDatabase = new Database();
+        const resdata: iresdata = {
             err: 0,
             msg: '',
             status: 200,
@@ -23,13 +23,13 @@ export default class Controller_Locais {
 
             void await db.Connect();
 
-            const local_id : number = Number(req.params.id_local || 0);
+            const local_id: number = Number(req.params.id_local || 0);
 
             if (local_id === 0) {
                 const error = new Error('ID Local não informado');
                 error.statusCode = 400;
                 throw error;
-            } 
+            }
 
             // Carrega o registro e garante retorno 404 quando ele nao existir.
             const locais = new Locais(db.connection);
@@ -43,19 +43,19 @@ export default class Controller_Locais {
 
             resdata.data = dados;
 
-        } catch (error :any) {
+        } catch (error: any) {
             applyControllerError(resdata, error, 'Controller Locais');
         }
 
         void await db.Disconnect();
 
         res.status(resdata.status).json(resdata);
-    
+
     }
-    
+
     static async Listar(req: Request, res: Response) {
 
-        const db : iDatabase = new Database();
+        const db: iDatabase = new Database();
 
         const resdata = {
             err: 0,
@@ -69,7 +69,7 @@ export default class Controller_Locais {
 
             void await db.Connect();
 
-            const pesq : string = String(req.params?.pesq || '*');
+            const pesq: string = String(req.params?.pesq || '*');
 
             if (!req.params.pesq && pesq !== '*') {
                 const error = new Error('Texto de pesquisa não informado');
@@ -81,7 +81,7 @@ export default class Controller_Locais {
 
             resdata.data = await locais.Listar(pesq) as iLocaisFields[];
 
-        } catch (error :any) {
+        } catch (error: any) {
             applyControllerError(resdata, error, 'Controller Locais');
         }
 
@@ -93,7 +93,7 @@ export default class Controller_Locais {
 
     static async ListarAtivos(req: Request, res: Response) {
 
-        const db : iDatabase = new Database();
+        const db: iDatabase = new Database();
 
         const resdata = {
             err: 0,
@@ -107,7 +107,7 @@ export default class Controller_Locais {
 
             void await db.Connect();
 
-            const pesq : string = String(req.params?.pesq || '*');
+            const pesq: string = String(req.params?.pesq || '*');
 
             if (!req.params.pesq && pesq !== '*') {
                 const error = new Error('Texto de pesquisa não informado');
@@ -119,7 +119,7 @@ export default class Controller_Locais {
 
             resdata.data = await locais.ListarAtivos(pesq) as iLocaisFields[];
 
-        } catch (error :any) {
+        } catch (error: any) {
             applyControllerError(resdata, error, 'Controller Locais');
         }
 
@@ -175,7 +175,7 @@ export default class Controller_Locais {
 
             resdata.msg = "Local salvo com sucesso";
 
-        } catch (error :any) {
+        } catch (error: any) {
             void await db.Rollback();
             applyControllerError(resdata, error, 'Controller Locais');
         }
@@ -183,7 +183,7 @@ export default class Controller_Locais {
         void await db.Disconnect();
 
         res.status(resdata.status).json(resdata);
-    
+
     }
 
     static async Excluir(req: Request, res: Response) {
@@ -220,18 +220,18 @@ export default class Controller_Locais {
                 error.statusCode = 404;
                 throw error;
             }
-            
+
             await locais.Excluir();
 
             void await db.Commit();
 
             resdata.msg = "Local excluído com sucesso";
 
-        } catch (error :any) {
+        } catch (error: any) {
             void await db.Rollback();
             applyControllerError(resdata, error, 'Controller Locais');
         }
-        
+
         void await db.Disconnect();
 
         res.status(resdata.status).json(resdata);

@@ -4,6 +4,16 @@ const settings = {
      demandas: [{
           name: 'DEMANDAS ESPECIFICAS',
           value: 'DE'
+     }],
+     status_estoque: [{
+          name: 'EM ANALISE',
+          value: 'EM_ANALISE'
+     }, {
+          name: 'DISPONÍVEL',
+          value: 'DISPONIVEL'
+     }, {
+          name: 'EMPENHADO',
+          value: 'EMPENHADO'
      }]
 }
 export default settings;
