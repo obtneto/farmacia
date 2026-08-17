@@ -44,7 +44,7 @@ type MedicamentoOptionRecord = {
 type DepositoOptionRecord = {
   dep_id: number
   dep_descr: string
-  dep_ativo: 0 | 1
+  dep_ativo?: 0 | 1
 }
 
 type FornecedorOptionRecord = {
@@ -233,7 +233,7 @@ async function listarMedicamentosOptions(authToken?: string | null): Promise<Med
 }
 
 async function listarDepositosOptions(authToken?: string | null): Promise<DepositoOptionRecord[]> {
-  return requestEntrada<DepositoOptionRecord[]>('/parametros/depositos/listar/*', { method: 'GET' }, authToken)
+  return requestEntrada<DepositoOptionRecord[]>('/parametros/depositos/listar-ativos/*', { method: 'GET' }, authToken)
 }
 
 async function listarFornecedoresOptions(authToken?: string | null): Promise<FornecedorOptionRecord[]> {
@@ -373,7 +373,6 @@ const [headerErrors, setHeaderErrors] = useState<HeaderFormErrors>({})
     .map(toMedicamentoOption)
 
   const depositoOptions: SelectOption<number>[] = (depositosQuery.data ?? [])
-    .filter((item) => item.dep_ativo === 1)
     .map((item) => ({
       label: item.dep_descr,
       value: item.dep_id,

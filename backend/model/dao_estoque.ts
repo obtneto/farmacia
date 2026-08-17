@@ -82,7 +82,7 @@ export default class Estoque extends BaseModel implements iEstoqueFields, iBaseM
 
   async BuscarPorItemEstoque(dep_id: number, med_id: number, lote: string): Promise<RowDataPacket> {
 
-    const query = `SELECT * FROM tb_estoque WHERE est_dep_id = :dep_id AND est_med_id = :med_id AND est_lote = :lote`
+    const query = `SELECT * FROM tb_estoque WHERE est_dep_id = :dep_id AND est_med_id = :med_id AND est_lote = :lote FOR UPDATE`
 
     const [rows] = await this.connection.query(query, { dep_id, med_id, lote }) as [RowDataPacket[], unknown]
 
@@ -91,15 +91,7 @@ export default class Estoque extends BaseModel implements iEstoqueFields, iBaseM
       this._found = true
     } else {
       this._found = false
-      this.populateFromInitial({
-        est_id: 0,
-        est_dep_id: null,
-        est_med_id: null,
-        est_lote: null,
-        est_saldo_disponivel: 0,
-        est_saldo_bloqueado: 0,
-        est_validade: null,
-      })
+      this.populateFromInitial(this._initialFields)
     }
 
     return this._fields as RowDataPacket

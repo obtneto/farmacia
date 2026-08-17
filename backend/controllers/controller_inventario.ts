@@ -9,6 +9,7 @@ import { applyControllerError } from "../utils/controllerError.js";
 import GeraNumeroReq from "../utils/GeraNumero.js";
 import pdfMake from "pdfmake/build/pdfmake.js";
 import pdfFonts from "pdfmake/build/vfs_fonts.js";
+import Estoque from "../model/dao_estoque.js";
 
 pdfMake.addVirtualFileSystem(pdfFonts);
 
@@ -570,7 +571,7 @@ export default class Controller_Inventarios {
 
     }
 
-    static async Fechar(req: Request, res: Response) { // deve ser refeito depois
+    static async SalvarDigitacao(req: Request, res: Response) {
 
         const db: iDatabase = new Database();
         const resdata: iresdata = { err: 0, msg: '', status: 200, data: {} }
@@ -581,10 +582,24 @@ export default class Controller_Inventarios {
             void await db.Begin();
 
             const inv_num: string = String(req.params.inv_num ?? '');
+            const itens: Array<{ med_id: number; med_lote: string; qtde_invent: number; }> = req.body.itens ?? [];
 
-            const inventarios = new Inventarios(db.connection);
+            if (inv_num === '' || inv_num === null || inv_num === undefined) {
+                const error = new Error('Número do inventário inválido');
+                error.statusCode = 400;
+                throw error;
+            }
 
-            const dados_inventario = await inventarios.BuscarPorNum(inv_num);
+            if (itens.length === 0) {
+                const error = new Error('Itens do inventário inválidos');
+                error.statusCode = 400;
+                throw error;
+            }
+
+            const inventarios: Inventarios = new Inventarios(db.connection);
+            const itens_inventarios: ItensInventario = new ItensInventario(db.connection);
+
+            void await inventarios.BuscarPorNum(inv_num);
 
             if (!inventarios.found) {
                 const error = new Error('Inventário não encontrado');
@@ -598,10 +613,94 @@ export default class Controller_Inventarios {
                 throw error;
             }
 
+            for (const item of itens) {
+
+                void await itens_inventarios.BuscarPorItem(inv_num, Number(item.med_id), item.med_lote);
+
+                if (!itens_inventarios.found) {
+                    const error = new Error(`Item ${item.med_id} não encontrado`);
+                    error.statusCode = 404;
+                    throw error;
+                }
+
+                itens_inventarios.iti_qtde_invent = item.qtde_invent;
+
+                void await itens_inventarios.Salvar();
+
+            }
+
+            void await db.Commit();
+
+            resdata.msg = `Inventário ${inv_num} salvo com sucesso`;
+
+        } catch (error: any) {
+
+            void await db.Rollback();
+
+            applyControllerError(resdata, error, 'Controller Inventarios.SalvarDigitacao');
+
+        }
+
+        void await db.Disconnect();
+
+        res.status(resdata.status).json(resdata);
+
+    }
+
+    static async Fechar(req: Request, res: Response) { // deve ser refeito depois
+
+        const db: iDatabase = new Database();
+        const resdata: iresdata = { err: 0, msg: '', status: 200, data: {} }
+
+        try {
+
+            void await db.Connect();
+            void await db.Begin();
+
+            const inv_num: string = String(req.params.inv_num ?? '');
+
+            const inventarios = new Inventarios(db.connection);
+            const itens_inventarios = new ItensInventario(db.connection);
+            const estoque = new Estoque(db.connection);
+
+            void await inventarios.BuscarPorNum(inv_num);
+
+            if (!inventarios.found) {
+                const error = new Error('Inventário não encontrado');
+                error.statusCode = 404;
+                throw error;
+            }
+
+            if (inventarios.inv_status !== eStatus.Aberto) {
+                const error = new Error('Inventário não está aberto');
+                error.statusCode = 400;
+                throw error;
+            }
+
+            const itens = await itens_inventarios.ListarPorInventario(inv_num);
+
+            if (itens.length === 0) {
+                const error = new Error('Inventário vazio');
+                error.statusCode = 400;
+                throw error;
+            }
+
             inventarios.inv_num = inv_num;
             inventarios.inv_status = eStatus.Fechado;
 
             void await inventarios.Salvar();
+
+            for (const item of itens) {
+
+                void await estoque.BuscarPorItemEstoque(Number(inventarios.inv_dep_id), Number(item.iti_med_id), String(item.iti_lote));
+
+                estoque.est_dep_id = Number(inventarios.inv_dep_id);
+                estoque.est_med_id = Number(item.iti_med_id);
+                estoque.est_lote = String(item.iti_lote);
+                estoque.est_saldo_disponivel = Number(item.iti_qtde_invent);
+
+                void await estoque.Salvar();
+            }
 
             void await db.Commit();
 

@@ -9,7 +9,6 @@ export interface iItensInventarioFields {
     iti_validade: Date | string | null,
     iti_qtde_estoque: number | null,
     iti_qtde_invent: number | null,
-    iti_qtde_dif: number | null,
     med_descr?: string | null,
     med_und?: string | null,
 }
@@ -29,8 +28,7 @@ export default class ItensInventario extends BaseModel implements iBaseModel, iI
             iti_lote: null,
             iti_validade: null,
             iti_qtde_estoque: null,
-            iti_qtde_invent: null,
-            iti_qtde_dif: null,
+            iti_qtde_invent: null
         };
 
         super(connection, 'tb_itens_inventario', initFields, 'iti_id');
@@ -60,9 +58,6 @@ export default class ItensInventario extends BaseModel implements iBaseModel, iI
     set iti_qtde_invent(qtde_invent: number | null) { this._fields.iti_qtde_invent = qtde_invent; }
     get iti_qtde_invent(): number | null { return this._fields.iti_qtde_invent; }
 
-    set iti_qtde_dif(qtde_dif: number | null) { this._fields.iti_qtde_dif = qtde_dif; }
-    get iti_qtde_dif(): number | null { return this._fields.iti_qtde_dif; }
-
     get med_descr(): string | null { return this._fields.med_descr; }
 
     public async ListarPorInventario(inv_num: string): Promise<iItensInventarioFields[]> {
@@ -88,9 +83,12 @@ export default class ItensInventario extends BaseModel implements iBaseModel, iI
             WHERE i.iti_inv_num = :inv_num AND i.iti_med_id = :med_id AND i.iti_lote = :lote
         `;
 
-        const [rows] = await this.ExecuteQuery(query, { inv_num, med_id, lote }) as [iItensInventarioFields[]];
+        const [rows] = await this.ExecuteQuery(query, { inv_num, med_id, lote }) as [RowDataPacket[]];
 
         if (rows && rows.length > 0) {
+
+            delete rows[0].iti_qtde_dif;
+
             this.populateFromRow(rows[0]);
             this._found = true;
         } else {

@@ -55,6 +55,7 @@ export type SectionKey =
   | 'operacao/entradas/listar'
   | 'operacao/entradas/demandas'
   | 'operacao/entradas/aprovacao'
+  | 'operacao/inventarios/listar'
   | 'operacao/inventarios/novo'
   | 'parametros/boname'
   | 'parametros/depositos'
@@ -209,6 +210,12 @@ export const APP_SECTIONS: Record<SectionKey, SectionMeta> = {
     description: '',
     status: 'Inventario de estoque',
     title: 'Novo Inventario',
+  },
+  'operacao/inventarios/listar': {
+    breadcrumbItems: ['Inicio', 'Operacao', 'Inventarios', 'Listar'],
+    description: '',
+    status: 'Consulta de inventarios',
+    title: 'Listar Inventarios',
   },
   'parametros/boname': {
     breadcrumbItems: ['Inicio', 'Cadastros', 'Boname'],
@@ -369,6 +376,11 @@ export const NAVIGATION_GROUPS: NavigationGroup[] = [
       {
         children: [
           {
+            eventKey: 'operacao/inventarios/listar',
+            icon: <RiFileList3Line size={18} />,
+            label: 'Listar',
+          },
+          {
             eventKey: 'operacao/inventarios/novo',
             icon: <RiAddLine size={18} />,
             label: 'Novo',
@@ -470,6 +482,7 @@ export const QUICK_ACTIONS: Array<{ eventKey: SectionKey; label: string }> = [
   { eventKey: 'operacao/entradas/listar', label: 'Abrir listagem de entradas' },
   { eventKey: 'operacao/entradas/demandas', label: 'Abrir entrada de mercadoria demandas' },
   { eventKey: 'operacao/entradas/aprovacao', label: 'Abrir aprovacao de entrada' },
+  { eventKey: 'operacao/inventarios/listar', label: 'Listar inventarios' },
   { eventKey: 'operacao/inventarios/novo', label: 'Criar inventario' },
   { eventKey: 'parametros/boname', label: 'Abrir cadastro de Boname' },
   { eventKey: 'parametros/depositos', label: 'Abrir cadastro de Depositos' },

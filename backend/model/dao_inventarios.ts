@@ -74,7 +74,8 @@ export default class Inventarios extends BaseModel implements iBaseModel, iInven
             tb_inventarios i
             LEFT JOIN tb_depositos d ON d.dep_id = i.inv_dep_id
             LEFT JOIN tb_tipos_medicamentos t ON t.tipo_codigo = i.inv_med_tipo_codigo
-            WHERE i.inv_dep_id = :dep_id AND STR_TO_DATE(:date_ini, '%Y/%m/%d') <= i.inv_date AND STR_TO_DATE(:date_fin, '%Y/%m/%d') >= i.inv_date`;
+            WHERE i.inv_dep_id = :dep_id  
+            AND STR_TO_DATE(:date_ini, '%Y/%m/%d') <= i.inv_date AND STR_TO_DATE(:date_fin, '%Y/%m/%d') >= i.inv_date`;
 
         const params: any = { date_ini, date_fin, dep_id };
 

@@ -1,0 +1,129 @@
+.listar-inventarios-page__filters-grid {
+  grid-template-columns: minmax(12rem, 0.8fr) minmax(12rem, 0.8fr) minmax(16rem, 1.2fr) auto;
+  align-items: start;
+  gap: 1rem;
+}
+
+.listar-inventarios-page__filters-grid .boname-page__control,
+.listar-inventarios-page__filters-grid .boname-page__control.rs-picker,
+.listar-inventarios-page__filters-grid .boname-page__control .rs-picker-toggle {
+  width: 100%;
+}
+
+.listar-inventarios-page__filters-grid .boname-page__control.rs-picker .rs-picker-toggle {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  height: 44px;
+}
+
+.listar-inventarios-page__record-meta {
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+
+.listar-inventarios-page__modal-content {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  align-content: start;
+  gap: 1rem;
+  min-height: 0;
+  width: 100%;
+}
+
+.listar-inventarios-page__modal-meta {
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+.listar-inventarios-page__modal-meta div {
+  padding-top: 0.6rem;
+  padding-bottom: 0.6rem;
+}
+
+.listar-inventarios-page__digitacao-modal.rs-modal {
+  --record-modal-height: min(52rem, calc(100dvh - var(--main-layout-header-height) - 0.75rem));
+  --record-modal-width: min(78rem, calc(100vw - 1.5rem));
+}
+
+.listar-inventarios-page__digitacao-modal.rs-modal,
+.listar-inventarios-page__digitacao-modal .rs-modal-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.listar-inventarios-page__digitacao-modal .rs-modal-dialog {
+  width: var(--record-modal-width);
+  height: var(--record-modal-height);
+  margin: auto;
+}
+
+.listar-inventarios-page__digitacao-modal .rs-modal-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.listar-inventarios-page__digitacao-modal .rs-modal-body,
+.listar-inventarios-page__digitacao-modal .app-modal__body-content,
+.listar-inventarios-page__digitacao-modal .listar-inventarios-page__modal-content {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.listar-inventarios-page__digitacao-modal .app-modal__body-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.listar-inventarios-page__modal-table {
+  flex: 1 1 auto;
+  min-height: 28rem;
+  min-width: 0;
+  width: 100%;
+}
+
+.listar-inventarios-page__quantity-input {
+  border-radius: 0.5rem;
+  min-height: 32px !important;
+  height: 32px !important;
+  width: 7.5rem;
+}
+
+.listar-inventarios-page__quantity-input.rs-number-input,
+.listar-inventarios-page__quantity-input .rs-input,
+.listar-inventarios-page__quantity-input .rs-number-input-input {
+  border-radius: 0.5rem;
+  min-height: 32px !important;
+  height: 32px !important;
+  line-height: normal;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.listar-inventarios-page__digitacao-modal .listar-inventarios-page__quantity-input.rs-number-input,
+.listar-inventarios-page__digitacao-modal .listar-inventarios-page__quantity-input .rs-input,
+.listar-inventarios-page__digitacao-modal .listar-inventarios-page__quantity-input .rs-number-input-input {
+  min-height: 32px !important;
+  height: 32px !important;
+}
+
+.listar-inventarios-page__diff-column .rs-table-cell-content {
+  padding-right: 1.25rem;
+}
+
+@media (max-width: 1100px) {
+  .listar-inventarios-page__filters-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .listar-inventarios-page__filters-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .listar-inventarios-page .estoque-page__actions-row,
+  .listar-inventarios-page .estoque-page__actions-row .rs-btn {
+    width: 100%;
+  }
+}
