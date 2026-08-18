@@ -1,4 +1,4 @@
-export default class GeraNumeroReq {
+export default class GeraNumero {
     private anoCorrente: number;
     private filaDeNumeros: number[];
 

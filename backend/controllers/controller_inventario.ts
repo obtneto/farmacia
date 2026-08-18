@@ -6,7 +6,7 @@ import Medicamentos from "../model/dao_medicamentos.js";
 import { iresdata } from "./interface_controllers.js";
 import { Request, Response } from "express";
 import { applyControllerError } from "../utils/controllerError.js";
-import GeraNumeroReq from "../utils/GeraNumero.js";
+import GeraNumero from "../utils/GeraNumero.js";
 import pdfMake from "pdfmake/build/pdfmake.js";
 import pdfFonts from "pdfmake/build/vfs_fonts.js";
 import Estoque from "../model/dao_estoque.js";
@@ -106,16 +106,6 @@ export default class Controller_Inventarios {
                 throw error;
             }
 
-            const depositos = new Depositos(db.connection);
-
-            await depositos.BuscarPorId(dep_id);
-
-            if (!depositos.found) {
-                const error = new Error('Depósito não encontrado');
-                error.statusCode = 404;
-                throw error;
-            }
-
             const inventarios = new Inventarios(db.connection);
 
             const data = await inventarios.ListarPorPeriodo(date_ini, date_fin, dep_id);
@@ -182,6 +172,7 @@ export default class Controller_Inventarios {
                 throw error;
             }
 
+            //instancia as classes models
             const inventarios = new Inventarios(db.connection);
             const medicamentos = new Medicamentos(db.connection);
             const itens_inventarios = new ItensInventario(db.connection);
@@ -203,7 +194,7 @@ export default class Controller_Inventarios {
             }
 
             //gerar número do inventário
-            const geraNumero = new GeraNumeroReq();
+            const geraNumero = new GeraNumero();
             const inv_num = `INV${geraNumero.proximoId()}`;
 
             //Buscar por id 0 para adicionar um novo registro
