@@ -70,6 +70,8 @@ type EstoqueMedicamentoRecord = {
   descricao_comercial: string | null
   id: number
   lote: string | null
+  med_id?: number | null
+  medicamento_id?: number | null
   saldo_disponivel: number
   unidade: string | null
   validade: Date | string | null
@@ -297,6 +299,10 @@ function validateHeaderForm(values: HeaderForm): HeaderErrors {
 
 function getItemDraftId(record: EstoqueMedicamentoRecord): string {
   return `${record.id}-${record.lote || 'sem-lote'}`
+}
+
+function getMedicamentoId(record: EstoqueMedicamentoRecord): number {
+  return Number(record.med_id ?? record.medicamento_id ?? 0)
 }
 
 function toOptions<TRecord, TValue extends number | string>(
@@ -616,7 +622,7 @@ export function RequisicaoPorPacientePage() {
         descricao: record.descricao || 'Medicamento sem descricao',
         draftId,
         lote: record.lote || '',
-        medicamentoId: Number(record.id),
+        medicamentoId: getMedicamentoId(record),
         quantidade,
         validade: record.validade,
       }
@@ -1219,8 +1225,8 @@ export function RequisicaoPorPacientePage() {
                   </Cell>
                 </Column>
                 <Column width={72} align="center">
-                  <HeaderCell>Codigo</HeaderCell>
-                  <Cell dataKey="id" />
+                  <HeaderCell>ID</HeaderCell>
+                  <Cell>{(rowData: EstoqueMedicamentoRecord) => getMedicamentoId(rowData)}</Cell>
                 </Column>
                 <Column flexGrow={1} minWidth={230}>
                   <HeaderCell>Descricao</HeaderCell>

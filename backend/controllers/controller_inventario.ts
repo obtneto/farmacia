@@ -638,6 +638,129 @@ export default class Controller_Inventarios {
 
     }
 
+    static async AdicionarItem(req: Request, res: Response) {
+
+        const db: iDatabase = new Database();
+        const resdata: iresdata = { err: 0, msg: '', status: 200, data: {} }
+
+        try {
+
+            void await db.Connect();
+            void await db.Begin();
+
+            const inv_num: string = String(req.params.inv_num ?? '');
+            const med_id: number = Number(req.body.med_id ?? 0);
+            const med_lote: string = String(req.body.med_lote ?? '').trim();
+            const med_dt_validade: string = String(req.body.med_dt_validade ?? '');
+            const med_qtd: number = Number(req.body.med_qtd ?? 0);
+
+            if (!inv_num) {
+                const error = new Error('Número do inventário inválido');
+                error.statusCode = 400;
+                throw error;
+            }
+
+            if (!med_id) {
+                const error = new Error('Medicamento deve ser informado.');
+                error.statusCode = 400;
+                throw error;
+            }
+
+            if (!med_lote) {
+                const error = new Error('Lote deve ser informado.');
+                error.statusCode = 400;
+                throw error;
+            }
+
+            if (Number.isNaN(Date.parse(med_dt_validade))) {
+                const error = new Error('Data de validade inválida.');
+                error.statusCode = 400;
+                throw error;
+            }
+
+            if (Number.isNaN(med_qtd) || med_qtd < 0) {
+                const error = new Error('Quantidade inválida.');
+                error.statusCode = 400;
+                throw error;
+            }
+
+            const inventarios = new Inventarios(db.connection);
+            const medicamentos = new Medicamentos(db.connection);
+            const itens_inventarios = new ItensInventario(db.connection);
+
+            void await inventarios.BuscarPorNum(inv_num);
+
+            if (!inventarios.found) {
+                const error = new Error('Inventário não encontrado');
+                error.statusCode = 404;
+                throw error;
+            }
+
+            if (inventarios.inv_status !== eStatus.Aberto) {
+                const error = new Error('Inventário não está aberto');
+                error.statusCode = 400;
+                throw error;
+            }
+
+            void await medicamentos.BuscarPorId(med_id);
+
+            if (!medicamentos.found || medicamentos.med_ativo !== 1) {
+                const error = new Error('Medicamento ativo não encontrado');
+                error.statusCode = 404;
+                throw error;
+            }
+
+            if (medicamentos.med_tipo_codigo !== inventarios.inv_med_tipo_codigo) {
+                const error = new Error('Medicamento incompatível com o tipo do inventário');
+                error.statusCode = 400;
+                throw error;
+            }
+
+            void await itens_inventarios.BuscarPorItem(inv_num, med_id, med_lote);
+
+            if (itens_inventarios.found) {
+                const error = new Error(`Item ${med_id} já cadastrado no inventário`);
+                error.statusCode = 409;
+                throw error;
+            }
+
+            void await itens_inventarios.BuscarPorId(0);
+            itens_inventarios.iti_inv_num = inv_num;
+            itens_inventarios.iti_med_id = med_id;
+            itens_inventarios.iti_lote = med_lote;
+            itens_inventarios.iti_validade = new Date(med_dt_validade);
+            itens_inventarios.iti_qtde_estoque = 0;
+            itens_inventarios.iti_qtde_invent = med_qtd;
+
+            void await itens_inventarios.Salvar();
+            void await db.Commit();
+
+            resdata.msg = `Item ${med_id} adicionado ao inventário`;
+            resdata.data = {
+                iti_id: itens_inventarios.iti_id,
+                iti_inv_num: inv_num,
+                iti_med_id: med_id,
+                iti_lote: med_lote,
+                iti_validade: new Date(med_dt_validade),
+                iti_qtde_estoque: 0,
+                iti_qtde_invent: med_qtd,
+                med_descr: medicamentos.med_descr,
+                med_und: medicamentos.med_und,
+            };
+
+        } catch (error: any) {
+
+            void await db.Rollback();
+            applyControllerError(resdata, error, 'Controller Inventarios.AdicionarItem');
+
+        }
+
+        void await db.Disconnect();
+
+        res.status(resdata.status).json(resdata);
+
+    }
+
     static async Fechar(req: Request, res: Response) {
 
         const db: iDatabase = new Database();
@@ -653,6 +776,7 @@ export default class Controller_Inventarios {
             const inventarios = new Inventarios(db.connection);
             const itens_inventarios = new ItensInventario(db.connection);
             const estoque = new Estoque(db.connection);
+            const depositos = new Depositos(db.connection);
 
             void await inventarios.BuscarPorNum(inv_num);
 
@@ -664,6 +788,12 @@ export default class Controller_Inventarios {
 
             if (inventarios.inv_status !== eStatus.Aberto) {
                 const error = new Error('Inventário não está aberto');
+                error.statusCode = 400;
+                throw error;
+            }
+
+            if (!inventarios.inv_dep_id || Number(inventarios.inv_dep_id) <= 0) {
+                const error = new Error('Depósito do inventário não encontrado');
                 error.statusCode = 400;
                 throw error;
             }
@@ -680,6 +810,18 @@ export default class Controller_Inventarios {
             inventarios.inv_status = eStatus.Fechado;
 
             void await inventarios.Salvar();
+
+            void await depositos.BuscarPorId(Number(inventarios.inv_dep_id));
+
+            if (!depositos.found) {
+                const error = new Error('Depósito não encontrado');
+                error.statusCode = 404;
+                throw error;
+            }
+
+            depositos.dep_bloqueado = 0;
+
+            void await depositos.Salvar();
 
             for (const item of itens) {
 
@@ -701,6 +843,74 @@ export default class Controller_Inventarios {
         } catch (error: any) {
             void await db.Rollback();
             applyControllerError(resdata, error, 'Controller Inventarios.Fechar');
+        }
+
+        void await db.Disconnect();
+
+        res.status(resdata.status).json(resdata);
+
+    }
+
+    static async ExcluirItem(req: Request, res: Response) {
+
+        const db: iDatabase = new Database();
+        const resdata: iresdata = { err: 0, msg: '', status: 200, data: {} }
+
+        try {
+
+            void await db.Connect();
+            void await db.Begin();
+
+            const inv_num: string = String(req.params.inv_num ?? '');
+            const iti_id: number = Number(req.params.iti_id ?? 0);
+
+            if (!inv_num) {
+                const error = new Error('Número do inventário inválido');
+                error.statusCode = 400;
+                throw error;
+            }
+
+            if (!iti_id) {
+                const error = new Error('Item do inventário inválido');
+                error.statusCode = 400;
+                throw error;
+            }
+
+            const inventarios = new Inventarios(db.connection);
+            const itens_inventarios = new ItensInventario(db.connection);
+
+            void await inventarios.BuscarPorNum(inv_num);
+
+            if (!inventarios.found) {
+                const error = new Error('Inventário não encontrado');
+                error.statusCode = 404;
+                throw error;
+            }
+
+            if (inventarios.inv_status !== eStatus.Aberto) {
+                const error = new Error('Inventário não está aberto');
+                error.statusCode = 400;
+                throw error;
+            }
+
+            void await itens_inventarios.BuscarPorId(iti_id);
+
+            if (!itens_inventarios.found || itens_inventarios.iti_inv_num !== inv_num) {
+                const error = new Error('Item do inventário não encontrado');
+                error.statusCode = 404;
+                throw error;
+            }
+
+            void await itens_inventarios.Excluir();
+            void await db.Commit();
+
+            resdata.msg = `Item ${iti_id} excluído do inventário`;
+
+        } catch (error: any) {
+
+            void await db.Rollback();
+            applyControllerError(resdata, error, 'Controller Inventarios.ExcluirItem');
+
         }
 
         void await db.Disconnect();

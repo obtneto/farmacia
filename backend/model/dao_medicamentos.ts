@@ -96,15 +96,15 @@ export default class Medicamentos extends BaseModel implements iMedicamentosFiel
         return rows as iMedicamentosFields[];
     }
 
-    async ListarAtivos(pesq: string) {
+    async ListarAtivos(pesq: string, med_tipo_codigo: string) {
 
-        let query: string = `SELECT * FROM tb_medicamentos WHERE med_ativo = 1`;
+        let query: string = `SELECT * FROM tb_medicamentos WHERE med_ativo = 1 AND med_tipo_codigo = :med_tipo_codigo`;
 
         if (pesq !== '*') {
             query += ` AND (MATCH(med_descr,med_descr_coml) AGAINST(:pesq IN BOOLEAN MODE) OR med_bona_codigo LIKE CONCAT('%',:pesq,'%'))`;
         }
 
-        const [rows] = await this.ExecuteQuery(query, { pesq }) as RowDataPacket[];
+        const [rows] = await this.ExecuteQuery(query, { pesq, med_tipo_codigo }) as RowDataPacket[];
 
         return rows as iMedicamentosFields[];
     }

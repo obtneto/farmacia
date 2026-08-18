@@ -3,7 +3,7 @@ import BaseModel, { iBaseModel } from './BaseModel.js';
 
 export interface iControleDduFields {
     cdd_id: number,
-    cdd_date: Date | null,
+    cdd_date: Date | string | null,
     cdd_req_num: string | null,
     cdd_status: 0 | 1 | null,
     cdd_pac_id: number | null,
@@ -56,10 +56,11 @@ export default class ControleDdu extends BaseModel implements iControleDduFields
                                     ddu.cdd_status
                               FROM tb_controle_ddu ddu
                               LEFT JOIN fsph_ambulatorio.tb_pacientes pac ON ddu.cdd_pac_id = pac.num_paciente
-                              WHERE (ddu.cdd_date >= :data_ini AND ddu.cdd_date <= :data_fin)`;
+                              WHERE (ddu.cdd_date >= :data_ini AND ddu.cdd_date <= :data_fin)
+                              AND ddu.cdd_status = :cdd_status`;
 
         if (pesq !== '*') {
-            query += ` AND ddu.cdd_status = :cdd_status AND (MATCH(pac.nom_paciente) AGAINST(:pesq IN BOOLEAN MODE))`;
+            query += ` AND (MATCH(pac.nom_paciente) AGAINST(:pesq IN BOOLEAN MODE))`;
         }
 
         const [rows] = await this.ExecuteQuery(query, { data_ini, data_fin, pesq, cdd_status }) as RowDataPacket[];

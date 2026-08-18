@@ -44,6 +44,7 @@ export interface EstoqueRecord {
   est_id: number
   id: number
   lote: string | null
+  med_id?: number | null
   medicamento_id: number | null
   saldo_bloqueado: number
   saldo_disponivel: number
@@ -172,6 +173,10 @@ function formatNumber(value: number): string {
     maximumFractionDigits: 2,
     minimumFractionDigits: 0,
   }).format(Number(value || 0))
+}
+
+function getMedicamentoId(item: EstoqueRecord): number {
+  return Number(item.med_id ?? item.medicamento_id ?? 0)
 }
 
 function formatDaysToValidity(value: number | string | null): string {
@@ -677,7 +682,7 @@ export function EstoqueListPage({
                   >
                     <Column width={72} align="center" fixed>
                       <HeaderCell>ID</HeaderCell>
-                      <Cell dataKey="id" />
+                      <Cell>{(rowData: EstoqueRecord) => getMedicamentoId(rowData)}</Cell>
                     </Column>
 
                     <Column flexGrow={1.3} minWidth={220}>

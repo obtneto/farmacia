@@ -1,5 +1,5 @@
-import Database, {iDatabase} from "../connections/dbconn.js";
-import Medicamentos, {iMedicamentosFields} from "../model/dao_medicamentos.js";
+import Database, { iDatabase } from "../connections/dbconn.js";
+import Medicamentos, { iMedicamentosFields } from "../model/dao_medicamentos.js";
 import { iresdata } from "./interface_controllers.js";
 import { Request, Response } from "express";
 import { applyControllerError } from "../utils/controllerError.js";
@@ -7,17 +7,17 @@ import { applyControllerError } from "../utils/controllerError.js";
 // Controla o cadastro mestre de medicamentos.
 export default class Controller_Medicamentos {
 
-    static async Listar (req: Request, res: Response) {
+    static async Listar(req: Request, res: Response) {
 
         const db: iDatabase = new Database();
 
         const resdata: iresdata = {
-          err: 0,
-          msg: '',
-          status: 200,
-          data: null
+            err: 0,
+            msg: '',
+            status: 200,
+            data: null
         };
-        
+
         try {
 
             void await db.Connect();
@@ -33,35 +33,36 @@ export default class Controller_Medicamentos {
             const medicamentos = new Medicamentos(db.connection);
 
             resdata.data = await medicamentos.ListarTodos(pesq) as iMedicamentosFields[];
-            
-        } catch (error:any) {
-            
+
+        } catch (error: any) {
+
             applyControllerError(resdata, error, 'Controller Medicamentos');
 
         }
-        
+
         void await db.Disconnect();
 
         res.status(resdata.status).json(resdata);
-        
+
     }
 
-    static async ListarAtivos (req: Request, res: Response) {
+    static async ListarAtivosPorTipo(req: Request, res: Response) {
 
         const db: iDatabase = new Database();
 
         const resdata: iresdata = {
-          err: 0,
-          msg: '',
-          status: 200,
-          data: null
+            err: 0,
+            msg: '',
+            status: 200,
+            data: null
         };
-        
+
         try {
 
             void await db.Connect();
 
             const pesq: string = String(req.params.pesq || '*');
+            const med_tipo_codigo: string = String(req.params.med_tipo_codigo || '*');
 
             if (!pesq) {
                 const error = new Error('Texto de pesquisa não informado');
@@ -69,20 +70,26 @@ export default class Controller_Medicamentos {
                 throw error;
             }
 
+            if (!med_tipo_codigo) {
+                const error = new Error('Tipo de medicamento não informado');
+                error.statusCode = 400;
+                throw error;
+            }
+
             const medicamentos = new Medicamentos(db.connection);
 
-            resdata.data = await medicamentos.ListarAtivos(pesq) as iMedicamentosFields[];
-            
-        } catch (error:any) {
-            
+            resdata.data = await medicamentos.ListarAtivos(pesq, med_tipo_codigo) as iMedicamentosFields[];
+
+        } catch (error: any) {
+
             applyControllerError(resdata, error, 'Controller Medicamentos');
 
         }
-        
+
         void await db.Disconnect();
 
         res.status(resdata.status).json(resdata);
-        
+
     }
 
     static async Buscar(req: Request, res: Response) {
@@ -90,12 +97,12 @@ export default class Controller_Medicamentos {
         const db: iDatabase = new Database();
 
         const resdata: iresdata = {
-          err: 0,
-          msg: '',
-          status: 200,
-          data: null
+            err: 0,
+            msg: '',
+            status: 200,
+            data: null
         };
-        
+
         try {
 
             void await db.Connect();
@@ -119,17 +126,17 @@ export default class Controller_Medicamentos {
             }
 
             resdata.data = data;
-            
-        } catch (error:any) {
-            
+
+        } catch (error: any) {
+
             applyControllerError(resdata, error, 'Controller Medicamentos');
 
         }
-        
+
         void await db.Disconnect();
 
         res.status(resdata.status).json(resdata);
-        
+
     }
 
     static async Salvar(req: Request, res: Response) {
@@ -137,12 +144,12 @@ export default class Controller_Medicamentos {
         const db: iDatabase = new Database();
 
         const resdata: iresdata = {
-          err: 0,
-          msg: '',
-          status: 200,
-          data: null
+            err: 0,
+            msg: '',
+            status: 200,
+            data: null
         };
-        
+
         try {
 
             void await db.Connect();
@@ -234,19 +241,19 @@ export default class Controller_Medicamentos {
             void await db.Commit();
 
             resdata.msg = 'Medicamento salvo com sucesso';
-            
-        } catch (error:any) {
-            
+
+        } catch (error: any) {
+
             void await db.Rollback();
 
             applyControllerError(resdata, error, 'Controller Medicamentos');
 
         }
-        
+
         void await db.Disconnect();
 
         res.status(resdata.status).json(resdata);
-        
+
     }
 
     static async Excluir(req: Request, res: Response) {
@@ -254,12 +261,12 @@ export default class Controller_Medicamentos {
         const db: iDatabase = new Database();
 
         const resdata: iresdata = {
-          err: 0,
-          msg: '',
-          status: 200,
-          data: null
+            err: 0,
+            msg: '',
+            status: 200,
+            data: null
         };
-        
+
         try {
 
             void await db.Connect();
@@ -283,25 +290,25 @@ export default class Controller_Medicamentos {
                 error.statusCode = 404;
                 throw error;
             }
-            
+
             void await medicamentos.Excluir();
 
             void await db.Commit();
 
             resdata.msg = 'Medicamento excluído com sucesso';
-            
-        } catch (error:any) {
-            
+
+        } catch (error: any) {
+
             void await db.Rollback();
 
             applyControllerError(resdata, error, 'Controller Medicamentos');
 
         }
-        
+
         void await db.Disconnect();
 
         res.status(resdata.status).json(resdata);
-        
+
     }
 
 }

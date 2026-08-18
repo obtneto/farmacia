@@ -111,14 +111,80 @@
   padding-right: 1.25rem;
 }
 
+.listar-inventarios-page__action-icon--close.rs-btn:hover,
+.listar-inventarios-page__action-icon--close.rs-btn:focus-visible {
+  border-color: rgba(22, 163, 74, 0.24);
+  background: linear-gradient(180deg, rgba(240, 253, 244, 0.98), rgba(220, 252, 231, 0.94));
+  box-shadow: 0 14px 30px rgba(22, 163, 74, 0.14);
+  color: #15803d;
+}
+
+.listar-inventarios-page__novo-item-metrics .boname-page__control,
+.listar-inventarios-page__novo-item-metrics .boname-page__control.rs-picker,
+.listar-inventarios-page__novo-item-metrics .boname-page__control .rs-picker-toggle,
+.listar-inventarios-page__novo-item-metrics .boname-page__control.rs-input-number {
+  width: 100%;
+}
+
+.listar-inventarios-page__novo-item-metrics {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.listar-inventarios-page__pesquisa-medicamento-modal.rs-modal {
+  --record-modal-height: min(42rem, calc(100dvh - var(--main-layout-header-height) - 0.75rem));
+  --record-modal-width: min(72rem, calc(100vw - 1.5rem));
+}
+
+.listar-inventarios-page__pesquisa-medicamento-modal.rs-modal,
+.listar-inventarios-page__pesquisa-medicamento-modal .rs-modal-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.listar-inventarios-page__pesquisa-medicamento-modal .rs-modal-dialog {
+  width: var(--record-modal-width);
+  height: var(--record-modal-height);
+  margin: auto;
+}
+
+.listar-inventarios-page__pesquisa-medicamento-modal .rs-modal-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.listar-inventarios-page__pesquisa-medicamento-content {
+  display: grid;
+  align-content: start;
+  gap: 1rem;
+  min-height: 0;
+}
+
+.listar-inventarios-page__novo-item-search {
+  max-width: 34rem;
+}
+
+.listar-inventarios-page__novo-item-table {
+  min-height: 22rem;
+}
+
 @media (max-width: 1100px) {
   .listar-inventarios-page__filters-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .listar-inventarios-page__novo-item-metrics {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (max-width: 768px) {
   .listar-inventarios-page__filters-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .listar-inventarios-page__novo-item-metrics {
     grid-template-columns: 1fr;
   }
 

@@ -133,6 +133,7 @@ app.use('/solicitacoes', router_solicitacoes);
 app.use('/itens-solicitacoes', router_itens_solicitacoes);
 app.use('/controle-ddu', router_controle_ddu);
 app.use('/inventarios', router_inventarios);
+app.use('/inventario', router_inventarios);
 app.use('/settings', (req: Request, res: Response) => {
     const resdata: iresdata = { err: 0, msg: '', status: 200, data: null }
 

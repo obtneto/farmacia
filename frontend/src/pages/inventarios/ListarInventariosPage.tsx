@@ -1,9 +1,13 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
+import CheckIcon from '@rsuite/icons/Check'
+import LockIcon from '@rsuite/icons/Lock'
+import PlusIcon from '@rsuite/icons/Plus'
 import ReloadIcon from '@rsuite/icons/Reload'
 import SearchIcon from '@rsuite/icons/Search'
+import TrashIcon from '@rsuite/icons/Trash'
 import VisibleIcon from '@rsuite/icons/Visible'
-import { Button, HStack, IconButton, Input, InputNumber, Pagination, Panel, SelectPicker, Tooltip, Whisper, useMediaQuery } from 'rsuite'
+import { Button, DatePicker, HStack, IconButton, Input, InputGroup, InputNumber, Pagination, Panel, SelectPicker, Tooltip, Whisper, useMediaQuery } from 'rsuite'
 import { Cell, Column, HeaderCell, Table } from 'rsuite-table'
 import { AppModal, DataState, PageSection, StatusBadge } from '../../components/ui'
 import { getErrorMessage, useMessage } from '../../hooks/useMessage'
@@ -33,6 +37,7 @@ interface InventarioRecord {
   dep_descr: string | null
   inv_date: Date | string | null
   inv_id: number
+  inv_med_tipo_codigo?: string | null
   inv_num: string | null
   inv_status: number | string | null
   inv_tipo: string | null
@@ -57,6 +62,24 @@ interface InventarioDetalheResponse {
   itens: InventarioItemRecord[]
 }
 
+interface MedicamentoAtivoRecord {
+  med_descr: string | null
+  med_descr_coml: string | null
+  med_id: number
+  med_tipo_codigo: string | null
+  med_und: string | null
+}
+
+interface NovoItemFormValues {
+  medDescr: string
+  medDescrComl: string
+  medDtValidade: Date | null
+  medId: number | null
+  medLote: string
+  medQtd: number | null
+  medUnd: string
+}
+
 interface SalvarDigitacaoItem {
   med_id: number
   med_lote: string
@@ -75,6 +98,7 @@ interface FilterValues {
 }
 
 type FilterErrors = Partial<Record<keyof FilterValues, string>>
+type NovoItemFormErrors = Partial<Record<'medDtValidade' | 'medId' | 'medLote' | 'medQtd', string>>
 
 export interface ListarInventariosPageProps {
   apiBaseUrl?: string
@@ -83,6 +107,18 @@ export interface ListarInventariosPageProps {
 
 const LOCAL_STORAGE_TOKEN_KEYS = ['authToken', 'access_token', 'token', 'jwtToken']
 const PAGE_SIZE = 10
+
+function getEmptyNovoItemFormValues(): NovoItemFormValues {
+  return {
+    medDescr: '',
+    medDescrComl: '',
+    medDtValidade: null,
+    medId: null,
+    medLote: '',
+    medQtd: null,
+    medUnd: '',
+  }
+}
 
 function getStoredToken(): string | null {
   if (typeof window === 'undefined') {
@@ -137,6 +173,14 @@ function formatDateForDisplay(value: Date | string | null): string {
 
 function formatDateForPath(value: string): string {
   return value.replaceAll('-', '/')
+}
+
+function formatDateForPayload(value: Date | null): string {
+  if (!value) {
+    return ''
+  }
+
+  return `${formatDateForInput(value)}T00:00:00`
 }
 
 function maskInventarioNumero(value: string | null): string {
@@ -198,6 +242,10 @@ function getInventarioStatusTone(value: number | string | null): 'neutral' | 'su
   }
 
   return 'neutral'
+}
+
+function isInventarioAberto(value: number | string | null): boolean {
+  return Number(value) === 0
 }
 
 function validateFilters(values: FilterValues): FilterErrors {
@@ -324,6 +372,93 @@ async function salvarDigitacaoInventario(
   )
 }
 
+async function listarMedicamentosAtivosInventario(
+  baseUrl: string,
+  searchText: string,
+  medTipoCodigo: string,
+  authToken?: string | null,
+): Promise<MedicamentoAtivoRecord[]> {
+  const pesq = searchText.trim() || '*'
+
+  return requestInventarios<MedicamentoAtivoRecord[]>(
+    baseUrl,
+    `/parametros/medicamentos/listar/ativos/${encodeURIComponent(pesq)}/${encodeURIComponent(medTipoCodigo)}`,
+    { method: 'GET' },
+    authToken,
+  )
+}
+
+async function adicionarItemInventario(
+  baseUrl: string,
+  invNum: string,
+  values: NovoItemFormValues,
+  authToken?: string | null,
+): Promise<InventarioItemRecord> {
+  return requestInventarios<InventarioItemRecord>(
+    baseUrl,
+    `/inventarios/adicionar-item/${encodeURIComponent(invNum)}`,
+    {
+      method: 'POST',
+      body: JSON.stringify({
+        med_dt_validade: formatDateForPayload(values.medDtValidade),
+        med_id: values.medId ?? 0,
+        med_lote: values.medLote.trim(),
+        med_qtd: Number(values.medQtd ?? 0),
+      }),
+    },
+    authToken,
+  )
+}
+
+async function excluirItemInventario(
+  baseUrl: string,
+  invNum: string,
+  itemId: number,
+  authToken?: string | null,
+): Promise<void> {
+  await requestInventarios(
+    baseUrl,
+    `/inventarios/excluir-item/${encodeURIComponent(invNum)}/${itemId}`,
+    { method: 'DELETE' },
+    authToken,
+  )
+}
+
+async function fecharInventario(
+  baseUrl: string,
+  invNum: string,
+  authToken?: string | null,
+): Promise<void> {
+  await requestInventarios(
+    baseUrl,
+    `/inventario/fechar/${encodeURIComponent(invNum)}`,
+    { method: 'PATCH' },
+    authToken,
+  )
+}
+
+function validateNovoItemForm(values: NovoItemFormValues): NovoItemFormErrors {
+  const errors: NovoItemFormErrors = {}
+
+  if (!values.medId) {
+    errors.medId = 'Pesquise e selecione o medicamento.'
+  }
+
+  if (!values.medLote.trim()) {
+    errors.medLote = 'Informe o lote.'
+  }
+
+  if (!values.medDtValidade) {
+    errors.medDtValidade = 'Informe a data de validade.'
+  }
+
+  if (values.medQtd === null || values.medQtd < 0) {
+    errors.medQtd = 'Informe a quantidade.'
+  }
+
+  return errors
+}
+
 export function ListarInventariosPage({
   apiBaseUrl = getApiBaseUrl(),
   authToken,
@@ -338,6 +473,12 @@ export function ListarInventariosPage({
   const [selectedInventario, setSelectedInventario] = useState<InventarioRecord | null>(null)
   const [digitacaoValues, setDigitacaoValues] = useState<Record<number, number | null>>({})
   const [digitacaoModalVersion, setDigitacaoModalVersion] = useState(0)
+  const [novoItemModalOpen, setNovoItemModalOpen] = useState(false)
+  const [medicamentoSearchModalOpen, setMedicamentoSearchModalOpen] = useState(false)
+  const [medicamentoSearchText, setMedicamentoSearchText] = useState('')
+  const [submittedMedicamentoSearchText, setSubmittedMedicamentoSearchText] = useState('*')
+  const [novoItemFormValues, setNovoItemFormValues] = useState<NovoItemFormValues>(getEmptyNovoItemFormValues)
+  const [novoItemFormErrors, setNovoItemFormErrors] = useState<NovoItemFormErrors>({})
   const modalTableRef = useRef<HTMLDivElement | null>(null)
   const [digitacaoTableWidth, setDigitacaoTableWidth] = useState(0)
 
@@ -371,6 +512,26 @@ export function ListarInventariosPage({
     enabled: Boolean(selectedInventario?.inv_num),
   })
 
+  const detalhe = detalheQuery.data
+  const medTipoCodigo = detalhe?.inventario.inv_med_tipo_codigo?.trim() ?? ''
+
+  const medicamentosAtivosQuery = useQuery({
+    queryKey: [
+      'listar-inventarios-medicamentos-ativos',
+      apiBaseUrl,
+      submittedMedicamentoSearchText,
+      medTipoCodigo,
+      resolvedAuthToken,
+    ],
+    queryFn: () => listarMedicamentosAtivosInventario(
+      apiBaseUrl,
+      submittedMedicamentoSearchText,
+      medTipoCodigo,
+      resolvedAuthToken,
+    ),
+    enabled: medicamentoSearchModalOpen && Boolean(medTipoCodigo),
+  })
+
   const saveDigitacaoMutation = useMutation({
     mutationFn: ({ invNum, itens }: SalvarDigitacaoRequest) => salvarDigitacaoInventario(
       apiBaseUrl,
@@ -385,6 +546,88 @@ export function ListarInventariosPage({
     },
     onError: async (error) => {
       await message.error('Nao foi possivel salvar a digitacao', getErrorMessage(error))
+    },
+  })
+
+  const addNovoItemMutation = useMutation({
+    mutationFn: async () => {
+      const invNum = detalhe?.inventario.inv_num?.trim()
+
+      if (!invNum) {
+        throw new Error('Numero do inventario nao informado.')
+      }
+
+      return adicionarItemInventario(
+        apiBaseUrl,
+        invNum,
+        novoItemFormValues,
+        resolvedAuthToken,
+      )
+    },
+    onSuccess: async () => {
+      setNovoItemModalOpen(false)
+      setMedicamentoSearchModalOpen(false)
+      setMedicamentoSearchText('')
+      setSubmittedMedicamentoSearchText('*')
+      setNovoItemFormValues(getEmptyNovoItemFormValues())
+      setNovoItemFormErrors({})
+      await detalheQuery.refetch()
+      await message.success('Item adicionado', 'O item foi adicionado ao inventario.')
+    },
+    onError: async (error) => {
+      await message.error('Nao foi possivel adicionar o item', getErrorMessage(error))
+    },
+  })
+
+  const deleteInventarioItemMutation = useMutation({
+    mutationFn: async (item: InventarioItemRecord) => {
+      const invNum = detalhe?.inventario.inv_num?.trim()
+
+      if (!invNum) {
+        throw new Error('Numero do inventario nao informado.')
+      }
+
+      await excluirItemInventario(
+        apiBaseUrl,
+        invNum,
+        item.iti_id,
+        resolvedAuthToken,
+      )
+
+      return item
+    },
+    onSuccess: async (item) => {
+      setDigitacaoValues((current) => {
+        const nextValues = { ...current }
+        delete nextValues[item.iti_id]
+        return nextValues
+      })
+      await detalheQuery.refetch()
+      await message.success('Item excluido', 'O item foi excluido do inventario.')
+    },
+    onError: async (error) => {
+      await message.error('Nao foi possivel excluir o item', getErrorMessage(error))
+    },
+  })
+
+  const closeInventarioMutation = useMutation({
+    mutationFn: async (inventario: InventarioRecord) => {
+      const invNum = inventario.inv_num?.trim()
+
+      if (!invNum) {
+        throw new Error('Numero do inventario nao informado.')
+      }
+
+      await fecharInventario(apiBaseUrl, invNum, resolvedAuthToken)
+
+      return inventario
+    },
+    onSuccess: async (inventario) => {
+      await listQuery.refetch()
+      await message.success('Inventario fechado', `Inventario ${maskInventarioNumero(inventario.inv_num)} fechado com sucesso.`)
+    },
+    onError: async (error) => {
+      await message.error('Nao foi possivel fechar o inventario', getErrorMessage(error))
     },
   })
 
@@ -406,9 +649,10 @@ export function ListarInventariosPage({
   const tableLabelStart = hasRecords ? pageStart + 1 : 0
   const tableLabelEnd = hasRecords ? pageStart + paginatedRecords.length : 0
   const tableHeight = isCompactLayout ? 360 : 430
-  const detalhe = detalheQuery.data
   const detalheItens = detalhe?.itens ?? []
   const hasDetalheItens = detalheItens.length > 0
+  const medicamentosAtivos = medicamentosAtivosQuery.data ?? []
+  const hasMedicamentosAtivos = medicamentosAtivos.length > 0
 
   useLayoutEffect(() => {
     if (!selectedInventario || !hasDetalheItens || !modalTableRef.current) {
@@ -464,6 +708,177 @@ export function ListarInventariosPage({
   const handleCloseDigitacao = () => {
     setSelectedInventario(null)
     setDigitacaoValues({})
+    setNovoItemModalOpen(false)
+    setMedicamentoSearchModalOpen(false)
+    setMedicamentoSearchText('')
+    setSubmittedMedicamentoSearchText('*')
+    setNovoItemFormValues(getEmptyNovoItemFormValues())
+    setNovoItemFormErrors({})
+  }
+
+  const handleOpenNovoItem = () => {
+    setMedicamentoSearchModalOpen(false)
+    setMedicamentoSearchText('')
+    setSubmittedMedicamentoSearchText('*')
+    setNovoItemFormValues(getEmptyNovoItemFormValues())
+    setNovoItemFormErrors({})
+    setNovoItemModalOpen(true)
+  }
+
+  const handleCloseNovoItem = () => {
+    setNovoItemModalOpen(false)
+    setMedicamentoSearchModalOpen(false)
+    setMedicamentoSearchText('')
+    setSubmittedMedicamentoSearchText('*')
+    setNovoItemFormValues(getEmptyNovoItemFormValues())
+    setNovoItemFormErrors({})
+  }
+
+  const handleOpenMedicamentoSearch = () => {
+    setMedicamentoSearchText('')
+    setSubmittedMedicamentoSearchText('*')
+    setMedicamentoSearchModalOpen(true)
+  }
+
+  const handleSubmitMedicamentoSearch = () => {
+    setSubmittedMedicamentoSearchText(medicamentoSearchText.trim() || '*')
+  }
+
+  const handleSelectMedicamento = (medicamento: MedicamentoAtivoRecord) => {
+    setNovoItemFormValues((current) => ({
+      ...current,
+      medDescr: medicamento.med_descr ?? '',
+      medDescrComl: medicamento.med_descr_coml ?? '',
+      medId: Number(medicamento.med_id),
+      medUnd: medicamento.med_und ?? '',
+    }))
+    setNovoItemFormErrors((current) => ({ ...current, medId: undefined }))
+    setMedicamentoSearchModalOpen(false)
+  }
+
+  const handleAddNovoItem = async () => {
+    const errors = validateNovoItemForm(novoItemFormValues)
+    setNovoItemFormErrors(errors)
+
+    if (Object.keys(errors).length > 0) {
+      await message.warning('Revise o item', 'Preencha os dados obrigatorios do item.')
+      return
+    }
+
+    addNovoItemMutation.mutate()
+  }
+
+  const handleRequestDeleteInventarioItem = async (item: InventarioItemRecord) => {
+    await message.confirmDestructive({
+      description: 'Esta acao remove o item do inventario de forma permanente.',
+      highlightedDescription: `${item.iti_med_id ?? item.iti_id} - ${item.med_descr || item.iti_lote || 'Item do inventario'}`,
+      onConfirm: async () => {
+        await deleteInventarioItemMutation.mutateAsync(item)
+      },
+      subtitle: 'A acao abaixo afeta diretamente o inventario em digitacao.',
+      title: 'Confirmar exclusao',
+    })
+  }
+
+  const handleRequestCloseInventario = async (inventario: InventarioRecord) => {
+    if (!isInventarioAberto(inventario.inv_status)) {
+      await message.warning('Inventario fechado', 'Este inventario ja esta fechado.')
+      return
+    }
+
+    const confirmed = await message.confirmAction({
+      confirmText: 'Fechar inventario',
+      description: 'Esta acao fecha o inventario e atualiza o estoque conforme as quantidades inventariadas.',
+      highlightedDescription: maskInventarioNumero(inventario.inv_num),
+      highlightedLabel: 'Inventario',
+      intentLabel: 'Fechamento',
+      onConfirm: async () => undefined,
+      subtitle: 'Confirme somente apos concluir a digitacao.',
+      title: 'Confirmar fechamento',
+    })
+
+    if (!confirmed) {
+      return
+    }
+
+    await closeInventarioMutation.mutateAsync(inventario)
+  }
+
+  const renderRowActions = (rowData: InventarioRecord, compact = false) => {
+    const isClosingCurrentRow = closeInventarioMutation.isPending && closeInventarioMutation.variables?.inv_id === rowData.inv_id
+    const isOpen = isInventarioAberto(rowData.inv_status)
+    const closeLabel = isOpen ? 'Fechar inventario' : 'Inventario ja fechado'
+
+    return (
+      <HStack
+        spacing={8}
+        wrap={compact}
+        className={`boname-page__row-actions ${compact ? 'boname-page__row-actions--compact' : 'boname-page__row-actions--table'}`.trim()}
+      >
+        {compact ? (
+          <Button
+            appearance="primary"
+            startIcon={<VisibleIcon />}
+            disabled={isClosingCurrentRow}
+            onClick={() => handleOpenDigitacao(rowData)}
+          >
+            Digitar
+          </Button>
+        ) : (
+          <Whisper
+            placement="top"
+            trigger={['hover', 'focus']}
+            controlId={`inventario-digitacao-${rowData.inv_id}`}
+            speaker={<Tooltip>Digitar inventario</Tooltip>}
+          >
+            <IconButton
+              aria-label="Digitar inventario"
+              appearance="subtle"
+              size="xs"
+              circle
+              className="boname-page__action-icon boname-page__action-icon--view"
+              icon={<VisibleIcon />}
+              disabled={isClosingCurrentRow}
+              onClick={() => handleOpenDigitacao(rowData)}
+            />
+          </Whisper>
+        )}
+
+        {compact ? (
+          <Button
+            appearance="subtle"
+            color="green"
+            size="xs"
+            startIcon={<LockIcon />}
+            disabled={!isOpen || closeInventarioMutation.isPending}
+            loading={isClosingCurrentRow}
+            onClick={() => { void handleRequestCloseInventario(rowData) }}
+          >
+            Fechar
+          </Button>
+        ) : (
+          <Whisper
+            placement="top"
+            trigger={['hover', 'focus']}
+            controlId={`inventario-close-${rowData.inv_id}`}
+            speaker={<Tooltip>{closeLabel}</Tooltip>}
+          >
+            <IconButton
+              aria-label="Fechar inventario"
+              appearance="subtle"
+              color="green"
+              size="xs"
+              circle
+              className="boname-page__action-icon listar-inventarios-page__action-icon--close"
+              icon={<LockIcon />}
+              disabled={!isOpen || closeInventarioMutation.isPending}
+              loading={isClosingCurrentRow}
+              onClick={() => { void handleRequestCloseInventario(rowData) }}
+            />
+          </Whisper>
+        )}
+      </HStack>
+    )
   }
 
   const handleSaveDigitacao = () => {
@@ -474,8 +889,8 @@ export function ListarInventariosPage({
       return
     }
 
-    if (detalheItens.some((item) => !item.iti_med_id || !item.iti_lote)) {
-      void message.error('Nao foi possivel salvar a digitacao', 'Ha item sem medicamento ou lote informado.')
+    if (detalheItens.some((item) => !item.iti_med_id)) {
+      void message.error('Nao foi possivel salvar a digitacao', 'Ha item sem medicamento informado.')
       return
     }
 
@@ -650,15 +1065,7 @@ export function ListarInventariosPage({
                             <dd>{rowData.inv_tipo || '-'}</dd>
                           </div>
                         </dl>
-                        <HStack spacing={10} className="boname-page__row-actions boname-page__row-actions--compact">
-                          <Button
-                            appearance="primary"
-                            startIcon={<VisibleIcon />}
-                            onClick={() => handleOpenDigitacao(rowData)}
-                          >
-                            Digitar
-                          </Button>
-                        </HStack>
+                        {renderRowActions(rowData, true)}
                       </Panel>
                   ))}
                 </div>
@@ -715,26 +1122,10 @@ export function ListarInventariosPage({
                       <Cell>{(rowData: InventarioRecord) => rowData.inv_tipo || '-'}</Cell>
                     </Column>
 
-                    <Column width={96} align="center" fixed="right">
+                    <Column width={128} align="center" fixed="right">
                       <HeaderCell>Acao</HeaderCell>
-                      <Cell>
-                        {(rowData: InventarioRecord) => (
-                          <HStack spacing={6} className="boname-page__row-actions boname-page__row-actions--table">
-                            <Whisper
-                              placement="top"
-                              trigger="hover"
-                              speaker={<Tooltip>Digitar inventario</Tooltip>}
-                            >
-                              <IconButton
-                                aria-label="Digitar inventario"
-                                appearance="subtle"
-                                className="boname-page__action-icon"
-                                icon={<VisibleIcon />}
-                                onClick={() => handleOpenDigitacao(rowData)}
-                              />
-                            </Whisper>
-                          </HStack>
-                        )}
+                      <Cell style={{ padding: 0 }}>
+                        {(rowData: InventarioRecord) => renderRowActions(rowData)}
                       </Cell>
                     </Column>
                   </Table>
@@ -776,14 +1167,24 @@ export function ListarInventariosPage({
         intentVisible={false}
         onClose={handleCloseDigitacao}
         footer={
-          <Button
-            appearance="primary"
-            disabled={!hasDetalheItens || detalheQuery.isPending || saveDigitacaoMutation.isPending}
-            loading={saveDigitacaoMutation.isPending}
-            onClick={handleSaveDigitacao}
-          >
-            Salvar Digitacao
-          </Button>
+          <HStack spacing={10} justifyContent="flex-end">
+            <Button
+              appearance="ghost"
+              disabled={detalheQuery.isPending || detalheQuery.isError || !medTipoCodigo}
+              startIcon={<PlusIcon />}
+              onClick={handleOpenNovoItem}
+            >
+              Novo Item
+            </Button>
+            <Button
+              appearance="primary"
+              disabled={!hasDetalheItens || detalheQuery.isPending || saveDigitacaoMutation.isPending}
+              loading={saveDigitacaoMutation.isPending}
+              onClick={handleSaveDigitacao}
+            >
+              Salvar Digitacao
+            </Button>
+          </HStack>
         }
       >
         {detalheQuery.isPending ? (
@@ -909,11 +1310,319 @@ export function ListarInventariosPage({
                     <HeaderCell className="listar-inventarios-page__diff-column">Dif.</HeaderCell>
                     <Cell className="listar-inventarios-page__diff-column">{(rowData: InventarioItemRecord) => formatNumber(getDigitacaoDifference(rowData, digitacaoValues))}</Cell>
                   </Column>
+
+                  <Column width={88} align="center" fixed="right" verticalAlign="middle">
+                    <HeaderCell>Acao</HeaderCell>
+                    <Cell style={{ padding: 0 }}>
+                      {(rowData: InventarioItemRecord) => (
+                        <Whisper
+                          placement="top"
+                          trigger={['hover', 'focus']}
+                          controlId={`inventario-item-delete-${rowData.iti_id}`}
+                          speaker={<Tooltip>Excluir</Tooltip>}
+                        >
+                          <IconButton
+                            appearance="subtle"
+                            color="red"
+                            size="xs"
+                            aria-label="Excluir item"
+                            circle
+                            className="boname-page__action-icon boname-page__action-icon--delete"
+                            disabled={deleteInventarioItemMutation.isPending || saveDigitacaoMutation.isPending}
+                            icon={<TrashIcon />}
+                            onClick={() => { void handleRequestDeleteInventarioItem(rowData) }}
+                          />
+                        </Whisper>
+                      )}
+                    </Cell>
+                  </Column>
                 </Table>
               </div>
             )}
           </div>
         ) : null}
+      </AppModal>
+
+      <AppModal
+        className="boname-page__record-modal listar-inventarios-page__novo-item-modal"
+        intent="create"
+        open={novoItemModalOpen}
+        overflow
+        size="lg"
+        title="Novo Item"
+        intentVisible={false}
+        onClose={handleCloseNovoItem}
+        footer={
+          <HStack spacing={10} justifyContent="flex-end">
+            <Button
+              appearance="subtle"
+              disabled={addNovoItemMutation.isPending}
+              onClick={handleCloseNovoItem}
+            >
+              Fechar
+            </Button>
+            <Button
+              appearance="primary"
+              disabled={addNovoItemMutation.isPending}
+              loading={addNovoItemMutation.isPending}
+              onClick={() => void handleAddNovoItem()}
+            >
+              Adicionar
+            </Button>
+          </HStack>
+        }
+      >
+        <div className="boname-page__modal-shell">
+          <section className="boname-page__form-panel" aria-label="Formulario do item do inventario">
+            <div className="boname-page__form-grid medicamentos-page__form-grid">
+              <section className="medicamentos-page__form-section boname-page__field--full" aria-label="Medicamento do item">
+                <div className="medicamentos-page__form-section-header">
+                  <h3>Medicamento</h3>
+                </div>
+                <div className="medicamentos-page__form-subgrid">
+                  <div className="boname-page__field">
+                    <label htmlFor="listar-inventarios-novo-item-med-id">ID</label>
+                    <InputGroup inside size="sm" className={novoItemFormErrors.medId ? 'boname-page__control boname-page__control--error' : 'boname-page__control'}>
+                      <Input
+                        id="listar-inventarios-novo-item-med-id"
+                        disabled
+                        value={novoItemFormValues.medId ? String(novoItemFormValues.medId) : ''}
+                      />
+                      <InputGroup.Button
+                        aria-label="Pesquisar medicamento"
+                        disabled={!medTipoCodigo}
+                        onClick={handleOpenMedicamentoSearch}
+                      >
+                        <SearchIcon />
+                      </InputGroup.Button>
+                    </InputGroup>
+                    {novoItemFormErrors.medId ? <span role="alert">{novoItemFormErrors.medId}</span> : null}
+                  </div>
+
+                  <div className="boname-page__field">
+                    <label htmlFor="listar-inventarios-novo-item-med-und">Unidade</label>
+                    <Input
+                      id="listar-inventarios-novo-item-med-und"
+                      size="sm"
+                      className="boname-page__control"
+                      disabled
+                      value={novoItemFormValues.medUnd}
+                    />
+                  </div>
+
+                  <div className="boname-page__field boname-page__field--full">
+                    <label htmlFor="listar-inventarios-novo-item-med-descr">Descricao</label>
+                    <Input
+                      id="listar-inventarios-novo-item-med-descr"
+                      size="sm"
+                      className="boname-page__control"
+                      disabled
+                      value={novoItemFormValues.medDescr}
+                    />
+                  </div>
+
+                  <div className="boname-page__field boname-page__field--full">
+                    <label htmlFor="listar-inventarios-novo-item-med-descr-coml">Descr Coml</label>
+                    <Input
+                      id="listar-inventarios-novo-item-med-descr-coml"
+                      size="sm"
+                      className="boname-page__control"
+                      disabled
+                      value={novoItemFormValues.medDescrComl}
+                    />
+                  </div>
+                </div>
+              </section>
+
+              <section className="medicamentos-page__form-section boname-page__field--full" aria-label="Dados do item">
+                <div className="medicamentos-page__form-section-header">
+                  <h3>Dados do item</h3>
+                </div>
+                <div className="medicamentos-page__form-subgrid medicamentos-page__form-subgrid--metrics listar-inventarios-page__novo-item-metrics">
+                  <div className="boname-page__field">
+                    <label htmlFor="listar-inventarios-novo-item-med-lote">Lote</label>
+                    <Input
+                      id="listar-inventarios-novo-item-med-lote"
+                      size="sm"
+                      className={novoItemFormErrors.medLote ? 'boname-page__control boname-page__control--error' : 'boname-page__control'}
+                      value={novoItemFormValues.medLote}
+                      onChange={(value) => {
+                        setNovoItemFormValues((current) => ({ ...current, medLote: value }))
+                        setNovoItemFormErrors((current) => ({ ...current, medLote: undefined }))
+                      }}
+                    />
+                    {novoItemFormErrors.medLote ? <span role="alert">{novoItemFormErrors.medLote}</span> : null}
+                  </div>
+
+                  <div className="boname-page__field">
+                    <label id="listar-inventarios-novo-item-med-validade-label">Data de Validade</label>
+                    <DatePicker
+                      aria-labelledby="listar-inventarios-novo-item-med-validade-label"
+                      size="sm"
+                      className={novoItemFormErrors.medDtValidade ? 'boname-page__control boname-page__control--error' : 'boname-page__control'}
+                      format="dd/MM/yyyy"
+                      oneTap
+                      value={novoItemFormValues.medDtValidade}
+                      onChange={(value) => {
+                        setNovoItemFormValues((current) => ({ ...current, medDtValidade: value }))
+                        setNovoItemFormErrors((current) => ({ ...current, medDtValidade: undefined }))
+                      }}
+                    />
+                    {novoItemFormErrors.medDtValidade ? <span role="alert">{novoItemFormErrors.medDtValidade}</span> : null}
+                  </div>
+
+                  <div className="boname-page__field">
+                    <label htmlFor="listar-inventarios-novo-item-med-qtd">Quantidade</label>
+                    <InputNumber
+                      id="listar-inventarios-novo-item-med-qtd"
+                      size="sm"
+                      className={novoItemFormErrors.medQtd ? 'boname-page__control boname-page__control--error' : 'boname-page__control'}
+                      controls={false}
+                      min={0}
+                      value={novoItemFormValues.medQtd}
+                      onChange={(value) => {
+                        setNovoItemFormValues((current) => ({
+                          ...current,
+                          medQtd: value === null || value === undefined ? null : Number(value),
+                        }))
+                        setNovoItemFormErrors((current) => ({ ...current, medQtd: undefined }))
+                      }}
+                    />
+                    {novoItemFormErrors.medQtd ? <span role="alert">{novoItemFormErrors.medQtd}</span> : null}
+                  </div>
+                </div>
+              </section>
+            </div>
+          </section>
+
+          {!medTipoCodigo ? (
+            <DataState
+              state="empty"
+              title="Tipo de medicamento indisponivel"
+              description="Nao foi possivel identificar o tipo do inventario selecionado."
+            />
+          ) : null}
+        </div>
+      </AppModal>
+
+      <AppModal
+        className="boname-page__record-modal listar-inventarios-page__pesquisa-medicamento-modal"
+        intent="view"
+        open={medicamentoSearchModalOpen}
+        overflow
+        size="lg"
+        title="Pesquisar medicamentos"
+        intentVisible={false}
+        onClose={() => setMedicamentoSearchModalOpen(false)}
+        footer={
+          <Button appearance="subtle" onClick={() => setMedicamentoSearchModalOpen(false)}>
+            Fechar
+          </Button>
+        }
+      >
+        <div className="listar-inventarios-page__pesquisa-medicamento-content">
+          <div className="boname-page__field listar-inventarios-page__novo-item-search">
+            <label htmlFor="listar-inventarios-pesquisa-medicamento">Pesquisar medicamento</label>
+            <InputGroup inside className="boname-page__control">
+              <Input
+                id="listar-inventarios-pesquisa-medicamento"
+                value={medicamentoSearchText}
+                onChange={setMedicamentoSearchText}
+                onPressEnter={handleSubmitMedicamentoSearch}
+              />
+              <InputGroup.Button aria-label="Pesquisar medicamento" onClick={handleSubmitMedicamentoSearch}>
+                <SearchIcon />
+              </InputGroup.Button>
+            </InputGroup>
+          </div>
+
+          {medTipoCodigo && medicamentosAtivosQuery.isPending ? (
+            <DataState
+              state="loading"
+              title="Carregando medicamentos..."
+              description="Buscando medicamentos ativos para o tipo do inventario."
+            />
+          ) : null}
+
+          {medTipoCodigo && medicamentosAtivosQuery.isError ? (
+            <DataState
+              state="error"
+              title="Nao foi possivel listar os medicamentos"
+              description={getErrorMessage(medicamentosAtivosQuery.error, 'Erro ao listar medicamentos ativos.')}
+              action={
+                <Button appearance="primary" onClick={() => void medicamentosAtivosQuery.refetch()}>
+                  Tentar novamente
+                </Button>
+              }
+            />
+          ) : null}
+
+          {medTipoCodigo && !medicamentosAtivosQuery.isPending && !medicamentosAtivosQuery.isError && !hasMedicamentosAtivos ? (
+            <DataState
+              state="empty"
+              title="Nenhum medicamento encontrado"
+              description="Nao ha medicamentos ativos disponiveis para adicionar."
+            />
+          ) : null}
+
+          {medTipoCodigo && !medicamentosAtivosQuery.isPending && !medicamentosAtivosQuery.isError && hasMedicamentosAtivos ? (
+            <div className="boname-page__table-wrap listar-inventarios-page__novo-item-table">
+              <Table
+                autoHeight={false}
+                bordered
+                data={medicamentosAtivos}
+                height={360}
+                headerHeight={52}
+                rowHeight={56}
+                virtualized
+              >
+                <Column width={76} align="center" fixed>
+                  <HeaderCell>ID</HeaderCell>
+                  <Cell dataKey="med_id" />
+                </Column>
+
+                <Column flexGrow={1.2} minWidth={220}>
+                  <HeaderCell>Descricao</HeaderCell>
+                  <Cell>{(rowData: MedicamentoAtivoRecord) => rowData.med_descr || '-'}</Cell>
+                </Column>
+
+                <Column flexGrow={1.1} minWidth={220}>
+                  <HeaderCell>Descr Coml</HeaderCell>
+                  <Cell>{(rowData: MedicamentoAtivoRecord) => rowData.med_descr_coml || '-'}</Cell>
+                </Column>
+
+                <Column width={110} align="center">
+                  <HeaderCell>Unidade</HeaderCell>
+                  <Cell>{(rowData: MedicamentoAtivoRecord) => rowData.med_und || '-'}</Cell>
+                </Column>
+
+                <Column width={88} align="center" fixed="right">
+                  <HeaderCell>Acoes</HeaderCell>
+                  <Cell style={{ padding: 0 }}>
+                    {(rowData: MedicamentoAtivoRecord) => (
+                      <Whisper
+                        placement="top"
+                        trigger={['hover', 'focus']}
+                        controlId={`inventario-medicamento-select-${rowData.med_id}`}
+                        speaker={<Tooltip>Selecionar</Tooltip>}
+                      >
+                        <IconButton
+                          appearance="subtle"
+                          size="xs"
+                          aria-label="Selecionar medicamento"
+                          circle
+                          className="boname-page__action-icon boname-page__action-icon--view"
+                          icon={<CheckIcon />}
+                          onClick={() => handleSelectMedicamento(rowData)}
+                        />
+                      </Whisper>
+                    )}
+                  </Cell>
+                </Column>
+              </Table>
+            </div>
+          ) : null}
+        </div>
       </AppModal>
     </section>
   )

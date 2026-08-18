@@ -18,8 +18,8 @@ export default class Controller_Controle_DDU {
             void await db.Connect();
 
             const pesq: string = String(req.params?.pesq || '*');
-            const data_ini: string = String(req.params?.data_ini || '');
-            const data_fin: string = String(req.params?.data_fin || '');
+            const data_ini: string = String(req.params?.data_ini || '') + ' 00:00:00';
+            const data_fin: string = String(req.params?.data_fin || '') + ' 23:59:59';
             const cdd_status: number = Number(req.params?.cdd_status);
 
             if (!req.params.pesq && pesq !== '*') {

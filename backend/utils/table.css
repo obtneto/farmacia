@@ -1,0 +1,30 @@
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+/* Transforma o thead e o tbody em blocos independentes */
+thead,
+tbody {
+    display: block;
+}
+
+/* Define a altura máxima e ativa a barra de rolagem vertical */
+tbody {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+/* Garante que as células alinhem corretamente entre o topo e o corpo */
+tr {
+    display: flex;
+}
+
+th,
+td {
+    flex: 1;
+    /* Distribui as colunas igualmente */
+    padding: 8px;
+    border: 1px solid #ddd;
+    text-align: left;
+}

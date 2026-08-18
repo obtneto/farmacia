@@ -33,9 +33,7 @@ export default class Inventarios extends BaseModel implements iBaseModel, iInven
             inv_med_tipo_codigo: null,
             inv_status: null,
             inv_tipo: null,
-            inv_num: null,
-            tipo_descr: null,
-            dep_descr: null,
+            inv_num: null
         };
 
         super(connection, 'tb_inventarios', initFields, 'inv_id');
@@ -65,9 +63,6 @@ export default class Inventarios extends BaseModel implements iBaseModel, iInven
     set inv_num(num: string | null) { this._fields.inv_num = num; }
     get inv_num(): string | null { return this._fields.inv_num; }
 
-    get tipo_descr(): string | null { return this._fields.tipo_descr; }
-    get dep_descr(): string | null { return this._fields.dep_descr; }
-
     public async ListarPorPeriodo(date_ini: String, date_fin: String, dep_id: number): Promise<iInventariosFields[]> {
 
         const query: string = `SELECT d.dep_descr,i.inv_id,i.inv_num,i.inv_date,i.inv_med_tipo_codigo,t.tipo_descr,i.inv_status,i.inv_tipo FROM 
@@ -89,7 +84,7 @@ export default class Inventarios extends BaseModel implements iBaseModel, iInven
 
         const query: string = `
             SELECT 
-                d.dep_descr,i.inv_id,i.inv_num,i.inv_date,i.inv_med_tipo_codigo,t.tipo_descr,i.inv_status,i.inv_tipo 
+                d.dep_descr,i.inv_id,i.inv_num,i.inv_date,i.inv_dep_id,i.inv_med_tipo_codigo,t.tipo_descr,i.inv_status,i.inv_tipo 
             FROM 
                 tb_inventarios i
                 LEFT JOIN tb_depositos d ON d.dep_id = i.inv_dep_id
