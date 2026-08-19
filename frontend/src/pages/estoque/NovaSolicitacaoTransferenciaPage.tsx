@@ -15,6 +15,7 @@ import './NovaSolicitacaoTransferenciaPage.css'
 type DraftItemForm = {
   draftId: string
   itemId: number
+  iso_med_id: number | null
   medicamentoId: number | null
   medicamentoLabel: string
   medTipoCodigo: string | null
@@ -60,10 +61,15 @@ type TipoMedicamentoOptionRecord = {
 
 type EstoqueModalRecord = {
   alerta_validade: number | null
+  codigo?: number | string | null
   descricao: string | null
   descricao_comercial: string | null
   dias_para_validade: number | string | null
+  est_med_id?: number | string | null
   id: number
+  id_medicacao?: number | string | null
+  med_id?: number | string | null
+  medicamento_id?: number | string | null
   lote: string | null
   saldo_bloqueado: number
   saldo_disponivel: number
@@ -78,6 +84,14 @@ type SelectOption<TValue extends number | string = number> = {
 
 type SaveSolicitacaoResponse = {
   sol_id: number
+}
+
+type SalvarSolicitacaoItemPayload = {
+  iso_id: number
+  iso_med_id: number
+  iso_med_qtde: number
+  iso_med_lote: string
+  iso_med_validade: string
 }
 
 type HeaderFormErrors = Partial<Record<keyof HeaderForm, string>>
@@ -99,6 +113,7 @@ const MAX_OBSERVACAO_LENGTH = 500
 const emptyDraftItem = (): DraftItemForm => ({
   draftId: '',
   itemId: 0,
+  iso_med_id: null,
   medicamentoId: null,
   medicamentoLabel: '',
   medTipoCodigo: null,
@@ -343,6 +358,14 @@ async function salvarSolicitacao(
   draftItems: DraftItemForm[],
   authToken?: string | null,
 ) {
+  const itens: SalvarSolicitacaoItemPayload[] = draftItems.map((item) => ({
+    iso_id: Number(item.itemId || 0),
+    iso_med_id: Number(item.iso_med_id || 0),
+    iso_med_qtde: Number(item.quantidade || 0),
+    iso_med_lote: normalizeText(item.lote, MAX_LOTE_LENGTH).trim().toLocaleUpperCase('pt-BR'),
+    iso_med_validade: item.validade ? formatDateForInput(item.validade) : '',
+  }))
+
   return requestSolicitacao<SaveSolicitacaoResponse>(
     baseUrl,
     '/solicitacoes/salvar',
@@ -356,13 +379,7 @@ async function salvarSolicitacao(
         sol_user_create: getStoredSessionUsername(),
         sol_status: 0,
         sol_obs: normalizeText(headerForm.observacao, MAX_OBSERVACAO_LENGTH).trim(),
-        itens: draftItems.map((item) => ({
-          iso_id: item.itemId,
-          iso_med_id: item.medicamentoId ?? 0,
-          iso_med_qtde: item.quantidade,
-          iso_med_lote: normalizeText(item.lote, MAX_LOTE_LENGTH).trim().toLocaleUpperCase('pt-BR'),
-          iso_med_validade: item.validade ? formatDateForInput(item.validade) : '',
-        })),
+        itens,
       }),
     },
     authToken,
@@ -401,6 +418,36 @@ function getEstoqueMedicamentoLabel(rowData: EstoqueModalRecord): string {
   }
 
   return descricao || descricaoComercial || 'Medicamento nao informado'
+}
+
+function toOptionalPositiveNumber(value: number | string | null | undefined): number | null {
+  const parsedValue = Number(value ?? 0)
+
+  return Number.isFinite(parsedValue) && parsedValue > 0 ? parsedValue : null
+}
+
+function getEstoqueMedicamentoId(rowData: EstoqueModalRecord, medicamentos: MedicamentoOptionRecord[] = []): number | null {
+  const directId =
+    toOptionalPositiveNumber(rowData.med_id)
+    ?? toOptionalPositiveNumber(rowData.medicamento_id)
+    ?? toOptionalPositiveNumber(rowData.id_medicacao)
+    ?? toOptionalPositiveNumber(rowData.est_med_id)
+    ?? toOptionalPositiveNumber(rowData.codigo)
+
+  if (directId) {
+    return directId
+  }
+
+  const descricao = String(rowData.descricao ?? '').trim()
+  const descricaoComercial = String(rowData.descricao_comercial ?? '').trim()
+  const matchedMedicamento = medicamentos.find((item) => {
+    const itemDescricao = String(item.med_descr ?? '').trim()
+    const itemDescricaoComercial = String(item.med_descr_coml ?? '').trim()
+
+    return itemDescricao === descricao && itemDescricaoComercial === descricaoComercial
+  })
+
+  return matchedMedicamento?.med_id ?? null
 }
 
 export function NovaSolicitacaoTransferenciaPage({
@@ -598,6 +645,7 @@ export function NovaSolicitacaoTransferenciaPage({
     for (const [index, rowData] of selectedRows.entries()) {
       const rowKey = getEstoqueRowKey(rowData)
       const quantidade = Number(selectedEstoqueQuantities[rowKey] ?? 0)
+      const medicamentoId = getEstoqueMedicamentoId(rowData, medicamentosQuery.data ?? [])
 
       if (!Number.isFinite(quantidade) || quantidade <= 0) {
         setItemErrors({ estoque: 'Informe uma quantidade maior que zero para os itens selecionados.' })
@@ -614,7 +662,8 @@ export function NovaSolicitacaoTransferenciaPage({
       nextItems.push({
         draftId: itemModalMode === 'edit' ? draftItemForm.draftId : `draft-${Date.now()}-${index}`,
         itemId: 0,
-        medicamentoId: rowData.id,
+        iso_med_id: medicamentoId,
+        medicamentoId,
         medicamentoLabel: getEstoqueMedicamentoLabel(rowData),
         medTipoCodigo: selectedTipoMedicamentoCodigo,
         lote: normalizeText(String(rowData.lote ?? ''), MAX_LOTE_LENGTH).trim().toLocaleUpperCase('pt-BR'),
@@ -869,6 +918,10 @@ export function NovaSolicitacaoTransferenciaPage({
 
                     <dl className="boname-page__record-meta">
                       <div>
+                        <dt>med_id</dt>
+                        <dd>{rowData.iso_med_id ?? '-'}</dd>
+                      </div>
+                      <div>
                         <dt>Quantidade</dt>
                         <dd>{rowData.quantidade}</dd>
                       </div>
@@ -885,6 +938,10 @@ export function NovaSolicitacaoTransferenciaPage({
             ) : (
               <div className="boname-page__table-wrap">
                 <Table data={draftItems} height={320} fillHeight bordered rowHeight={54} headerHeight={52} autoHeight={false}>
+                  <Column width={96} align="center">
+                    <HeaderCell>med_id</HeaderCell>
+                    <Cell>{(rowData: DraftItemForm) => rowData.iso_med_id ?? '-'}</Cell>
+                  </Column>
                   <Column flexGrow={1} minWidth={240}>
                     <HeaderCell>Medicamento</HeaderCell>
                     <Cell>{(rowData: DraftItemForm) => rowData.medicamentoLabel || getMedicamentoLabel(rowData.medicamentoId, medicamentoLookupOptions)}</Cell>
@@ -1063,6 +1120,7 @@ export function NovaSolicitacaoTransferenciaPage({
                       <div className="solicitacoes-transferencia-page__stock-grid" role="table" aria-label="Itens disponiveis no estoque">
                         <div className="solicitacoes-transferencia-page__stock-grid-row solicitacoes-transferencia-page__stock-grid-row--header" role="row">
                           <div role="columnheader">Sel.</div>
+                          <div role="columnheader">med_id</div>
                           <div role="columnheader">Medicamento</div>
                           <div role="columnheader">Und</div>
                           <div role="columnheader">Lote</div>
@@ -1109,6 +1167,7 @@ export function NovaSolicitacaoTransferenciaPage({
                                   }}
                                 />
                               </div>
+                              <div role="cell">{getEstoqueMedicamentoId(rowData, medicamentosQuery.data ?? []) ?? '-'}</div>
                               <div role="cell">{getEstoqueMedicamentoLabel(rowData)}</div>
                               <div role="cell">{rowData.unidade || '-'}</div>
                               <div role="cell">{rowData.lote || '-'}</div>

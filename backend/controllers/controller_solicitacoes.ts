@@ -228,7 +228,7 @@ export default class Controller_Solicitacoes {
 
                   const itemRows: Array<Array<Record<string, unknown>>> = itens.map((item) => {
                         return [
-                              { text: Controller_Solicitacoes.formatText(item.med_bona_codigo ?? item.med_id, ''), style: 'tableCellCenter' },
+                              { text: Controller_Solicitacoes.formatText(item.iso_med_id, ''), style: 'tableCellCenter' },
                               { text: Controller_Solicitacoes.formatText(item.med_descr, ''), style: 'tableCell' },
                               { text: Controller_Solicitacoes.formatText(item.med_descr_coml, ''), style: 'tableCell' },
                               { text: Controller_Solicitacoes.formatText(item.med_und, ''), style: 'tableCellCenter' },
@@ -882,13 +882,13 @@ export default class Controller_Solicitacoes {
                   await db.Begin();
 
                   const sol_id = Number(req.body.sol_id);
-                  const sol_date = req.body.sol_date as string;
-                  const sol_dep_ori_id = Number(req.body.sol_dep_ori_id);
-                  const sol_dep_des_id = Number(req.body.sol_dep_des_id);
-                  const sol_user_create = String(req.body.sol_user_create);
-                  const sol_status = Number(req.body.sol_status);
-                  const sol_obs = req.body.sol_obs as string;
-                  const itens = req.body.itens as Array<any>;
+                  const sol_date: string = req.body.sol_date as string;
+                  const sol_dep_ori_id: number = Number(req.body.sol_dep_ori_id);
+                  const sol_dep_des_id: number = Number(req.body.sol_dep_des_id);
+                  const sol_user_create: string = String(req.body.sol_user_create);
+                  const sol_status: number = Number(req.body.sol_status);
+                  const sol_obs: string = req.body.sol_obs as string;
+                  const itens: Array<{ iso_id: number, iso_med_id: number, iso_med_qtde: number, iso_med_lote: string, iso_med_validade: string }> = req.body.itens || [];
 
                   if (isNaN(sol_id)) {
                         const error = new Error("Parâmetro 'sol_id' inválido.");

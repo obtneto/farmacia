@@ -330,8 +330,12 @@ async function listarPacientes(pesquisa: string, authToken?: string | null): Pro
   )
 }
 
-async function listarLocais(authToken?: string | null): Promise<LocalRecord[]> {
-  return requestRequisicao<LocalRecord[]>('/parametros/locais/listar_ativos/*', { method: 'GET' }, authToken)
+async function listarLocais(pesquisa: string, authToken?: string | null): Promise<LocalRecord[]> {
+  return requestRequisicao<LocalRecord[]>(
+    `/parametros/locais/listar_ativos/${encodeURIComponent(pesquisa.trim() || '*')}`,
+    { method: 'GET' },
+    authToken,
+  )
 }
 
 async function listarDepositos(authToken?: string | null): Promise<DepositoRecord[]> {
@@ -396,6 +400,7 @@ export function RequisicaoPorPacientePage() {
   }))
   const [headerErrors, setHeaderErrors] = useState<HeaderErrors>({})
   const [itens, setItens] = useState<RequisicaoItem[]>([])
+  const [localSearchValue, setLocalSearchValue] = useState('')
   const [pacienteModalOpen, setPacienteModalOpen] = useState(false)
   const [pacienteSearchValue, setPacienteSearchValue] = useState('')
   const [submittedPacienteSearch, setSubmittedPacienteSearch] = useState<string | null>(null)
@@ -410,8 +415,8 @@ export function RequisicaoPorPacientePage() {
   const [lastSavedRequisicao, setLastSavedRequisicao] = useState<{ reqId: number, reqNum: string } | null>(null)
 
   const locaisQuery = useQuery({
-    queryKey: ['requisicao-paciente-locais', resolvedAuthToken],
-    queryFn: () => listarLocais(resolvedAuthToken),
+    queryKey: ['requisicao-paciente-locais', localSearchValue, resolvedAuthToken],
+    queryFn: () => listarLocais(localSearchValue, resolvedAuthToken),
   })
 
   const depositosQuery = useQuery({
@@ -816,6 +821,9 @@ export function RequisicaoPorPacientePage() {
                   placeholder="Selecione o local"
                   className={headerErrors.localId ? 'boname-page__control boname-page__control--compact boname-page__control--error' : 'boname-page__control boname-page__control--compact'}
                   value={headerForm.localId}
+                  onSearch={(searchKeyword) => {
+                    setLocalSearchValue(searchKeyword)
+                  }}
                   onChange={(value) => {
                     setHeaderForm((current) => ({ ...current, localId: value == null ? null : Number(value) }))
                     setHeaderErrors((current) => ({ ...current, localId: undefined }))

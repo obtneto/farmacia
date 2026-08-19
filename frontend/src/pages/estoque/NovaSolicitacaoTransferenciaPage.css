@@ -144,7 +144,7 @@
 
 .solicitacoes-transferencia-page__stock-grid-row {
   display: grid;
-  grid-template-columns: 64px minmax(0, 4fr) minmax(56px, 0.7fr) minmax(84px, 1fr) minmax(104px, 1fr) minmax(72px, 0.8fr) minmax(120px, 1.7fr);
+  grid-template-columns: 56px minmax(64px, 0.75fr) minmax(0, 4fr) minmax(52px, 0.65fr) minmax(80px, 0.95fr) minmax(96px, 0.95fr) minmax(68px, 0.75fr) minmax(112px, 1.55fr);
   width: 100%;
   min-width: 0;
   border-bottom: 1px solid rgba(15, 23, 42, 0.08);
@@ -166,8 +166,8 @@
   font-weight: 800;
 }
 
-.solicitacoes-transferencia-page__stock-grid-row > [role='columnheader']:not(:nth-child(2)),
-.solicitacoes-transferencia-page__stock-grid-row > [role='cell']:not(:nth-child(2)) {
+.solicitacoes-transferencia-page__stock-grid-row > [role='columnheader']:not(:nth-child(3)),
+.solicitacoes-transferencia-page__stock-grid-row > [role='cell']:not(:nth-child(3)) {
   justify-content: center;
   text-align: center;
 }
