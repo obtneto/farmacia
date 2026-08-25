@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import { Modal } from 'rsuite'
 import PageLoader from './PageLoader'
 
@@ -47,17 +47,14 @@ export function AppModal({
   subtitle,
   title,
 }: AppModalProps) {
-  const [modalContainer, setModalContainer] = useState<HTMLElement | null>(null)
-  const modalClassName = ['app-modal', `app-modal--${intent}`, className].filter(Boolean).join(' ')
-
-  useEffect(() => {
-    if (typeof window === 'undefined') {
-      return
+  const [modalContainer] = useState<HTMLElement | null>(() => {
+    if (typeof document === 'undefined') {
+      return null
     }
 
-    const mainContentShell = document.querySelector<HTMLElement>('.main-layout__content-shell')
-    setModalContainer(mainContentShell)
-  }, [])
+    return document.querySelector<HTMLElement>('.main-layout__content-shell')
+  })
+  const modalClassName = ['app-modal', `app-modal--${intent}`, className].filter(Boolean).join(' ')
 
   return (
     <Modal

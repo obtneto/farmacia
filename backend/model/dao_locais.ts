@@ -46,7 +46,7 @@ export default class Locais extends BaseModel implements iBaseModel, iLocaisFiel
         let query: string = "SELECT * FROM tb_locais";
 
         if (pesq !== '*') {
-            query += " WHERE local_descr LIKE :pesq";
+            query += " WHERE MATCH(local_descr) AGAINST(:pesq IN NATURAL LANGUAGE MODE)";
         }
 
         const [rows] = await this.ExecuteQuery(query, { pesq: `%${pesq}%` }) as [iLocaisFields[]];
@@ -55,7 +55,7 @@ export default class Locais extends BaseModel implements iBaseModel, iLocaisFiel
 
     }
 
-    public async ListarAtivos(pesq: string = ''): Promise<iLocaisFields[]> {
+    public async ListarAtivos(pesq: string = '*'): Promise<iLocaisFields[]> {
 
         let query: string = "SELECT * FROM tb_locais WHERE local_ativo = 1";
 

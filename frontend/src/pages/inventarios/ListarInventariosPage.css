@@ -2,6 +2,7 @@
   grid-template-columns: minmax(12rem, 0.8fr) minmax(12rem, 0.8fr) minmax(16rem, 1.2fr) auto;
   align-items: start;
   gap: 1rem;
+  padding-bottom: 0.35rem;
 }
 
 .listar-inventarios-page__filters-grid .boname-page__control,
@@ -15,6 +16,15 @@
   align-items: center;
   min-height: 44px;
   height: 44px;
+}
+
+.listar-inventarios-page__filters-grid .estoque-page__filter-field,
+.listar-inventarios-page__filters-grid .estoque-page__actions-field {
+  grid-template-rows: auto minmax(44px, auto) minmax(0.25rem, auto);
+}
+
+.listar-inventarios-page .estoque-page__merged-section .page-section__body {
+  gap: 0.35rem;
 }
 
 .listar-inventarios-page__record-meta {

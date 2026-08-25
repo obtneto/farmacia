@@ -248,6 +248,10 @@ function isInventarioAberto(value: number | string | null): boolean {
   return Number(value) === 0
 }
 
+function isInventarioFechado(value: number | string | null): boolean {
+  return Number(value) === 1
+}
+
 function validateFilters(values: FilterValues): FilterErrors {
   const errors: FilterErrors = {}
 
@@ -514,6 +518,8 @@ export function ListarInventariosPage({
 
   const detalhe = detalheQuery.data
   const medTipoCodigo = detalhe?.inventario.inv_med_tipo_codigo?.trim() ?? ''
+  const isDigitacaoInventarioFechado = isInventarioFechado(detalhe?.inventario.inv_status ?? selectedInventario?.inv_status ?? null)
+  const digitacaoDepositoDescricao = detalhe?.inventario.dep_descr || selectedInventario?.dep_descr || '-'
 
   const medicamentosAtivosQuery = useQuery({
     queryKey: [
@@ -717,6 +723,11 @@ export function ListarInventariosPage({
   }
 
   const handleOpenNovoItem = () => {
+    if (isDigitacaoInventarioFechado) {
+      void message.warning('Inventario fechado', 'Nao e possivel adicionar itens em inventario fechado.')
+      return
+    }
+
     setMedicamentoSearchModalOpen(false)
     setMedicamentoSearchText('')
     setSubmittedMedicamentoSearchText('*')
@@ -883,6 +894,11 @@ export function ListarInventariosPage({
 
   const handleSaveDigitacao = () => {
     const invNum = detalhe?.inventario.inv_num?.trim()
+
+    if (isDigitacaoInventarioFechado) {
+      void message.warning('Inventario fechado', 'Nao e possivel salvar digitacao de inventario fechado.')
+      return
+    }
 
     if (!invNum || detalheItens.length === 0) {
       void message.warning('Digitacao indisponivel', 'Nenhum item do inventario esta disponivel para salvar.')
@@ -1166,7 +1182,7 @@ export function ListarInventariosPage({
         title="Digitacao do Inventario"
         intentVisible={false}
         onClose={handleCloseDigitacao}
-        footer={
+        footer={!isDigitacaoInventarioFechado ? (
           <HStack spacing={10} justifyContent="flex-end">
             <Button
               appearance="ghost"
@@ -1185,7 +1201,7 @@ export function ListarInventariosPage({
               Salvar Digitacao
             </Button>
           </HStack>
-        }
+        ) : null}
       >
         {detalheQuery.isPending ? (
           <DataState
@@ -1221,7 +1237,7 @@ export function ListarInventariosPage({
               </div>
               <div>
                 <dt>Deposito</dt>
-                <dd>{detalhe.inventario.dep_descr || '-'}</dd>
+                <dd>{digitacaoDepositoDescricao}</dd>
               </div>
               <div>
                 <dt>Status</dt>
@@ -1292,6 +1308,7 @@ export function ListarInventariosPage({
                           aria-label={`Quantidade inventariada do item ${rowData.iti_med_id ?? rowData.iti_id}`}
                           className="listar-inventarios-page__quantity-input"
                           controls={false}
+                          disabled={isDigitacaoInventarioFechado}
                           min={0}
                           size="sm"
                           value={getDigitacaoValue(rowData, digitacaoValues)}
@@ -1328,7 +1345,7 @@ export function ListarInventariosPage({
                             aria-label="Excluir item"
                             circle
                             className="boname-page__action-icon boname-page__action-icon--delete"
-                            disabled={deleteInventarioItemMutation.isPending || saveDigitacaoMutation.isPending}
+                            disabled={isDigitacaoInventarioFechado || deleteInventarioItemMutation.isPending || saveDigitacaoMutation.isPending}
                             icon={<TrashIcon />}
                             onClick={() => { void handleRequestDeleteInventarioItem(rowData) }}
                           />

@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useState } from 'react'
+import { useLayoutEffect, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import EditIcon from '@rsuite/icons/Edit'
 import ReloadIcon from '@rsuite/icons/Reload'
@@ -41,6 +41,8 @@ const DESKTOP_TABLE_OFFSET = 340
 const MAX_DESKTOP_TABLE_HEIGHT = 560
 const SESSION_USER_STORAGE_KEY = 'sessionUser'
 const AUTH_STORAGE_KEYS = ['authToken', 'token', 'accessToken', 'jwt']
+const EMPTY_SOLICITACAO_ABERTA_ITEMS: SolicitacaoAbertaItemRecord[] = []
+const EMPTY_SOLICITACAO_ABERTA_RECORDS: SolicitacaoAbertaRecord[] = []
 
 function formatDateForDisplay(value?: string | null): string {
   if (!value) {
@@ -170,7 +172,6 @@ export function SolicitacoesAbertasPage({
   const [activePage, setActivePage] = useState(1)
   const [desktopTableHeight, setDesktopTableHeight] = useState(540)
   const [selectedSolicitacao, setSelectedSolicitacao] = useState<SolicitacaoAbertaRecord | null>(null)
-  const [initializedSolId, setInitializedSolId] = useState<number | null>(null)
   const [selectedItemIds, setSelectedItemIds] = useState<number[]>([])
   const [digitadas, setDigitadas] = useState<Record<number, number>>({})
   const message = useMessage()
@@ -249,8 +250,8 @@ export function SolicitacoesAbertasPage({
     },
   })
 
-  const records = listQuery.data ?? []
-  const itens = itensQuery.data ?? []
+  const records = listQuery.data ?? EMPTY_SOLICITACAO_ABERTA_RECORDS
+  const itens = itensQuery.data ?? EMPTY_SOLICITACAO_ABERTA_ITEMS
   const totalPages = Math.max(1, Math.ceil(records.length / pageSize))
   const currentPage = Math.min(activePage, totalPages)
   const pageStart = (currentPage - 1) * pageSize
@@ -260,16 +261,6 @@ export function SolicitacoesAbertasPage({
   const tableLabelStart = hasRecords ? pageStart + 1 : 0
   const tableLabelEnd = hasRecords ? pageStart + paginatedRecords.length : 0
   const selectedItems = itens.filter((item) => selectedItemIds.includes(item.iso_id))
-
-  useEffect(() => {
-    if (!selectedSolicitacao || initializedSolId === selectedSolicitacao.sol_id || itens.length === 0) {
-      return
-    }
-
-    setSelectedItemIds(itens.map((item) => item.iso_id))
-    setDigitadas(Object.fromEntries(itens.map((item) => [item.iso_id, Number(item.iso_qtde_digitada ?? item.iso_med_qtde ?? 0)])))
-    setInitializedSolId(selectedSolicitacao.sol_id)
-  }, [initializedSolId, itens, selectedSolicitacao])
 
   useLayoutEffect(() => {
     if (isCompactLayout) {
@@ -292,16 +283,22 @@ export function SolicitacoesAbertasPage({
     await listQuery.refetch()
   }
 
-  const handleOpenDigitacaoModal = (record: SolicitacaoAbertaRecord) => {
+  const handleOpenDigitacaoModal = async (record: SolicitacaoAbertaRecord) => {
     setSelectedSolicitacao(record)
-    setInitializedSolId(null)
     setSelectedItemIds([])
     setDigitadas({})
+
+    const modalItems = await queryClient.fetchQuery({
+      queryKey: ['solicitacao-aberta-itens', record.sol_id],
+      queryFn: () => listarItensSolicitacao(record.sol_id),
+    })
+
+    setSelectedItemIds(modalItems.map((item) => item.iso_id))
+    setDigitadas(Object.fromEntries(modalItems.map((item) => [item.iso_id, Number(item.iso_qtde_digitada ?? item.iso_med_qtde ?? 0)])))
   }
 
   function handleCloseDigitacaoModal() {
     setSelectedSolicitacao(null)
-    setInitializedSolId(null)
     setSelectedItemIds([])
     setDigitadas({})
   }
@@ -390,7 +387,7 @@ export function SolicitacoesAbertasPage({
           >
             Imprimir
           </Button>
-          <Button appearance="subtle" size="xs" startIcon={<EditIcon />} onClick={() => handleOpenDigitacaoModal(rowData)}>
+          <Button appearance="subtle" size="xs" startIcon={<EditIcon />} onClick={() => void handleOpenDigitacaoModal(rowData)}>
             Digitacao
           </Button>
           <Button appearance="subtle" color="red" size="xs" startIcon={<TrashIcon />} onClick={() => void handleRequestDelete(rowData)}>
@@ -419,7 +416,7 @@ export function SolicitacoesAbertasPage({
               className="boname-page__action-icon boname-page__action-icon--edit"
               icon={<EditIcon />}
               aria-label="Digitacao"
-              onClick={() => handleOpenDigitacaoModal(rowData)}
+              onClick={() => void handleOpenDigitacaoModal(rowData)}
             />
           </Whisper>
           <Whisper placement="top" trigger={['hover', 'focus']} controlId={`solicitacao-aberta-delete-${rowData.sol_id}`} speaker={<Tooltip>Excluir solicitacao</Tooltip>}>

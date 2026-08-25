@@ -798,6 +798,11 @@ export function AprovacaoRequisicaoPage({
                     headerHeight={52}
                     autoHeight={false}
                   >
+                    <Column width={8}>
+                      <HeaderCell>{null}</HeaderCell>
+                      <Cell>{() => null}</Cell>
+                    </Column>
+
                     <Column width={104} align="center">
                       <HeaderCell>Req</HeaderCell>
                       <Cell>{(rowData: RequisicaoNaoAprovadaRecord) => mask.requisitionNumber(rowData.req_num) || rowData.requisicao}</Cell>
@@ -836,6 +841,11 @@ export function AprovacaoRequisicaoPage({
                     <Column width={92} align="center">
                       <HeaderCell>Acoes</HeaderCell>
                       <Cell>{(rowData: RequisicaoNaoAprovadaRecord) => renderRowActions(rowData)}</Cell>
+                    </Column>
+
+                    <Column width={8}>
+                      <HeaderCell>{null}</HeaderCell>
+                      <Cell>{() => null}</Cell>
                     </Column>
                   </Table>
                 </div>

@@ -84,13 +84,32 @@
   height: 100%;
   min-height: 0;
   min-width: 0;
+  background: #fff;
   overflow: hidden;
 }
 
 .controle-dose-domiciliar-page__edit-table-wrap .rs-table {
   flex: 1 1 auto;
   width: 100%;
-  background: transparent;
+  background: #fff;
+}
+
+.controle-dose-domiciliar-page__edit-table-wrap .rs-table-body-wheel-area,
+.controle-dose-domiciliar-page__edit-table-wrap .rs-table-cell-group,
+.controle-dose-domiciliar-page__edit-table-wrap .rs-table-cell-group-fixed-left,
+.controle-dose-domiciliar-page__edit-table-wrap .rs-table-cell-group-fixed-right {
+  background: #fff;
+}
+
+.controle-dose-domiciliar-page__edit-table-wrap .rs-table-row-header,
+.controle-dose-domiciliar-page__edit-table-wrap .rs-table-row-header .rs-table-cell-group,
+.controle-dose-domiciliar-page__edit-table-wrap .rs-table-row-header .rs-table-cell-group-fixed-left,
+.controle-dose-domiciliar-page__edit-table-wrap .rs-table-row-header .rs-table-cell-group-fixed-right {
+  background: #fff !important;
+}
+
+.controle-dose-domiciliar-page__edit-table-wrap .rs-table-scrollbar-horizontal {
+  display: none !important;
 }
 
 .controle-dose-domiciliar-page__edit-table-wrap .rs-table-cell-content {
@@ -98,6 +117,11 @@
   align-items: center;
   height: 100%;
   line-height: 1.35;
+  padding-inline: 1.05rem;
+}
+
+.controle-dose-domiciliar-page__edit-table-wrap .rs-table-cell-header .rs-table-cell-content {
+  padding-inline: 1.05rem;
 }
 
 .controle-dose-domiciliar-page__quantity-input {

@@ -11,13 +11,8 @@ export default class Controller_Locais {
 
         // Inicializa infraestrutura da requisicao e o envelope padrao da resposta
         const db: iDatabase = new Database();
-        const resdata: iresdata = {
-            err: 0,
-            msg: '',
-            status: 200,
-            data: []
 
-        };
+        const resdata: iresdata = { err: 0, msg: '', status: 200, data: [] };
 
         try {
 
@@ -33,6 +28,7 @@ export default class Controller_Locais {
 
             // Carrega o registro e garante retorno 404 quando ele nao existir.
             const locais = new Locais(db.connection);
+
             const dados = await locais.BuscarPorId(local_id) as iLocaisFields;
 
             if (!locais.found) {
@@ -146,13 +142,17 @@ export default class Controller_Locais {
 
             void await db.Begin();
 
-            const locais = new Locais(db.connection);
-
             const local_id: number = Number(req.body?.local_id || 0);
-            const local_descr: string = String(req.body.local_descr || '').toLocaleUpperCase().trim();
-            const local_ativo: 0 | 1 = req.body?.local_ativo || 0;
+            const local_descr: string = String(req.body.local_descr).toLocaleUpperCase().trim();
+            const local_ativo: 0 | 1 = (req.body?.local_ativo || 0);
 
-            if (!local_descr) {
+            if (local_id === 0 || local_id === undefined) {
+                const error = new Error('ID Local inválido');
+                error.statusCode = 400;
+                throw error;
+            }
+
+            if (!local_descr || local_descr === undefined) {
                 const error = new Error('Descrição do local não informada');
                 error.statusCode = 400;
                 throw error;
@@ -164,7 +164,15 @@ export default class Controller_Locais {
                 throw error;
             }
 
+            const locais = new Locais(db.connection);
+
             void await locais.BuscarPorId(local_id);
+
+            if (!locais.found) {
+                const error = new Error('Local não encontrado');
+                error.statusCode = 404;
+                throw error;
+            }
 
             locais.local_descr = local_descr;
             locais.local_ativo = local_ativo;

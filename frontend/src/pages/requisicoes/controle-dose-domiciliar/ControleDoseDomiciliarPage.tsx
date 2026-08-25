@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import EditIcon from '@rsuite/icons/Edit'
 import ReloadIcon from '@rsuite/icons/Reload'
@@ -310,11 +310,6 @@ export function ControleDoseDomiciliarPage({
   const tableLabelStart = hasRecords ? pageStart + 1 : 0
   const tableLabelEnd = hasRecords ? pageStart + paginatedRecords.length : 0
   const selectedItems = itens.filter((item) => selectedItemIds.includes(getItemId(item)))
-
-  useEffect(() => {
-    setSelectedItemIds([])
-    setDigitadas(Object.fromEntries(itens.map((item) => [getItemId(item), 0])))
-  }, [itens])
 
   const handleSubmitFilters = async () => {
     const nextErrors = validateFilters(filterValues)
@@ -815,13 +810,12 @@ export function ControleDoseDomiciliarPage({
                 data={itens}
                 height={detailTableHeight}
                 bordered
-                virtualized
                 rowHeight={58}
                 headerHeight={52}
                 autoHeight={false}
               >
                 {modalMode === 'edit' ? (
-                  <Column width={72} align="center">
+                  <Column flexGrow={1} minWidth={72} align="center">
                     <HeaderCell>Sel.</HeaderCell>
                     <Cell>
                       {(rowData: ControleDDUItemRecord) => {
@@ -839,33 +833,33 @@ export function ControleDoseDomiciliarPage({
                   </Column>
                 ) : null}
 
-                <Column width={96}>
+                <Column flexGrow={1} minWidth={96}>
                   <HeaderCell>Codigo</HeaderCell>
                   <Cell>{(rowData: ControleDDUItemRecord) => formatText(getItemMedId(rowData))}</Cell>
                 </Column>
 
-                <Column flexGrow={1} minWidth={260}>
+                <Column flexGrow={4} minWidth={260}>
                   <HeaderCell>Descricao</HeaderCell>
                   <Cell>{(rowData: ControleDDUItemRecord) => formatText(rowData.med_descr)}</Cell>
                 </Column>
 
-                <Column width={126}>
+                <Column flexGrow={2} minWidth={126}>
                   <HeaderCell>Lote</HeaderCell>
                   <Cell>{(rowData: ControleDDUItemRecord) => formatText(getItemLote(rowData))}</Cell>
                 </Column>
 
-                <Column width={150} align="right">
+                <Column flexGrow={2} minWidth={150} align="right">
                   <HeaderCell>Qtde Recebida</HeaderCell>
                   <Cell>{(rowData: ControleDDUItemRecord) => formatNumber(getItemQuantidade(rowData))}</Cell>
                 </Column>
 
-                <Column width={150} align="right">
+                <Column flexGrow={2} minWidth={150} align="right">
                   <HeaderCell>Qtde Retornada</HeaderCell>
                   <Cell>{(rowData: ControleDDUItemRecord) => formatNumber(getItemQuantidadeDigitada(rowData))}</Cell>
                 </Column>
 
                 {modalMode === 'edit' ? (
-                  <Column width={170}>
+                  <Column flexGrow={2} minWidth={170}>
                     <HeaderCell>Qtde a Retornar</HeaderCell>
                     <Cell>
                       {(rowData: ControleDDUItemRecord) => {

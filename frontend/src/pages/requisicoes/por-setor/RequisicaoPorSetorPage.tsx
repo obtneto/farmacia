@@ -70,6 +70,8 @@ type EstoqueMedicamentoRecord = {
   validade: Date | string | null
 }
 
+const EMPTY_ESTOQUE_MEDICAMENTOS: EstoqueMedicamentoRecord[] = []
+
 type RequisicaoItem = {
   draftId: string
   medicamentoId: number
@@ -496,7 +498,7 @@ export function RequisicaoPorSetorPage() {
     (record) => `${record.tipo_descr} (${record.tipo_codigo})`,
   )
 
-  const estoqueMedicamentos = estoqueMedicamentosQuery.data ?? []
+  const estoqueMedicamentos = estoqueMedicamentosQuery.data ?? EMPTY_ESTOQUE_MEDICAMENTOS
   const hasBootstrapError = locaisQuery.isError || depositosQuery.isError || setoresQuery.isError
   const tableHeight = isCompactLayout ? 320 : 360
   const filteredEstoqueMedicamentos = useMemo(() => {

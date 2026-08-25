@@ -9,6 +9,7 @@
 }
 
 @media (max-width: 640px) {
+
   .dashboard-page .rs-btn-group,
   .dashboard-page .rs-stack {
     width: 100%;

@@ -77,6 +77,8 @@ type EstoqueMedicamentoRecord = {
   validade: Date | string | null
 }
 
+const EMPTY_ESTOQUE_MEDICAMENTOS: EstoqueMedicamentoRecord[] = []
+
 type RequisicaoItem = {
   draftId: string
   medicamentoId: number
@@ -528,7 +530,7 @@ export function RequisicaoPorPacientePage() {
   const pacienteLookupPageStart = (currentPacienteLookupPage - 1) * PAGE_SIZE
   const paginatedPacientes = pacientes.slice(pacienteLookupPageStart, pacienteLookupPageStart + PAGE_SIZE)
   const pacienteLookupTableHeight = Math.min(Math.max(paginatedPacientes.length * 54 + 112, 280), 560)
-  const estoqueMedicamentos = estoqueMedicamentosQuery.data ?? []
+  const estoqueMedicamentos = estoqueMedicamentosQuery.data ?? EMPTY_ESTOQUE_MEDICAMENTOS
   const hasBootstrapError = locaisQuery.isError || depositosQuery.isError
   const tableHeight = isCompactLayout ? 320 : 360
   const filteredEstoqueMedicamentos = useMemo(() => {
