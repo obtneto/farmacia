@@ -1127,6 +1127,10 @@
   align-content: start;
 }
 
+.entradas-page__form-grid .medicamentos-page__form-subgrid--metrics .boname-page__field {
+  grid-template-rows: auto minmax(44px, auto) minmax(0.25rem, auto);
+}
+
 .entradas-page__item-modal-grid {
   gap: 1rem 1.1rem;
 }
@@ -1713,7 +1717,7 @@
 
 .entradas-page__history-toolbar {
   box-sizing: border-box;
-  padding: 0.8rem 0.95rem;
+  padding: 0.8rem 0.95rem 0.35rem;
   border: 1px solid var(--border-soft);
   border-radius: 1.05rem;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(248, 251, 255, 0.92) 100%);
@@ -1876,11 +1880,16 @@
   gap: 1rem;
   border: 1px solid rgba(148, 163, 184, 0.32);
   border-radius: 16px;
-  padding: 0.8rem 0.95rem;
+  padding: 0.8rem 0.95rem 0.35rem;
+}
+
+.aprovacao-entradas-page__filters-grid .aprovacao-entradas-page__filter-field,
+.aprovacao-entradas-page__filters-grid .aprovacao-entradas-page__actions-field {
+  grid-template-rows: auto minmax(44px, auto) minmax(0.25rem, auto);
 }
 
 .aprovacao-entradas-page__filters-section>.rs-panel-body {
-  padding-bottom: 0.85rem;
+  padding-bottom: 0.45rem;
 }
 
 .aprovacao-entradas-page__merged-section .boname-page__table-content,

@@ -2,6 +2,7 @@
   grid-template-columns: minmax(20rem, 1.7fr) minmax(11rem, 0.82fr) minmax(11rem, 0.82fr) minmax(14rem, 1fr) auto;
   align-items: start;
   gap: 1rem;
+  padding-bottom: 0.35rem;
 }
 
 .consulta-movimentacoes-page__filters-grid .boname-page__control,
@@ -15,6 +16,15 @@
   height: 44px;
   display: flex;
   align-items: center;
+}
+
+.consulta-movimentacoes-page__filters-grid .estoque-page__filter-field,
+.consulta-movimentacoes-page__filters-grid .estoque-page__actions-field {
+  grid-template-rows: auto minmax(44px, auto) minmax(0.25rem, auto);
+}
+
+.consulta-movimentacoes-page .estoque-page__merged-section .page-section__body {
+  gap: 0.35rem;
 }
 
 .consulta-movimentacoes-page__record-meta {

@@ -559,7 +559,7 @@ const handleSaveEntry = () => {
           <section
             className="medicamentos-page__form-section boname-page__field--full"
             aria-label="Cabecalho da entrada"
-            style={{ gap: '0.7rem', padding: '0.8rem 0.95rem' }}
+            style={{ gap: '0.7rem', padding: '0.8rem 0.95rem 0.35rem' }}
           >
             <div className="medicamentos-page__form-subgrid medicamentos-page__form-subgrid--metrics" style={{ gap: '0.75rem 0.9rem' }}>
               <div className="boname-page__field">

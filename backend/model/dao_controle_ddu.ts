@@ -60,7 +60,7 @@ export default class ControleDdu extends BaseModel implements iControleDduFields
                               AND ddu.cdd_status = :cdd_status`;
 
         if (pesq !== '*') {
-            query += ` AND (MATCH(pac.nom_paciente) AGAINST(:pesq IN BOOLEAN MODE))`;
+            query += ` AND (MATCH(pac.nom_paciente,pac.nom_social) AGAINST(:pesq IN BOOLEAN MODE))`;
         }
 
         const [rows] = await this.ExecuteQuery(query, { data_ini, data_fin, pesq, cdd_status }) as RowDataPacket[];
