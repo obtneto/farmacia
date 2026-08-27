@@ -109,6 +109,7 @@ export default class Controller_Requisicoes {
 
             const dat_ini = String(req.params.dat_ini);
             const dat_fim = String(req.params.dat_fim);
+            const dep_id = Number(req.params.dep_id || 0);
 
             if (!dat_ini || !dat_fim) {
                 const error = new Error('Datas não informadas') as any;
@@ -116,9 +117,18 @@ export default class Controller_Requisicoes {
                 throw error;
             }
 
+            const depostos = new Depositos(db.connection);
             const requisicoes = new Requisicoes(db.connection);
 
-            const result = await requisicoes.ListarPorPeriodo(dat_ini, dat_fim);
+            await depostos.BuscarPorId(dep_id);
+
+            if (!depostos.found) {
+                const error = new Error('Depósito não encontrado') as any;
+                error.statusCode = 404;
+                throw error;
+            }
+
+            const result = await requisicoes.ListarPorPeriodo(dat_ini, dat_fim, dep_id);
 
             resdata.data = result;
 

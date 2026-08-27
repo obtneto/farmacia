@@ -3,7 +3,7 @@ import Controller_Requisicoes from '../controllers/controller_requisicoes.js';
 
 const router = Router();
 
-router.get('/listar/:dat_ini/:dat_fim', Controller_Requisicoes.Listar);
+router.get('/listar/:dat_ini/:dat_fim/:dep_id', Controller_Requisicoes.Listar);
 router.get('/buscar/:req_id', Controller_Requisicoes.Buscar);
 router.get('/naoaprovadas', Controller_Requisicoes.ListarRequisicoesNaoAprovadas);
 router.get('/imprimir/:req_id', Controller_Requisicoes.Imprimir);
