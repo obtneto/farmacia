@@ -1,0 +1,158 @@
+.listar-requisicoes-periodo-page__filters-grid {
+  grid-template-columns: minmax(12rem, 0.8fr) minmax(12rem, 0.8fr) minmax(16rem, 1.2fr) auto;
+  align-items: start;
+  gap: 1rem;
+  padding-bottom: 0.35rem;
+}
+
+.listar-requisicoes-periodo-page__filters-grid .boname-page__control,
+.listar-requisicoes-periodo-page__filters-grid .boname-page__control.rs-picker,
+.listar-requisicoes-periodo-page__filters-grid .boname-page__control .rs-picker-toggle {
+  width: 100%;
+}
+
+.listar-requisicoes-periodo-page__filters-grid .boname-page__control.rs-picker .rs-picker-toggle {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  height: 44px;
+}
+
+.listar-requisicoes-periodo-page__filters-grid .estoque-page__filter-field,
+.listar-requisicoes-periodo-page__filters-grid .estoque-page__actions-field {
+  grid-template-rows: auto minmax(44px, auto) minmax(0.25rem, auto);
+}
+
+.listar-requisicoes-periodo-page .estoque-page__merged-section .page-section__body {
+  gap: 0.35rem;
+}
+
+.listar-requisicoes-periodo-page__record-meta {
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+
+.listar-requisicoes-periodo-page__action-cell .rs-table-cell-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 0;
+}
+
+.listar-requisicoes-periodo-page__action-button.rs-btn-icon.rs-btn-sm {
+  width: 34px;
+  min-width: 34px;
+  height: 34px;
+  min-height: 34px;
+}
+
+.listar-requisicoes-periodo-page__details-modal.rs-modal {
+  --record-modal-height: min(42rem, calc(100dvh - var(--main-layout-header-height) - 0.75rem));
+  --record-modal-width: min(72rem, calc(100vw - 1.5rem));
+}
+
+.listar-requisicoes-periodo-page__details-modal.rs-modal,
+.listar-requisicoes-periodo-page__details-modal .rs-modal-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.listar-requisicoes-periodo-page__details-modal .rs-modal-dialog {
+  width: var(--record-modal-width);
+  height: var(--record-modal-height);
+  margin: auto;
+}
+
+.listar-requisicoes-periodo-page__details-modal .rs-modal-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.listar-requisicoes-periodo-page__details-modal .rs-modal-body,
+.listar-requisicoes-periodo-page__details-modal .app-modal__body-content,
+.listar-requisicoes-periodo-page__modal-content {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.listar-requisicoes-periodo-page__modal-content {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  align-content: start;
+  gap: 1rem;
+  width: 100%;
+}
+
+.listar-requisicoes-periodo-page__modal-meta {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.listar-requisicoes-periodo-page__modal-table {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 22rem;
+  min-width: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #fff;
+}
+
+.listar-requisicoes-periodo-page__modal-table .rs-table {
+  flex: 1 1 auto;
+  width: 100%;
+  background: #fff;
+}
+
+.listar-requisicoes-periodo-page__modal-table .rs-table-body-wheel-area,
+.listar-requisicoes-periodo-page__modal-table .rs-table-cell-group,
+.listar-requisicoes-periodo-page__modal-table .rs-table-cell-group-fixed-left,
+.listar-requisicoes-periodo-page__modal-table .rs-table-cell-group-fixed-right {
+  background: #fff;
+}
+
+.listar-requisicoes-periodo-page__modal-table .rs-table-row-header,
+.listar-requisicoes-periodo-page__modal-table .rs-table-row-header .rs-table-cell-group,
+.listar-requisicoes-periodo-page__modal-table .rs-table-row-header .rs-table-cell-group-fixed-left,
+.listar-requisicoes-periodo-page__modal-table .rs-table-row-header .rs-table-cell-group-fixed-right {
+  background: #fff !important;
+}
+
+.listar-requisicoes-periodo-page__modal-table .rs-table-scrollbar-horizontal {
+  display: none !important;
+}
+
+.listar-requisicoes-periodo-page__modal-table .rs-table-cell-content {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  line-height: 1.35;
+  padding-inline: 1.05rem;
+}
+
+.listar-requisicoes-periodo-page__modal-table .rs-table-cell-header .rs-table-cell-content {
+  padding-inline: 1.05rem;
+}
+
+.listar-requisicoes-periodo-page__quantity-column .rs-table-cell-content {
+  padding-right: 2rem;
+}
+
+@media (max-width: 1100px) {
+  .listar-requisicoes-periodo-page__filters-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .listar-requisicoes-periodo-page__filters-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .listar-requisicoes-periodo-page .estoque-page__actions-row,
+  .listar-requisicoes-periodo-page .estoque-page__actions-row .rs-btn {
+    width: 100%;
+  }
+}

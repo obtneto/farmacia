@@ -1528,4 +1528,43 @@ export default class Controller_Requisicoes {
 
     }
 
+    static async ListarItensRequisicao(req: Request, res: Response) {
+
+        const db: iDatabase = new Database('fsph_farmacia');
+        const resdata: iresdata = { err: 0, msg: '', status: 200, data: {} };
+
+        try {
+
+            await db.Connect();
+
+            const req_id = Number(req.params.req_id || 0);
+
+            if (!req_id || req_id <= 0) {
+                const error = new Error('ID da requisição inválido.') as any;
+                error.statusCode = 400;
+                throw error;
+            }
+
+            const requisicoes = new Requisicoes(db.connection);
+
+            const itens = await requisicoes.ListarItensRequisicao(req_id);
+
+            if (!itens || itens.length === 0) {
+                const error = new Error('Não foi possível encontrar os itens da requisição.') as any;
+                error.statusCode = 404;
+                throw error;
+            }
+
+            resdata.data = { itens };
+
+        } catch (error: any) {
+            applyControllerError(resdata, error, 'Controller_Requisicoes.ListarItensRequisicao');
+        }
+
+        await db.Disconnect();
+
+        return res.status(resdata.status).json(resdata);
+
+    }
+
 }

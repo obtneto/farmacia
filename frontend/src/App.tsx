@@ -24,6 +24,7 @@ import PacientesAmbulatorioPage from './pages/PacientesAmbulatorioPage'
 import AprovacaoRequisicaoPage from './pages/requisicoes/aprovacao'
 import ControleDoseDomiciliarPage from './pages/requisicoes/controle-dose-domiciliar'
 import DevolucaoMedicamentoPage from './pages/requisicoes/devolucao-medicamento'
+import ListarRequisicoesPorPeriodoPage from './pages/requisicoes/listar-por-periodo'
 import RequisicaoPorPacientePage from './pages/requisicoes/por-paciente'
 import RequisicaoPorSetorPage from './pages/requisicoes/por-setor'
 import SolicitacoesAbertasPage from './pages/SolicitacoesAbertasPage'
@@ -60,6 +61,7 @@ function App() {
     || activeSectionKey === 'requisicoes/aprovacao'
     || activeSectionKey === 'requisicoes/controle_dose_domiciliar'
     || activeSectionKey === 'requisicoes/devolucao_medicamento'
+    || activeSectionKey === 'requisicoes/listar_por_periodo'
     || activeSectionKey === 'requisicoes/por_paciente'
     || activeSectionKey === 'requisicoes/por_setor'
     || activeSectionKey === 'parametros/locais'
@@ -148,6 +150,8 @@ function App() {
         <DevolucaoMedicamentoPage />
       ) : activeSectionKey === 'requisicoes/controle_dose_domiciliar' ? (
         <ControleDoseDomiciliarPage />
+      ) : activeSectionKey === 'requisicoes/listar_por_periodo' ? (
+        <ListarRequisicoesPorPeriodoPage />
       ) : activeSectionKey === 'requisicoes/por_paciente' ? (
         <RequisicaoPorPacientePage />
       ) : activeSectionKey === 'requisicoes/por_setor' ? (

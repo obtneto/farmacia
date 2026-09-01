@@ -147,6 +147,16 @@ export default class Requisicoes extends BaseModel implements iRequisicoesFields
 
     }
 
+    public async ListarItensRequisicao(req_id: number): Promise<RowDataPacket[]> {
+
+        const query = `SELECT * FROM tb_itens_requisicao WHERE ite_req_id = :req_id`;
+
+        const [rows] = await this.ExecuteQuery(query, { req_id }) as RowDataPacket[];
+
+        return rows as RowDataPacket[];
+
+    }
+
     public async BuscarPorNum(req_num: string): Promise<RowDataPacket> {
 
         const query = `SELECT * FROM tb_requisicoes WHERE req_num = :req_num`;

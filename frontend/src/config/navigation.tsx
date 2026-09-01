@@ -49,6 +49,7 @@ export type SectionKey =
   | 'requisicoes/aprovacao'
   | 'requisicoes/por_paciente'
   | 'requisicoes/por_setor'
+  | 'requisicoes/listar_por_periodo'
   | 'requisicoes/devolucao_medicamento'
   | 'requisicoes/controle_dose_domiciliar'
   | 'operacao/entradas/nova'
@@ -168,6 +169,12 @@ export const APP_SECTIONS: Record<SectionKey, SectionMeta> = {
     description: '',
     status: 'Nova requisicao',
     title: 'Requisicoes por Setor',
+  },
+  'requisicoes/listar_por_periodo': {
+    breadcrumbItems: ['Inicio', 'Operacao', 'Requisicoes Medicamentos', 'Listar por Periodo'],
+    description: '',
+    status: 'Consulta de requisicoes',
+    title: 'Listar Requisicoes por Periodo',
   },
   'requisicoes/devolucao_medicamento': {
     breadcrumbItems: ['Inicio', 'Operacao', 'Requisicoes Medicamentos', 'Devolucao Medicamento'],
@@ -407,6 +414,11 @@ export const NAVIGATION_GROUPS: NavigationGroup[] = [
             label: 'Aprovar Requisicao',
           },
           {
+            eventKey: 'requisicoes/listar_por_periodo',
+            icon: <RiFileHistoryLine size={18} />,
+            label: 'Listar por Periodo',
+          },
+          {
             eventKey: 'requisicoes/devolucao_medicamento',
             icon: <RiRefund2Line size={18} />,
             label: 'Devolucao Medicamento',
@@ -498,5 +510,6 @@ export const QUICK_ACTIONS: Array<{ eventKey: SectionKey; label: string }> = [
   { eventKey: 'requisicoes/por_paciente', label: 'Consultar requisicoes por paciente' },
   { eventKey: 'requisicoes/aprovacao', label: 'Aprovar requisicoes' },
   { eventKey: 'requisicoes/por_setor', label: 'Nova requisicao por setor' },
+  { eventKey: 'requisicoes/listar_por_periodo', label: 'Listar requisicoes por periodo' },
   { eventKey: 'estoque/listar', label: 'Consultar estoque' },
 ]

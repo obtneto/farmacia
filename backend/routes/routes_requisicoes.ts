@@ -13,6 +13,7 @@ router.post('/aprovar/:req_id', Controller_Requisicoes.AprovarRequisicao);
 router.put('/itens/:ite_id', Controller_Requisicoes.AtualizarItem);
 router.delete('/itens/:ite_id', Controller_Requisicoes.ExcluirItem);
 router.post('/reprovar', Controller_Requisicoes.ReprovarRequisicao);
-router.get('/buscar_para_devolucao/:req_num', Controller_Requisicoes.BuscarRequisicaoParaDevolucao)
+router.get('/buscar_para_devolucao/:req_num', Controller_Requisicoes.BuscarRequisicaoParaDevolucao);
+router.get('/listar_itens/:req_id', Controller_Requisicoes.ListarItensRequisicao);
 
 export default router;
