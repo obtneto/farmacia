@@ -1,14 +1,15 @@
 import { useRef, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Button, HStack, IconButton, Input, InputNumber, Pagination, Panel, Textarea, Tooltip, useMediaQuery, Whisper } from 'rsuite'
-import { Cell, Column, HeaderCell, Table } from 'rsuite-table'
 import SearchIcon from '@rsuite/icons/Search'
 import ReloadIcon from '@rsuite/icons/Reload'
 import PlusIcon from '@rsuite/icons/Plus'
 import EditIcon from '@rsuite/icons/Edit'
 import TrashIcon from '@rsuite/icons/Trash'
 import VisibleIcon from '@rsuite/icons/Visible'
+import { Table as AppTable, type TableColumn } from '../../components/Table'
 import { AppModal, DataState, PageSection, StatusBadge } from '../../components/ui'
+import { useTablePagination } from '../../hook/useTablePagination'
 import { getErrorMessage, useMessage } from '../../hooks/useMessage'
 import { getApiBaseUrl } from '../../lib/api-base-url'
 import '../boname/BonameCrudPage.css'
@@ -193,7 +194,6 @@ export function DiagnosticosCrudPage({
   const formRequestIdRef = useRef(0)
   const [searchValue, setSearchValue] = useState('')
   const [submittedSearch, setSubmittedSearch] = useState('*')
-  const [activePage, setActivePage] = useState(1)
   const [modalMode, setModalMode] = useState<FormMode | null>(null)
   const [formValues, setFormValues] = useState<DiagnosticoRecord>(DEFAULT_FORM_VALUES)
   const [formErrors, setFormErrors] = useState<FormErrors>({})
@@ -225,17 +225,13 @@ export function DiagnosticosCrudPage({
   })
 
   const records = listQuery.data ?? []
-  const totalPages = Math.max(1, Math.ceil(records.length / PAGE_SIZE))
-  const currentPage = Math.min(activePage, totalPages)
-  const pageStart = (currentPage - 1) * PAGE_SIZE
-  const paginatedRecords = records.slice(pageStart, pageStart + PAGE_SIZE)
+  const pagination = useTablePagination(records, { initialLimit: PAGE_SIZE })
   const hasData = records.length > 0
   const isReadOnly = modalMode === 'view'
-  const tableHeight = Math.min(Math.max(paginatedRecords.length * 54 + 104, 260), 560)
 
   const handleSearch = () => {
     setSubmittedSearch(normalizeSearchTerm(searchValue))
-    setActivePage(1)
+    pagination.resetPage()
   }
 
   const closeFormModal = () => {
@@ -311,8 +307,8 @@ export function DiagnosticosCrudPage({
     })
   }
 
-  const tableLabelStart = hasData ? pageStart + 1 : 0
-  const tableLabelEnd = hasData ? pageStart + paginatedRecords.length : 0
+  const tableLabelStart = hasData ? pagination.startIndex + 1 : 0
+  const tableLabelEnd = hasData ? pagination.startIndex + pagination.paginatedData.length : 0
 
   const renderRowActions = (rowData: DiagnosticoRecord, compact = false) => (
     <HStack
@@ -349,6 +345,39 @@ export function DiagnosticosCrudPage({
       )}
     </HStack>
   )
+
+  const diagnosticoColumns: TableColumn<DiagnosticoRecord>[] = [
+    {
+      align: 'center',
+      header: 'ID',
+      key: 'diag_id',
+      size: 'xs',
+    },
+    {
+      header: 'Descricao',
+      key: 'diag_descr',
+      size: 'fluid',
+    },
+    {
+      align: 'center',
+      header: 'Status',
+      key: 'diag_ativo',
+      render: (rowData) => (
+        <StatusBadge tone={rowData.diag_ativo === 1 ? 'success' : 'danger'}>
+          {rowData.diag_ativo === 1 ? 'Ativo' : 'Inativo'}
+        </StatusBadge>
+      ),
+      size: 'sm',
+    },
+    {
+      align: 'center',
+      header: 'Acoes',
+      id: 'actions',
+      key: 'diag_id',
+      render: (rowData) => renderRowActions(rowData),
+      size: 'actions',
+    },
+  ]
 
   return (
     <section className="boname-page diagnosticos-page">
@@ -424,7 +453,7 @@ export function DiagnosticosCrudPage({
             <div className="boname-page__table-content">
               {isCompactLayout ? (
                 <div className="boname-page__card-list">
-                  {paginatedRecords.map((rowData) => (
+                  {pagination.paginatedData.map((rowData) => (
                     <Panel bordered key={rowData.diag_id} className="boname-page__record-card">
                       <div className="boname-page__record-card-top">
                         <div>
@@ -452,42 +481,7 @@ export function DiagnosticosCrudPage({
                 </div>
               ) : (
                 <div className="boname-page__table-wrap">
-                  <Table
-                    data={paginatedRecords}
-                    height={tableHeight}
-                    fillHeight
-                    virtualized
-                    bordered
-                    rowHeight={54}
-                    headerHeight={52}
-                    autoHeight={false}
-                  >
-                    <Column width={64} align="center" fixed>
-                      <HeaderCell>ID</HeaderCell>
-                      <Cell dataKey="diag_id" />
-                    </Column>
-
-                    <Column flexGrow={1} minWidth={220}>
-                      <HeaderCell>Descricao</HeaderCell>
-                      <Cell dataKey="diag_descr" />
-                    </Column>
-
-                    <Column width={104} align="center">
-                      <HeaderCell>Status</HeaderCell>
-                      <Cell>
-                        {(rowData: DiagnosticoRecord) => (
-                          <StatusBadge tone={rowData.diag_ativo === 1 ? 'success' : 'danger'}>
-                            {rowData.diag_ativo === 1 ? 'Ativo' : 'Inativo'}
-                          </StatusBadge>
-                        )}
-                      </Cell>
-                    </Column>
-
-                    <Column width={132} fixed="right">
-                      <HeaderCell>Acoes</HeaderCell>
-                      <Cell>{(rowData: DiagnosticoRecord) => renderRowActions(rowData)}</Cell>
-                    </Column>
-                  </Table>
+                  <AppTable columns={diagnosticoColumns} data={pagination.tableData} rowKey="diag_id" />
                 </div>
               )}
             </div>
@@ -498,19 +492,19 @@ export function DiagnosticosCrudPage({
                 <strong>{records.length}</strong> registros.
               </p>
               <Pagination
-                activePage={currentPage}
+                activePage={pagination.activePage}
                 boundaryLinks
                 ellipsis
                 first
                 last
-                limit={PAGE_SIZE}
+                limit={pagination.limit}
                 layout={['pager']}
                 maxButtons={5}
                 next
                 prev
                 size={isCompactLayout ? 'sm' : 'md'}
-                total={records.length}
-                onChangePage={setActivePage}
+                total={pagination.total}
+                onChangePage={pagination.onChangePage}
               />
             </div>
           </>

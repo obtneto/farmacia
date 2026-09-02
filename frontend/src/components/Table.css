@@ -1,0 +1,112 @@
+.app-table__container {
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  width: 100%;
+}
+
+.app-table {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-width: 640px;
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  color: #132341;
+  font-size: 0.92rem;
+}
+
+.app-table thead,
+.app-table tbody {
+  display: block;
+}
+
+.app-table thead {
+  flex: 0 0 auto;
+  background: #fff;
+}
+
+.app-table tbody {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.app-table tr {
+  display: flex;
+  width: 100%;
+}
+
+.app-table th,
+.app-table td {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  padding: 0.55rem 0.75rem;
+  border: 0;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+  text-align: left;
+}
+
+.app-table th {
+  min-height: 52px;
+  color: #132341;
+  font-weight: 800;
+}
+
+.app-table td {
+  min-height: 54px;
+  background: #fff;
+}
+
+.app-table tbody tr:hover td {
+  background: rgba(248, 251, 255, 0.95);
+}
+
+.app-table .app-table__cell--center {
+  justify-content: center;
+  text-align: center;
+}
+
+.app-table .app-table__cell--right {
+  justify-content: flex-end;
+  text-align: right;
+}
+
+.app-table .app-table__cell--left {
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.app-table .app-table__cell--xs {
+  flex: 0 0 4rem;
+}
+
+.app-table .app-table__cell--sm {
+  flex: 0 0 6.5rem;
+}
+
+.app-table .app-table__cell--md {
+  flex: 0 0 9rem;
+}
+
+.app-table .app-table__cell--lg {
+  flex: 0 0 14rem;
+}
+
+.app-table .app-table__cell--actions {
+  flex: 0 0 8.25rem;
+}
+
+.app-table .app-table__cell--fluid {
+  flex: 1 1 14rem;
+}
+
+.app-table .app-table__empty {
+  flex: 1 1 100%;
+  justify-content: center;
+  text-align: center;
+  color: #6b7280;
+}
