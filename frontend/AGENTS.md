@@ -142,7 +142,8 @@ Se não houver referência equivalente no projeto, o agente deve:
 
 ### O que é considerado desvio de padrão (proibido)
 
-- usar elemento HTML puro (`<button>`, `<input>`, `<table>`, `<select>`, `<div>` estilizado manualmente) quando existe componente RSuite equivalente;
+- usar elemento HTML puro (`<button>`, `<input>`, `<select>`  estilizado manualmente) quando existe componente RSuite equivalente;
+- não usar componente `<Table>` do RSuite, usando sempre o componente <Table> do projeto;
 - aplicar estilos inline ou classes CSS avulsas que não seguem o padrão existente;
 - criar layout com espaçamento, cores, fontes ou bordas diferentes das já usadas no projeto;
 - criar modal, drawer, formulário ou tabela com estrutura JSX diferente do padrão existente no projeto;
