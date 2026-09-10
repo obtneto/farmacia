@@ -238,7 +238,7 @@ export function SetoresCrudPage({
   const paginatedRecords = records.slice(pageStart, pageStart + PAGE_SIZE)
   const hasData = records.length > 0
   const isReadOnly = modalMode === 'view'
-  const tableHeight = Math.min(Math.max(paginatedRecords.length * 54 + 104, 260), 560)
+  const tableHeight = Math.min(Math.max(paginatedRecords.length * 54 + 104, 260), 560) * 2
 
   const handleSearch = () => {
     setSubmittedSearch(normalizeSearchTerm(searchValue))

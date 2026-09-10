@@ -2,15 +2,14 @@ import 'dotenv/config';
 import { createConnection, Connection } from 'mysql2/promise';
 
 export interface iDatabase {
-    connection : Connection,
-    Connect() : Promise<void>,
-    Disconnect() : Promise<void>,
-    Begin() : Promise<void>,
-    Commit() : Promise<void>,
-    Rollback() : Promise<void>,
+    connection: Connection,
+    Connect(): Promise<void>,
+    Disconnect(): Promise<void>,
+    Begin(): Promise<void>,
+    Commit(): Promise<void>,
+    Rollback(): Promise<void>,
 }
 
-// Encapsula a conexao MySQL e o controle de transacao usado pelos controllers.
 export default class Database implements iDatabase {
 
     private conn: Connection | null = null;
@@ -22,7 +21,7 @@ export default class Database implements iDatabase {
     }
 
     // Abre a conexao somente quando ela ainda nao existe no ciclo atual.
-    public async Connect() : Promise<void> {
+    public async Connect(): Promise<void> {
         if (this.conn) {
             return;
         }
@@ -39,7 +38,7 @@ export default class Database implements iDatabase {
             dateStrings: true,
             charset: 'utf8mb4'
         });
-       
+
     }
 
     // Exige que a conexao tenha sido inicializada antes de expor o driver.
