@@ -10,6 +10,7 @@ export interface AppModalProps {
   children: ReactNode
   className?: string
   footer?: ReactNode
+  headerVisible?: boolean
   intent?: AppModalIntent
   intentVisible?: boolean
   loading?: boolean
@@ -37,6 +38,7 @@ export function AppModal({
   children,
   className,
   footer,
+  headerVisible = true,
   intent = 'view',
   intentVisible = true,
   loading = false,
@@ -67,15 +69,17 @@ export function AppModal({
       onClose={onClose}
       className={modalClassName}
     >
-      <Modal.Header>
-        <div className="app-modal__header">
-          <div className="app-modal__copy">
-            <Modal.Title>{title}</Modal.Title>
-            {subtitle ? <p>{subtitle}</p> : null}
+      {headerVisible ? (
+        <Modal.Header>
+          <div className="app-modal__header">
+            <div className="app-modal__copy">
+              <Modal.Title>{title}</Modal.Title>
+              {subtitle ? <p>{subtitle}</p> : null}
+            </div>
+            {intentVisible ? <span className="app-modal__intent">{INTENT_LABELS[intent]}</span> : null}
           </div>
-          {intentVisible ? <span className="app-modal__intent">{INTENT_LABELS[intent]}</span> : null}
-        </div>
-      </Modal.Header>
+        </Modal.Header>
+      ) : null}
 
       <Modal.Body>
         {loading ? (

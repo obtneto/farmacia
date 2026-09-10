@@ -3,8 +3,8 @@ import { useQuery } from '@tanstack/react-query'
 import ReloadIcon from '@rsuite/icons/Reload'
 import SearchIcon from '@rsuite/icons/Search'
 import VisibleIcon from '@rsuite/icons/Visible'
-import { Button, HStack, IconButton, Input, InputNumber, Pagination, Panel, useMediaQuery } from 'rsuite'
-import { Cell, Column, HeaderCell, Table } from '../../components/RsuiteTableAdapter'
+import { Button, HStack, IconButton, Input, InputNumber, Pagination, Panel, Tooltip, useMediaQuery, Whisper } from 'rsuite'
+import { Table as AppTable, type TableColumn } from '../../components/Table'
 import { AppModal, DataState, PageSection, StatusBadge } from '../../components/ui'
 import { useMask } from '../../hooks/useMask'
 import { apiRequest } from '../../lib/api'
@@ -112,7 +112,6 @@ export default function PacientesAmbulatorioCrudPage() {
   const currentPage = Math.min(activePage, totalPages)
   const pageStart = (currentPage - 1) * PAGE_SIZE
   const paginatedPatients = pacientes.slice(pageStart, pageStart + PAGE_SIZE)
-  const tableHeight = Math.min(Math.max(paginatedPatients.length * 54 + 104, 260), 560)
 
   const handleSearch = () => {
     setSubmittedSearch(searchValue.trim() || '*')
@@ -131,6 +130,70 @@ export default function PacientesAmbulatorioCrudPage() {
   const closeDetailsModal = () => {
     setSelectedPatient(null)
   }
+
+  const pacienteColumns: TableColumn<PacienteListRecord>[] = [
+    {
+      align: 'center',
+      header: 'Codigo',
+      key: 'num_paciente',
+      size: 'sm',
+    },
+    {
+      flexGrow: 1.7,
+      header: 'Nome do Paciente',
+      key: 'nom_paciente',
+      render: (rowData) => formatText(rowData.nom_paciente),
+      size: 'fluid',
+    },
+    {
+      flexGrow: 1.4,
+      header: 'Nome Usual',
+      key: 'nom_social',
+      render: (rowData) => formatText(rowData.nom_social),
+      size: 'fluid',
+    },
+    {
+      header: 'Nascimento',
+      key: 'dt_nascimento',
+      render: (rowData) => formatDateForDisplay(rowData.dt_nascimento),
+      size: 'md',
+    },
+    {
+      header: 'CPF',
+      key: 'cpf',
+      render: (rowData) => mask.cpf(rowData.cpf),
+      size: 'md',
+    },
+    {
+      flexGrow: 1.2,
+      header: 'E-mail',
+      key: 'email',
+      render: (rowData) => formatText(rowData.email),
+      size: 'fluid',
+    },
+    {
+      align: 'center',
+      header: 'Acoes',
+      id: 'actions',
+      key: 'num_paciente',
+      render: (rowData) => (
+        <HStack spacing={8} justifyContent="center" className="boname-page__row-actions boname-page__row-actions--table">
+          <Whisper placement="top" trigger={['hover', 'focus']} controlId={`paciente-view-${rowData.num_paciente}`} speaker={<Tooltip>Visualizar</Tooltip>}>
+            <IconButton
+              appearance="subtle"
+              size="xs"
+              circle
+              aria-label="Visualizar paciente"
+              className="boname-page__action-icon boname-page__action-icon--view"
+              icon={<VisibleIcon />}
+              onClick={() => setSelectedPatient(rowData)}
+            />
+          </Whisper>
+        </HStack>
+      ),
+      size: 'actions',
+    },
+  ]
 
   return (
     <section className="boname-page pacientes-page estoque-page--merged-layout">
@@ -241,69 +304,7 @@ export default function PacientesAmbulatorioCrudPage() {
                 </div>
               ) : (
                 <div className="boname-page__table-wrap">
-                  <Table
-                    data={paginatedPatients}
-                    height={tableHeight}
-                    fillHeight
-                    virtualized
-                    bordered
-                    rowHeight={54}
-                    headerHeight={52}
-                    autoHeight={false}
-                  >
-                    <Column width={96} align="center" fixed>
-                      <HeaderCell>Codigo</HeaderCell>
-                      <Cell dataKey="num_paciente" />
-                    </Column>
-
-                    <Column flexGrow={1.7} minWidth={260}>
-                      <HeaderCell>Nome do Paciente</HeaderCell>
-                      <Cell dataKey="nom_paciente" />
-                    </Column>
-
-                    <Column flexGrow={1.4} minWidth={220}>
-                      <HeaderCell>Nome Usual</HeaderCell>
-                      <Cell>{(rowData: PacienteListRecord) => formatText(rowData.nom_social)}</Cell>
-                    </Column>
-
-                    <Column width={150}>
-                      <HeaderCell>Nascimento</HeaderCell>
-                      <Cell>{(rowData: PacienteListRecord) => formatDateForDisplay(rowData.dt_nascimento)}</Cell>
-                    </Column>
-
-                    <Column width={160}>
-                      <HeaderCell>CPF</HeaderCell>
-                      <Cell>{(rowData: PacienteListRecord) => mask.cpf(rowData.cpf)}</Cell>
-                    </Column>
-
-                    <Column flexGrow={1.2} minWidth={240}>
-                      <HeaderCell>E-mail</HeaderCell>
-                      <Cell>{(rowData: PacienteListRecord) => formatText(rowData.email)}</Cell>
-                    </Column>
-
-                    <Column width={132} fixed="right">
-                      <HeaderCell>Acoes</HeaderCell>
-                      <Cell>
-                        {(rowData: PacienteListRecord) => (
-                          <HStack
-                            spacing={8}
-                            justifyContent="center"
-                            className="boname-page__row-actions boname-page__row-actions--table"
-                          >
-                            <IconButton
-                              appearance="subtle"
-                              size="xs"
-                              circle
-                              aria-label="Visualizar paciente"
-                              className="boname-page__action-icon boname-page__action-icon--view"
-                              icon={<VisibleIcon />}
-                              onClick={() => setSelectedPatient(rowData)}
-                            />
-                          </HStack>
-                        )}
-                      </Cell>
-                    </Column>
-                  </Table>
+                  <AppTable columns={pacienteColumns} data={paginatedPatients} rowKey="num_paciente" />
                 </div>
               )}
             </div>

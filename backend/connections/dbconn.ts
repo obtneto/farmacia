@@ -28,11 +28,11 @@ export default class Database implements iDatabase {
 
 
         this.conn = await createConnection({
-            host: process.env.DB_HOST,
+            host: process.env.DB_HOST || 'localhost',
             port: Number(process.env.DB_PORT || 3306),
-            user: process.env.DB_USER,
-            password: process.env.DB_PASS,
-            database: this.dbname,
+            user: process.env.DB_USER || 'apiuser',
+            password: process.env.DB_PASS || 'Abcd@1234',
+            database: this.dbname || 'fsph_farmacia',
             namedPlaceholders: true,
             decimalNumbers: true,
             dateStrings: true,

@@ -152,13 +152,16 @@ export function Table<T extends TableRow = TableRow>({
 }
 
 export function Column(_props: ColumnProps) {
+  void _props
   return null
 }
 
 export function HeaderCell(_props: HeaderCellProps) {
+  void _props
   return null
 }
 
 export function Cell<T extends TableRow = TableRow>(_props: CellProps<T>) {
+  void _props
   return null
 }

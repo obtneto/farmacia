@@ -8,7 +8,7 @@ import ReloadIcon from '@rsuite/icons/Reload'
 import SearchIcon from '@rsuite/icons/Search'
 import VisibleIcon from '@rsuite/icons/Visible'
 import { Button, HStack, IconButton, Input, InputNumber, Pagination, Panel, SelectPicker, useMediaQuery } from 'rsuite'
-import { Cell, Column, HeaderCell, Table } from '../../components/RsuiteTableAdapter'
+import { Table as AppTable, type TableColumn } from '../../components/Table'
 import { AppModal, DataState, PageSection, StatusBadge, SummaryCard } from '../../components/ui'
 import { getErrorMessage, useMessage } from '../../hooks/useMessage'
 import { getApiBaseUrl } from '../../lib/api-base-url'
@@ -507,7 +507,6 @@ export default function DemandasEspecificasCrudPage({
   const currentPage = Math.min(activePage, Math.max(1, Math.ceil(filteredRecords.length / PAGE_SIZE)))
   const pageStart = (currentPage - 1) * PAGE_SIZE
   const paginatedRecords = filteredRecords.slice(pageStart, pageStart + PAGE_SIZE)
-  const tableHeight = isCompactLayout ? 360 : 420
 
   const itens = itensQuery.data ?? []
   const currentModalPage = Math.min(modalActivePage, Math.max(1, Math.ceil(itens.length / MODAL_PAGE_SIZE)))
@@ -517,7 +516,6 @@ export default function DemandasEspecificasCrudPage({
   const currentPatientLookupPage = Math.min(patientLookupPage, Math.max(1, Math.ceil(pacientesPesquisados.length / PAGE_SIZE)))
   const patientLookupPageStart = (currentPatientLookupPage - 1) * PAGE_SIZE
   const paginatedPacientes = pacientesPesquisados.slice(patientLookupPageStart, patientLookupPageStart + PAGE_SIZE)
-  const patientLookupTableHeight = Math.min(Math.max(paginatedPacientes.length * 54 + 112, 280), 560)
 
   const handleOpenDetails = (record: DemandaEspecificaRecord) => {
     setSelectedDemanda(record)
@@ -729,6 +727,111 @@ export default function DemandasEspecificasCrudPage({
     return <StatusBadge tone={isActive ? 'success' : 'danger'}>{isActive ? 'Ativo' : 'Inativo'}</StatusBadge>
   }
 
+  const demandaColumns: TableColumn<DemandaEspecificaRecord>[] = [
+    {
+      align: 'center',
+      header: 'ID',
+      key: 'dem_id',
+      size: 'xs',
+    },
+    {
+      flexGrow: 1.3,
+      header: 'Paciente',
+      key: 'nome_paciente',
+      render: (rowData) => formatText(rowData.nome_paciente),
+      size: 'fluid',
+    },
+    {
+      header: 'Nascimento',
+      key: 'data_nascimento',
+      render: (rowData) => formatDateForDisplay(rowData.data_nascimento),
+      size: 'md',
+    },
+    {
+      flexGrow: 1.2,
+      header: 'Medico Assistente',
+      key: 'dem_medico_assis',
+      render: (rowData) => formatText(rowData.dem_medico_assis),
+      size: 'fluid',
+    },
+    {
+      header: 'CRM',
+      key: 'dem_medico_crm',
+      render: (rowData) => formatText(rowData.dem_medico_crm),
+      size: 'sm',
+    },
+    {
+      flexGrow: 1,
+      header: 'Diagnostico',
+      key: 'diagnostico',
+      render: (rowData) => formatText(rowData.diagnostico),
+      size: 'fluid',
+    },
+    {
+      align: 'center',
+      header: 'Acao',
+      id: 'actions',
+      key: 'dem_id',
+      render: (rowData) => renderMainActions(rowData),
+      size: 'actions',
+    },
+  ]
+
+  const pacienteLookupColumns: TableColumn<PacienteLookupRecord>[] = [
+    {
+      align: 'center',
+      header: 'Codigo',
+      key: 'num_paciente',
+      size: 'sm',
+    },
+    {
+      flexGrow: 1.6,
+      header: 'Paciente',
+      key: 'nom_paciente',
+      render: (rowData) => formatText(rowData.nom_paciente),
+      size: 'fluid',
+    },
+    {
+      flexGrow: 1.2,
+      header: 'Nome usual',
+      key: 'nom_social',
+      render: (rowData) => formatText(rowData.nom_social),
+      size: 'fluid',
+    },
+    {
+      header: 'Nascimento',
+      key: 'dt_nascimento',
+      render: (rowData) => formatDateForDisplay(rowData.dt_nascimento),
+      size: 'md',
+    },
+    {
+      header: 'CPF',
+      key: 'cpf',
+      render: (rowData) => formatCpf(rowData.cpf),
+      size: 'md',
+    },
+    {
+      align: 'center',
+      header: 'Acao',
+      id: 'actions',
+      key: 'num_paciente',
+      render: (rowData) => (
+        <HStack justifyContent="center" className="boname-page__row-actions boname-page__row-actions--table">
+          <IconButton
+            appearance="subtle"
+            aria-label={`Selecionar paciente ${formatText(rowData.nom_paciente)}`}
+            circle
+            className="boname-page__action-icon boname-page__action-icon--view"
+            icon={<CheckIcon />}
+            size="xs"
+            onClick={() => handleSelectPaciente(rowData)}
+          />
+        </HStack>
+      ),
+      size: 'actions',
+    },
+  ]
+
   return (
     <section className="boname-page pacientes-page demandas-especificas-page estoque-page--merged-layout">
       <PageSection className="estoque-page__filters-section estoque-page__merged-section">
@@ -816,36 +919,7 @@ export default function DemandasEspecificasCrudPage({
                 </div>
               ) : (
                 <div className="boname-page__table-wrap">
-                  <Table data={paginatedRecords} height={tableHeight} fillHeight virtualized bordered rowHeight={54} headerHeight={52} autoHeight={false}>
-                    <Column width={78} align="center" fixed>
-                      <HeaderCell>ID</HeaderCell>
-                      <Cell dataKey="dem_id" />
-                    </Column>
-                    <Column flexGrow={1.3} minWidth={230}>
-                      <HeaderCell>Paciente</HeaderCell>
-                      <Cell>{(rowData: DemandaEspecificaRecord) => formatText(rowData.nome_paciente)}</Cell>
-                    </Column>
-                    <Column width={132}>
-                      <HeaderCell>Nascimento</HeaderCell>
-                      <Cell>{(rowData: DemandaEspecificaRecord) => formatDateForDisplay(rowData.data_nascimento)}</Cell>
-                    </Column>
-                    <Column flexGrow={1.2} minWidth={220}>
-                      <HeaderCell>Medico Assistente</HeaderCell>
-                      <Cell>{(rowData: DemandaEspecificaRecord) => formatText(rowData.dem_medico_assis)}</Cell>
-                    </Column>
-                    <Column width={110}>
-                      <HeaderCell>CRM</HeaderCell>
-                      <Cell>{(rowData: DemandaEspecificaRecord) => formatText(rowData.dem_medico_crm)}</Cell>
-                    </Column>
-                    <Column flexGrow={1} minWidth={220}>
-                      <HeaderCell>Diagnostico</HeaderCell>
-                      <Cell>{(rowData: DemandaEspecificaRecord) => formatText(rowData.diagnostico)}</Cell>
-                    </Column>
-                    <Column width={132} fixed="right">
-                      <HeaderCell>Acao</HeaderCell>
-                      <Cell>{(rowData: DemandaEspecificaRecord) => renderMainActions(rowData)}</Cell>
-                    </Column>
-                  </Table>
+                  <AppTable columns={demandaColumns} data={paginatedRecords} rowKey="dem_id" />
                 </div>
               )}
             </div>
@@ -1081,55 +1155,12 @@ export default function DemandasEspecificasCrudPage({
             ) : (
               <>
                 <div className="boname-page__table-wrap demandas-especificas-page__patient-lookup-table-wrap demandas-especificas-page__modal-table-wrap">
-                  <Table
+                  <AppTable
                     key={patientLookupTableInstance}
+                    columns={pacienteLookupColumns}
                     data={paginatedPacientes}
-                    height={patientLookupTableHeight}
-                    fillHeight
-                    bordered
-                    rowHeight={54}
-                    headerHeight={52}
-                    autoHeight={false}
-                  >
-                    <Column width={104} align="center">
-                      <HeaderCell>Codigo</HeaderCell>
-                      <Cell dataKey="num_paciente" />
-                    </Column>
-                    <Column flexGrow={1.6} minWidth={260}>
-                      <HeaderCell>Paciente</HeaderCell>
-                      <Cell>{(rowData: PacienteLookupRecord) => formatText(rowData.nom_paciente)}</Cell>
-                    </Column>
-                    <Column flexGrow={1.2} minWidth={220}>
-                      <HeaderCell>Nome usual</HeaderCell>
-                      <Cell>{(rowData: PacienteLookupRecord) => formatText(rowData.nom_social)}</Cell>
-                    </Column>
-                    <Column width={140}>
-                      <HeaderCell>Nascimento</HeaderCell>
-                      <Cell>{(rowData: PacienteLookupRecord) => formatDateForDisplay(rowData.dt_nascimento)}</Cell>
-                    </Column>
-                    <Column width={150}>
-                      <HeaderCell>CPF</HeaderCell>
-                      <Cell>{(rowData: PacienteLookupRecord) => formatCpf(rowData.cpf)}</Cell>
-                    </Column>
-                    <Column width={120}>
-                      <HeaderCell>Acao</HeaderCell>
-                      <Cell>
-                        {(rowData: PacienteLookupRecord) => (
-                          <HStack justifyContent="center" className="boname-page__row-actions boname-page__row-actions--table">
-                            <IconButton
-                              appearance="subtle"
-                              aria-label={`Selecionar paciente ${formatText(rowData.nom_paciente)}`}
-                              circle
-                              className="boname-page__action-icon boname-page__action-icon--view"
-                              icon={<CheckIcon />}
-                              size="xs"
-                              onClick={() => handleSelectPaciente(rowData)}
-                            />
-                          </HStack>
-                        )}
-                      </Cell>
-                    </Column>
-                  </Table>
+                    rowKey="num_paciente"
+                  />
                 </div>
                 <div className="boname-page__table-footer">
                   <p>
@@ -1173,6 +1204,7 @@ export default function DemandasEspecificasCrudPage({
             </Button>
           </>
         }
+        headerVisible={false}
         intent="view"
         intentVisible={false}
         loading={detailsModalOpen && itensQuery.isPending}
