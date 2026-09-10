@@ -44,11 +44,18 @@ const app = express();
 const port: number = Number(process.env.PORT || 3000);
 const allowedOrigins = new Set([
     'http://localhost',
+    'http://172.23.42.17',
+    'http://172.23.42.17:8080',
     'http://localhost:5173',
     'http://localhost:8080',
     'http://192.168.0.8:5173',
     'http://192.168.0.8:8080'
 ]);
+const corsAllowedHeaders = [
+    'Authorization',
+    'Cache-Control',
+    'Content-Type',
+];
 
 function isLoopbackOrigin(origin: string): boolean {
     try {
@@ -100,8 +107,9 @@ app.use(cors({
         callback(new Error(`Origin nao permitida: ${origin}`));
     },
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Cache-Control'],
+    allowedHeaders: corsAllowedHeaders,
     credentials: true,
+    optionsSuccessStatus: 204,
 
 }));
 

@@ -68,7 +68,7 @@ export default class Estoque extends BaseModel implements iEstoqueFields, iBaseM
                 END AS dias_para_validade
                 FROM tb_estoque e
                 LEFT JOIN tb_medicamentos m ON e.est_med_id = m.med_id
-                WHERE e.est_dep_id = :dep_id AND e.est_saldo_disponivel > 0
+                WHERE e.est_dep_id = :dep_id AND (e.est_saldo_disponivel + e.est_saldo_bloqueado) > 0
                 AND m.med_tipo_codigo = :med_tipo_codigo`
 
     if (pesq !== '*') {

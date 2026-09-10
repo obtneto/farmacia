@@ -9,7 +9,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  min-width: 640px;
+  min-width: 0;
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
@@ -30,11 +30,15 @@
 .app-table tbody {
   flex: 1 1 auto;
   min-height: 0;
+  max-width: 100%;
+  overflow-x: hidden;
   overflow-y: auto;
 }
 
 .app-table tr {
   display: flex;
+  min-width: 0;
+  max-width: 100%;
   width: 100%;
 }
 
@@ -44,10 +48,17 @@
   align-items: center;
   flex: 1;
   min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
   padding: 0.55rem 0.75rem;
   border: 0;
   border-bottom: 1px solid rgba(148, 163, 184, 0.18);
   text-align: left;
+}
+
+.app-table th > *,
+.app-table td > * {
+  min-width: 0;
 }
 
 .app-table th {

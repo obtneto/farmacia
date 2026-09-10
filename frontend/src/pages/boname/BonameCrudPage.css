@@ -118,7 +118,7 @@
   flex: 1 1 auto;
   min-height: 0;
   width: 100%;
-  overflow-x: auto;
+  overflow: hidden;
   border: 1px solid #e3ebf4;
   border-radius: 1.15rem;
   background: #fff;
@@ -148,6 +148,10 @@
 .boname-page__table-wrap .rs-table-row-header .rs-table-cell-content {
   color: #132341;
   font-weight: 800;
+}
+
+.tipos-medicamentos-page .boname-page__table-wrap .rs-table {
+  height: 100% !important;
 }
 
 .boname-page__row-actions {
@@ -781,7 +785,7 @@
 }
 
 .demandas-especificas-page__items-table-wrap {
-  overflow-x: auto;
+  overflow: hidden;
 }
 
 .demandas-especificas-page__modal-table-wrap {
