@@ -14,7 +14,7 @@ import {
   Whisper,
   useMediaQuery,
 } from 'rsuite'
-import { Cell, Column, HeaderCell, Table } from '../../components/RsuiteTableAdapter'
+import { Cell, Column, HeaderCell, Table } from '../../components/Table'
 import PlusIcon from '@rsuite/icons/Plus'
 import PrintIcon from '@rsuite/icons/legacy/Print'
 import ReloadIcon from '@rsuite/icons/Reload'

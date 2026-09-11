@@ -162,6 +162,15 @@
   overflow-x: hidden !important;
 }
 
+.solicitacoes-encerradas-page__details-table-wrap .app-table tbody {
+  scrollbar-gutter: stable;
+}
+
+.solicitacoes-encerradas-page__details-table-wrap .app-table th:last-child,
+.solicitacoes-encerradas-page__details-table-wrap .app-table td:last-child {
+  padding-right: 1.35rem;
+}
+
 .solicitacoes-encerradas-page__details-table-wrap .rs-table-cell-content {
   display: flex;
   align-items: center;

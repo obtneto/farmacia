@@ -1,10 +1,10 @@
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import DetailIcon from '@rsuite/icons/Detail'
 import ReloadIcon from '@rsuite/icons/Reload'
 import SearchIcon from '@rsuite/icons/Search'
 import { Button, HStack, IconButton, Input, Pagination, Panel, Tooltip, useMediaQuery, Whisper } from 'rsuite'
-import { Cell, Column, HeaderCell, Table } from '../../components/RsuiteTableAdapter'
+import { Cell, Column, HeaderCell, Table, type TableColumn } from '../../components/Table'
 import { AppModal, DataState, PageSection, StatusBadge } from '../../components/ui'
 import { getErrorMessage, useMessage } from '../../hooks/useMessage'
 import { apiRequest } from '../../lib/api'
@@ -120,6 +120,10 @@ function getDepositoDestino(record: SolicitacaoEncerradaRecord): string | null |
   return record.deposito_destino || record.dep_destino_descr
 }
 
+function getQuantidadeDigitada(record: SolicitacaoEncerradaItemRecord): number | null | undefined {
+  return record.iso_qtde_digitada ?? record.iso_med_qtde
+}
+
 function validateFilters(values: FilterValues): FilterErrors {
   const errors: FilterErrors = {}
 
@@ -171,6 +175,59 @@ async function listarItensSolicitacao(solId: number): Promise<SolicitacaoEncerra
   return apiRequest<SolicitacaoEncerradaItemRecord[]>(`/itens-solicitacoes/listar/${solId}`, { method: 'GET' })
 }
 
+const detailItemColumns: TableColumn<SolicitacaoEncerradaItemRecord>[] = [
+  {
+    align: 'center',
+    header: 'Código',
+    key: 'iso_med_id',
+    size: 'xs',
+    width: 86,
+    render: (rowData) => formatText(rowData.iso_med_id),
+  },
+  {
+    flexGrow: 1,
+    header: 'Medicamento',
+    key: 'medicamento',
+    minWidth: 300,
+    render: (rowData) => (
+      <div className="solicitacoes-encerradas-page__table-copy">
+        <strong>{formatText(rowData.med_descr)}</strong>
+        <span>{formatText(rowData.med_descr_coml)}</span>
+      </div>
+    ),
+  },
+  {
+    header: 'Lote',
+    key: 'iso_med_lote',
+    size: 'sm',
+    width: 118,
+    render: (rowData) => formatText(rowData.iso_med_lote),
+  },
+  {
+    header: 'Validade',
+    key: 'iso_med_validade',
+    size: 'sm',
+    width: 112,
+    render: (rowData) => formatDateForDisplay(rowData.iso_med_validade),
+  },
+  {
+    align: 'right',
+    header: 'Qtde solicitada',
+    key: 'iso_med_qtde',
+    size: 'md',
+    width: 126,
+    render: (rowData) => formatNumber(rowData.iso_med_qtde),
+  },
+  {
+    align: 'right',
+    header: 'Qtde digitada',
+    key: 'iso_qtde_digitada',
+    size: 'md',
+    width: 122,
+    render: (rowData) => formatNumber(getQuantidadeDigitada(rowData)),
+  },
+]
+
 export function SolicitacoesEncerradasPage({
   pageSize = DEFAULT_PAGE_SIZE,
 }: SolicitacoesEncerradasPageProps) {
@@ -181,8 +238,6 @@ export function SolicitacoesEncerradasPage({
   const [submittedFilters, setSubmittedFilters] = useState<FilterValues | null>(null)
   const [activePage, setActivePage] = useState(1)
   const [selectedSolicitacao, setSelectedSolicitacao] = useState<SolicitacaoEncerradaRecord | null>(null)
-  const detailTableWrapRef = useRef<HTMLDivElement | null>(null)
-  const [detailTableWidth, setDetailTableWidth] = useState(0)
 
   const listQuery = useQuery({
     queryKey: ['solicitacoes-encerradas', submittedFilters],
@@ -213,36 +268,8 @@ export function SolicitacoesEncerradasPage({
   const tableHeight = isCompactLayout ? 360 : 470
   const detailTableHeight = isCompactLayout ? 420 : 460
   const detailsModalOpen = selectedSolicitacao !== null
-  const effectiveDetailTableWidth = detailsModalOpen ? detailTableWidth : 0
   const tableLabelStart = hasRecords ? pageStart + 1 : 0
   const tableLabelEnd = hasRecords ? pageStart + paginatedRecords.length : 0
-
-  useLayoutEffect(() => {
-    if (!detailsModalOpen || itens.length === 0) {
-      return
-    }
-
-    const container = detailTableWrapRef.current
-
-    if (!container) {
-      return
-    }
-
-    const updateTableWidth = () => {
-      setDetailTableWidth(Math.max(0, Math.round(container.getBoundingClientRect().width)))
-    }
-
-    updateTableWidth()
-
-    const resizeObserver = new ResizeObserver(updateTableWidth)
-    resizeObserver.observe(container)
-    window.addEventListener('resize', updateTableWidth)
-
-    return () => {
-      resizeObserver.disconnect()
-      window.removeEventListener('resize', updateTableWidth)
-    }
-  }, [detailsModalOpen, isCompactLayout, itens.length])
 
   const handleSubmitFilters = async () => {
     const nextErrors = validateFilters(filterValues)
@@ -276,7 +303,6 @@ export function SolicitacoesEncerradasPage({
 
   const handleCloseDetailsModal = () => {
     setSelectedSolicitacao(null)
-    setDetailTableWidth(0)
   }
 
   const renderRowActions = (rowData: SolicitacaoEncerradaRecord, compact = false) => (
@@ -619,55 +645,18 @@ export function SolicitacoesEncerradasPage({
         ) : null}
 
         {!itensQuery.isPending && !itensQuery.isError && itens.length > 0 ? (
-          <div ref={detailTableWrapRef} className="boname-page__table-wrap solicitacoes-encerradas-page__details-table-wrap">
+          <div className="boname-page__table-wrap solicitacoes-encerradas-page__details-table-wrap">
             <Table
-              key={`${selectedSolicitacao?.sol_id ?? 'sem-solicitacao'}-${effectiveDetailTableWidth}`}
+              key={selectedSolicitacao?.sol_id ?? 'sem-solicitacao'}
+              columns={detailItemColumns}
               data={itens}
               height={detailTableHeight}
-              width={effectiveDetailTableWidth || undefined}
               fillHeight
               bordered
               rowHeight={58}
               headerHeight={52}
               autoHeight={false}
-            >
-              <Column width={86}>
-                <HeaderCell>Código</HeaderCell>
-                <Cell>{(rowData: SolicitacaoEncerradaItemRecord) => formatText(rowData.iso_med_id)}</Cell>
-              </Column>
-
-              <Column flexGrow={1} minWidth={300}>
-                <HeaderCell>Medicamento</HeaderCell>
-                <Cell>
-                  {(rowData: SolicitacaoEncerradaItemRecord) => (
-                    <div className="solicitacoes-encerradas-page__table-copy">
-                      <strong>{formatText(rowData.med_descr)}</strong>
-                      <span>{formatText(rowData.med_descr_coml)}</span>
-                    </div>
-                  )}
-                </Cell>
-              </Column>
-
-              <Column width={118}>
-                <HeaderCell>Lote</HeaderCell>
-                <Cell>{(rowData: SolicitacaoEncerradaItemRecord) => formatText(rowData.iso_med_lote)}</Cell>
-              </Column>
-
-              <Column width={112}>
-                <HeaderCell>Validade</HeaderCell>
-                <Cell>{(rowData: SolicitacaoEncerradaItemRecord) => formatDateForDisplay(rowData.iso_med_validade)}</Cell>
-              </Column>
-
-              <Column width={126} align="right">
-                <HeaderCell>Qtde solicitada</HeaderCell>
-                <Cell>{(rowData: SolicitacaoEncerradaItemRecord) => formatNumber(rowData.iso_med_qtde)}</Cell>
-              </Column>
-
-              <Column width={122} align="right">
-                <HeaderCell>Qtde digitada</HeaderCell>
-                <Cell>{(rowData: SolicitacaoEncerradaItemRecord) => formatNumber(rowData.iso_qtde_digitada)}</Cell>
-              </Column>
-            </Table>
+            />
           </div>
         ) : null}
       </AppModal>

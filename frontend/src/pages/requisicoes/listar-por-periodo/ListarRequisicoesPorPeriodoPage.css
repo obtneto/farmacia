@@ -136,8 +136,19 @@
   padding-inline: 1.05rem;
 }
 
-.listar-requisicoes-periodo-page__quantity-column .rs-table-cell-content {
-  padding-right: 2rem;
+.listar-requisicoes-periodo-page__modal-table .app-table tbody {
+  scrollbar-gutter: stable;
+}
+
+.listar-requisicoes-periodo-page__modal-table .app-table th,
+.listar-requisicoes-periodo-page__modal-table .app-table td {
+  padding-inline: 1.05rem;
+}
+
+.listar-requisicoes-periodo-page__modal-table .app-table th:last-child,
+.listar-requisicoes-periodo-page__modal-table .app-table td:last-child,
+.listar-requisicoes-periodo-page__modal-table .app-table .listar-requisicoes-periodo-page__quantity-column {
+  padding-right: 2.35rem;
 }
 
 @media (max-width: 1100px) {

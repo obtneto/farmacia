@@ -1,0 +1,26 @@
+{
+  "apps": [
+    {
+      "name": "farmacia-api",
+      "cwd": "/home/obtneto/farmacia/backend",
+      "script": "farmacia.ts",
+      "interpreter": "bun",
+      "exec_mode": "fork",
+      "instances": 1,
+      "autorestart": true,
+      "watch": false,
+      "max_memory_restart": "512M",
+      "env": {
+        "NODE_ENV": "production",
+        "PORT": "3000"
+      },
+      "env_homolog": {
+        "NODE_ENV": "production",
+        "PORT": "3000"
+      },
+      "error_file": "/home/obtneto/farmacia/logs/farmacia-api-error.log",
+      "out_file": "/home/obtneto/farmacia/logs/farmacia-api-out.log",
+      "log_date_format": "YYYY-MM-DD HH:mm:ss Z"
+    }
+  ]
+}

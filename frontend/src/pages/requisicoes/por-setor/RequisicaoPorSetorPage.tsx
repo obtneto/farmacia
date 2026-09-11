@@ -6,7 +6,7 @@ import PrintIcon from '@rsuite/icons/legacy/Print'
 import ReloadIcon from '@rsuite/icons/Reload'
 import TrashIcon from '@rsuite/icons/Trash'
 import { Button, Checkbox, DatePicker, HStack, IconButton, Input, InputNumber, SelectPicker, Tabs, Textarea, Tooltip, Whisper, useMediaQuery } from 'rsuite'
-import { Cell, Column, HeaderCell, Table } from '../../../components/RsuiteTableAdapter'
+import { Cell, Column, HeaderCell, Table } from '../../../components/Table'
 import { AppModal, DataState, PageSection, ReferenceNotification, StatusBadge } from '../../../components/ui'
 import { getErrorMessage, useMessage } from '../../../hooks/useMessage'
 import { maskDate, useMask } from '../../../hooks/useMask'
@@ -63,8 +63,11 @@ type EstoqueMedicamentoRecord = {
   alerta_validade: number | null
   descricao: string | null
   descricao_comercial: string | null
+  est_med_id?: number | null
   id: number
   lote: string | null
+  med_id?: number | null
+  medicamento_id?: number | null
   saldo_disponivel: number
   unidade: string | null
   validade: Date | string | null
@@ -291,6 +294,17 @@ function getItemDraftId(record: EstoqueMedicamentoRecord): string {
   return `${record.id}-${record.lote || 'sem-lote'}`
 }
 
+function getMedicamentoId(record: EstoqueMedicamentoRecord): number {
+  return Number(record.est_med_id ?? record.med_id ?? record.medicamento_id ?? 0)
+}
+
+function normalizeEstoqueMedicamento(record: EstoqueMedicamentoRecord): EstoqueMedicamentoRecord {
+  return {
+    ...record,
+    est_med_id: getMedicamentoId(record),
+  }
+}
+
 function toOptions<TRecord, TValue extends number | string>(
   records: TRecord[],
   getValue: (record: TRecord) => TValue,
@@ -329,11 +343,13 @@ async function listarTiposMedicamentos(authToken?: string | null): Promise<TipoM
 }
 
 async function listarEstoqueMedicamentos(depositoId: number, tipoCodigo: string, authToken?: string | null): Promise<EstoqueMedicamentoRecord[]> {
-  return requestRequisicao<EstoqueMedicamentoRecord[]>(
+  const records = await requestRequisicao<EstoqueMedicamentoRecord[]>(
     `/estoque/listar/*/${depositoId}/${encodeURIComponent(tipoCodigo)}`,
     { method: 'GET' },
     authToken,
   )
+
+  return records.map(normalizeEstoqueMedicamento)
 }
 
 async function salvarRequisicao(headerForm: HeaderForm, itens: RequisicaoItem[], authToken?: string | null): Promise<SalvarRequisicaoResponse> {
@@ -544,9 +560,15 @@ export function RequisicaoPorSetorPage() {
   const handleAddModalItem = (record: EstoqueMedicamentoRecord) => {
     const draftId = getItemDraftId(record)
     const quantidade = Number(quantidades[draftId] || 0)
+    const medicamentoId = getMedicamentoId(record)
 
     if (itens.some((item) => item.draftId === draftId)) {
       message.warning('Item ja adicionado', 'Este item ja foi adicionado a requisicao.')
+      return
+    }
+
+    if (medicamentoId <= 0) {
+      message.warning('Medicamento invalido', 'Nao foi possivel identificar o ID do medicamento.')
       return
     }
 
@@ -565,7 +587,7 @@ export function RequisicaoPorSetorPage() {
         descricao: record.descricao || 'Medicamento sem descricao',
         draftId,
         lote: record.lote || '',
-        medicamentoId: Number(record.id),
+        medicamentoId,
         quantidade,
         validade: record.validade,
       }
@@ -993,8 +1015,8 @@ export function RequisicaoPorSetorPage() {
                   </Cell>
                 </Column>
                 <Column width={72} align="center">
-                  <HeaderCell>Codigo</HeaderCell>
-                  <Cell dataKey="id" />
+                  <HeaderCell>ID</HeaderCell>
+                  <Cell>{(rowData: EstoqueMedicamentoRecord) => getMedicamentoId(rowData)}</Cell>
                 </Column>
                 <Column flexGrow={1} minWidth={230}>
                   <HeaderCell>Descricao</HeaderCell>

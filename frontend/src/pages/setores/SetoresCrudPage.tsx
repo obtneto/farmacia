@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Button, HStack, IconButton, Input, InputNumber, Pagination, Panel, Textarea, Tooltip, useMediaQuery, Whisper } from 'rsuite'
-import { Cell, Column, HeaderCell, Table } from '../../components/RsuiteTableAdapter'
+import { Cell, Column, HeaderCell, Table } from '../../components/Table'
 import SearchIcon from '@rsuite/icons/Search'
 import ReloadIcon from '@rsuite/icons/Reload'
 import PlusIcon from '@rsuite/icons/Plus'

@@ -5,6 +5,23 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   base: './',
   plugins: [react()],
+  optimizeDeps: {
+    include: [
+      '@rsuite/icons/Check',
+      '@rsuite/icons/Close',
+      '@rsuite/icons/Detail',
+      '@rsuite/icons/Edit',
+      '@rsuite/icons/Icon',
+      '@rsuite/icons/Lock',
+      '@rsuite/icons/Plus',
+      '@rsuite/icons/Reload',
+      '@rsuite/icons/Search',
+      '@rsuite/icons/Trash',
+      '@rsuite/icons/Visible',
+      '@rsuite/icons/legacy/Print',
+      '@rsuite/icons/legacy/Unlock',
+    ],
+  },
   css: {
     devSourcemap: false,
   },

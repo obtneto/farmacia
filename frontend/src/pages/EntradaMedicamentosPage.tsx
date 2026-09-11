@@ -4,7 +4,7 @@ import { Button, DatePicker, HStack, IconButton, Input, InputNumber, SelectPicke
 import EditIcon from '@rsuite/icons/Edit'
 import PlusIcon from '@rsuite/icons/Plus'
 import TrashIcon from '@rsuite/icons/Trash'
-import { Cell, Column, HeaderCell, Table } from '../components/RsuiteTableAdapter'
+import { Cell, Column, HeaderCell, Table } from '../components/Table'
 import { AppModal, DataState, PageSection, ReferenceNotification } from '../components/ui'
 import { getErrorMessage, useMessage } from '../hooks/useMessage'
 import { useMask } from '../hooks/useMask'

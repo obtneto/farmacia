@@ -50,7 +50,7 @@
   min-width: 0;
   max-width: 100%;
   overflow: hidden;
-  padding: 0.55rem 0.75rem;
+  padding: 0.3rem 0.75rem;
   border: 0;
   border-bottom: 1px solid rgba(148, 163, 184, 0.18);
   text-align: left;
@@ -62,14 +62,26 @@
 }
 
 .app-table th {
-  min-height: 52px;
+  min-height: 48px;
+  padding-block: 0.55rem;
   color: #132341;
   font-weight: 800;
 }
 
 .app-table td {
-  min-height: 54px;
+  min-height: 42px;
   background: #fff;
+}
+
+.app-table--word-wrap th,
+.app-table--word-wrap td {
+  align-items: flex-start;
+  white-space: normal;
+}
+
+.app-table--word-wrap th > *,
+.app-table--word-wrap td > * {
+  overflow-wrap: anywhere;
 }
 
 .app-table tbody tr:hover td {

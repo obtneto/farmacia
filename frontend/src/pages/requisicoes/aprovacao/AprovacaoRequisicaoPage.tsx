@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import CheckIcon from '@rsuite/icons/Check'
 import CloseIcon from '@rsuite/icons/Close'
@@ -8,7 +8,7 @@ import ReloadIcon from '@rsuite/icons/Reload'
 import TrashIcon from '@rsuite/icons/Trash'
 import VisibleIcon from '@rsuite/icons/Visible'
 import { Button, HStack, IconButton, Input, InputNumber, Pagination, Panel, Tooltip, useMediaQuery, Whisper } from 'rsuite'
-import { Cell, Column, HeaderCell, Table } from '../../../components/RsuiteTableAdapter'
+import { Cell, Column, HeaderCell, Table } from '../../../components/Table'
 import { AppModal, DataState, PageSection, StatusBadge } from '../../../components/ui'
 import { getErrorMessage, useMessage } from '../../../hooks/useMessage'
 import { useMask } from '../../../hooks/useMask'
@@ -307,8 +307,6 @@ export function AprovacaoRequisicaoPage({
   const [editingItem, setEditingItem] = useState<RequisicaoItemRecord | null>(null)
   const [editItemForm, setEditItemForm] = useState<EditItemForm>({ quantidade: 0 })
   const [editItemErrors, setEditItemErrors] = useState<EditItemErrors>({})
-  const modalTableWrapRef = useRef<HTMLDivElement | null>(null)
-  const [modalTableWidth, setModalTableWidth] = useState(0)
 
   const listQuery = useQuery({
     queryKey: ['aprovacao-requisicoes-list', apiBaseUrl, resolvedAuthToken],
@@ -439,37 +437,6 @@ export function AprovacaoRequisicaoPage({
   const tableLabelEnd = hasRecords ? pageStart + paginatedRecords.length : 0
   const modalItems = detalhesRequisicaoQuery.data?.itens ?? []
   const modalItemsCount = modalItems.length
-  const effectiveModalTableWidth = detailsModalOpen ? modalTableWidth : 0
-
-  useLayoutEffect(() => {
-    if (!detailsModalOpen) {
-      return
-    }
-
-    const container = modalTableWrapRef.current
-
-    if (!container) {
-      return
-    }
-
-    const updateTableWidth = () => {
-      setModalTableWidth(Math.max(0, Math.round(container.getBoundingClientRect().width)))
-    }
-
-    updateTableWidth()
-
-    const resizeObserver = new ResizeObserver(() => {
-      updateTableWidth()
-    })
-
-    resizeObserver.observe(container)
-    window.addEventListener('resize', updateTableWidth)
-
-    return () => {
-      resizeObserver.disconnect()
-      window.removeEventListener('resize', updateTableWidth)
-    }
-  }, [detailsModalOpen, isCompactLayout, modalItemsCount])
 
   const handleRefresh = async () => {
     await listQuery.refetch()
@@ -1006,17 +973,18 @@ export function AprovacaoRequisicaoPage({
                   ))}
                 </div>
               ) : (
-                <div ref={modalTableWrapRef} className="boname-page__table-wrap aprovacao-entradas-page__modal-table-wrap">
+                <div className="boname-page__table-wrap aprovacao-entradas-page__modal-table-wrap aprovacao-requisicao-page__modal-table-wrap">
                   <Table
-                    key={`${selectedRequisicao?.requisicao ?? 'sem-requisicao'}-${effectiveModalTableWidth}`}
+                    key={selectedRequisicao?.requisicao ?? 'sem-requisicao'}
+                    className="aprovacao-requisicao-page__modal-items-table"
                     data={modalItems}
                     height={360}
-                    width={effectiveModalTableWidth || undefined}
                     fillHeight
                     bordered
                     rowHeight={50}
                     headerHeight={52}
                     autoHeight={false}
+                    rowKey="ite_id"
                   >
                     <Column width={76} align="center">
                       <HeaderCell>Codigo</HeaderCell>
