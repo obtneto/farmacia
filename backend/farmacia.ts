@@ -85,27 +85,6 @@ function isPrivateNetworkOrigin(origin: string): boolean {
     }
 }
 
-function sanitizeLogUrl(requestUrl?: string): string {
-    if (!requestUrl) {
-        return '-';
-    }
-
-    try {
-        const parsedUrl = new URL(requestUrl, 'http://localhost');
-        const sensitiveParams = ['access_token', 'authorization', 'jwt', 'password', 'senha', 'token'];
-
-        for (const param of sensitiveParams) {
-            if (parsedUrl.searchParams.has(param)) {
-                parsedUrl.searchParams.set(param, '[redacted]');
-            }
-        }
-
-        return `${parsedUrl.pathname}${parsedUrl.search}`;
-    } catch {
-        return requestUrl.split('?')[0] || '-';
-    }
-}
-
 console.clear();
 
 app.use(helmet());
@@ -184,6 +163,7 @@ app.use('/controle-ddu', router_controle_ddu);
 app.use('/inventarios', router_inventarios);
 app.use('/inventario', router_inventarios);
 app.use('/settings', (req: Request, res: Response) => {
+
     const resdata: iresdata = { err: 0, msg: '', status: 200, data: null }
 
     resdata.data = { settings }
