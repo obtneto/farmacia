@@ -85,10 +85,50 @@ function isPrivateNetworkOrigin(origin: string): boolean {
     }
 }
 
+function sanitizeLogUrl(requestUrl?: string): string {
+    if (!requestUrl) {
+        return '-';
+    }
+
+    try {
+        const parsedUrl = new URL(requestUrl, 'http://localhost');
+        const sensitiveParams = ['access_token', 'authorization', 'jwt', 'password', 'senha', 'token'];
+
+        for (const param of sensitiveParams) {
+            if (parsedUrl.searchParams.has(param)) {
+                parsedUrl.searchParams.set(param, '[redacted]');
+            }
+        }
+
+        return `${parsedUrl.pathname}${parsedUrl.search}`;
+    } catch {
+        return requestUrl.split('?')[0] || '-';
+    }
+}
+
 console.clear();
 
 app.use(helmet());
-app.use(morgan('dev'));
+app.use(morgan((tokens, req, res) => {
+    return [
+        tokens.method(req, res),
+        tokens.url(req, res),
+        tokens.status(req, res),
+        tokens.res(req, res, 'content-length') || '0',
+        '-',
+        tokens['response-time'](req, res),
+        'ms'
+    ].join(' ');
+}, {
+    skip: (req) => {
+        const requestPath = req.url.toLowerCase();
+
+        return req.method === 'OPTIONS'
+            || requestPath === '/health'
+            || requestPath === '/healthcheck'
+            || requestPath === '/favicon.ico';
+    }
+}));
 
 app.use(express.json({
     limit: '150kb',
