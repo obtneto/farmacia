@@ -109,6 +109,7 @@ function sanitizeLogUrl(requestUrl?: string): string {
 console.clear();
 
 app.use(helmet());
+
 app.use(morgan((tokens, req, res) => {
     return [
         tokens.method(req, res),
