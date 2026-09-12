@@ -86,7 +86,7 @@ export interface DemandasEspecificasCrudPageProps {
   apiBaseUrl?: string
 }
 
-const PAGE_SIZE = 10
+const PAGE_SIZE = 13
 const MODAL_PAGE_SIZE = 8
 const DEFAULT_ITEM_FORM_VALUES: ItemFormValues = {
   dem_med_id: 0,

@@ -106,7 +106,7 @@ export interface ListarInventariosPageProps {
 }
 
 const LOCAL_STORAGE_TOKEN_KEYS = ['authToken', 'access_token', 'token', 'jwtToken']
-const PAGE_SIZE = 10
+const PAGE_SIZE = 13
 
 function getEmptyNovoItemFormValues(): NovoItemFormValues {
   return {
@@ -654,7 +654,6 @@ export function ListarInventariosPage({
   const paginatedRecords = records.slice(pageStart, pageStart + PAGE_SIZE)
   const tableLabelStart = hasRecords ? pageStart + 1 : 0
   const tableLabelEnd = hasRecords ? pageStart + paginatedRecords.length : 0
-  const tableHeight = isCompactLayout ? 360 : 430
   const detalheItens = detalhe?.itens ?? []
   const hasDetalheItens = detalheItens.length > 0
   const medicamentosAtivos = medicamentosAtivosQuery.data ?? []
@@ -1092,7 +1091,6 @@ export function ListarInventariosPage({
                     bordered
                     data={paginatedRecords}
                     fillHeight
-                    height={tableHeight}
                     headerHeight={52}
                     rowHeight={56}
                     virtualized

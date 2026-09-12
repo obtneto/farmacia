@@ -305,7 +305,6 @@ export function ControleDoseDomiciliarPage({
   const pageStart = (currentPage - 1) * pageSize
   const paginatedRecords = records.slice(pageStart, pageStart + pageSize)
   const hasRecords = records.length > 0
-  const tableHeight = isCompactLayout ? 360 : 470
   const detailTableHeight = isCompactLayout ? 420 : 460
   const tableLabelStart = hasRecords ? pageStart + 1 : 0
   const tableLabelEnd = hasRecords ? pageStart + paginatedRecords.length : 0
@@ -663,7 +662,6 @@ export function ControleDoseDomiciliarPage({
                 <div className="boname-page__table-wrap">
                   <Table
                     data={paginatedRecords}
-                    height={tableHeight}
                     virtualized
                     bordered
                     rowHeight={56}

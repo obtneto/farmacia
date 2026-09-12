@@ -41,7 +41,7 @@ const DEFAULT_FORM_VALUES: LocalRequisicaoRecord = {
 }
 
 const LOCAL_STORAGE_TOKEN_KEYS = ['authToken', 'access_token', 'token', 'jwtToken']
-const PAGE_SIZE = 11
+const PAGE_SIZE = 13
 const LOCAL_DESCR_MAX_LENGTH = 150
 
 function getStoredToken(): string | null {
@@ -234,7 +234,6 @@ export function LocaisRequisicaoCrudPage({
   const paginatedRecords = records.slice(pageStart, pageStart + PAGE_SIZE)
   const hasData = records.length > 0
   const isReadOnly = modalMode === 'view'
-  const tableHeight = Math.min(Math.max(paginatedRecords.length * 54 + 104, 260), 560)
 
   const handleSearch = () => {
     setSubmittedSearch(normalizeSearchTerm(searchValue))
@@ -467,7 +466,6 @@ export function LocaisRequisicaoCrudPage({
                 <div className="boname-page__table-wrap">
                   <Table
                     data={paginatedRecords}
-                    height={tableHeight}
                     fillHeight
                     virtualized
                     bordered

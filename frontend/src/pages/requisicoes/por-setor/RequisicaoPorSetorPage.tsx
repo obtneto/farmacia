@@ -516,7 +516,6 @@ export function RequisicaoPorSetorPage() {
 
   const estoqueMedicamentos = estoqueMedicamentosQuery.data ?? EMPTY_ESTOQUE_MEDICAMENTOS
   const hasBootstrapError = locaisQuery.isError || depositosQuery.isError || setoresQuery.isError
-  const tableHeight = isCompactLayout ? 320 : 360
   const filteredEstoqueMedicamentos = useMemo(() => {
     const normalizedSearch = medicamentoSearchValue.trim().toLocaleLowerCase('pt-BR')
 
@@ -853,7 +852,7 @@ export function RequisicaoPorSetorPage() {
                 </div>
               ) : (
                 <div className="boname-page__table-wrap">
-                  <Table key={`requisicao-itens-${itens.length}`} data={itens} height={tableHeight} fillHeight bordered rowHeight={54} headerHeight={52} autoHeight={false}>
+                  <Table key={`requisicao-itens-${itens.length}`} data={itens} fillHeight bordered rowHeight={54} headerHeight={52} autoHeight={false}>
                     <Column width={120} align="center">
                       <HeaderCell>Codigo</HeaderCell>
                       <Cell dataKey="medicamentoId" />

@@ -61,7 +61,7 @@ export interface ConsultaMovimentacoesPageProps {
 const DAY_IN_MS = 1000 * 60 * 60 * 24
 const LOCAL_STORAGE_TOKEN_KEYS = ['authToken', 'access_token', 'token', 'jwtToken']
 const MAX_RANGE_DAYS = 45
-const PAGE_SIZE = 10
+const PAGE_SIZE = 13
 
 function buildUrl(baseUrl: string, path: string): string {
   const normalizedBase = baseUrl.replace(/\/$/, '')
@@ -329,7 +329,6 @@ export function ConsultaMovimentacoesPage({
   const hasDependencyError = tiposMedicamentosQuery.isError
   const hasSubmittedFilters = submittedFilters !== null
   const hasRecords = records.length > 0
-  const tableHeight = isCompactLayout ? 360 : 440
   const tableLabelStart = hasRecords ? pageStart + 1 : 0
   const tableLabelEnd = hasRecords ? pageStart + paginatedRecords.length : 0
 
@@ -565,7 +564,6 @@ export function ConsultaMovimentacoesPage({
                 <div className="boname-page__table-wrap">
                   <Table
                     data={paginatedRecords}
-                    height={tableHeight}
                     fillHeight
                     virtualized
                     bordered

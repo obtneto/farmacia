@@ -29,7 +29,7 @@ interface PacienteDetalheRecord extends PacienteListRecord {
   uf: string | null
 }
 
-const PAGE_SIZE = 11
+const PAGE_SIZE = 13
 
 function normalizeRows<T>(payload: unknown): T[] {
   if (!Array.isArray(payload)) {

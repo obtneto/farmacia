@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState } from 'react'
+import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import EditIcon from '@rsuite/icons/Edit'
 import ReloadIcon from '@rsuite/icons/Reload'
@@ -36,9 +36,7 @@ export interface SolicitacoesAbertasPageProps {
   pageSize?: number
 }
 
-const DEFAULT_PAGE_SIZE = 8
-const DESKTOP_TABLE_OFFSET = 340
-const MAX_DESKTOP_TABLE_HEIGHT = 560
+const DEFAULT_PAGE_SIZE = 13
 const SESSION_USER_STORAGE_KEY = 'sessionUser'
 const AUTH_STORAGE_KEYS = ['authToken', 'token', 'accessToken', 'jwt']
 const EMPTY_SOLICITACAO_ABERTA_ITEMS: SolicitacaoAbertaItemRecord[] = []
@@ -170,7 +168,6 @@ export function SolicitacoesAbertasPage({
 }: SolicitacoesAbertasPageProps) {
   const [isCompactLayout] = useMediaQuery('(max-width: 768px)')
   const [activePage, setActivePage] = useState(1)
-  const [desktopTableHeight, setDesktopTableHeight] = useState(540)
   const [selectedSolicitacao, setSelectedSolicitacao] = useState<SolicitacaoAbertaRecord | null>(null)
   const [selectedItemIds, setSelectedItemIds] = useState<number[]>([])
   const [digitadas, setDigitadas] = useState<Record<number, number>>({})
@@ -257,27 +254,9 @@ export function SolicitacoesAbertasPage({
   const pageStart = (currentPage - 1) * pageSize
   const paginatedRecords = records.slice(pageStart, pageStart + pageSize)
   const hasRecords = records.length > 0
-  const tableHeight = isCompactLayout ? 360 : desktopTableHeight
   const tableLabelStart = hasRecords ? pageStart + 1 : 0
   const tableLabelEnd = hasRecords ? pageStart + paginatedRecords.length : 0
   const selectedItems = itens.filter((item) => selectedItemIds.includes(item.iso_id))
-
-  useLayoutEffect(() => {
-    if (isCompactLayout) {
-      return
-    }
-
-    const updateTableHeight = () => {
-      setDesktopTableHeight(Math.min(MAX_DESKTOP_TABLE_HEIGHT, Math.max(360, window.innerHeight - DESKTOP_TABLE_OFFSET)))
-    }
-
-    updateTableHeight()
-    window.addEventListener('resize', updateTableHeight)
-
-    return () => {
-      window.removeEventListener('resize', updateTableHeight)
-    }
-  }, [isCompactLayout])
 
   const handleRefresh = async () => {
     await listQuery.refetch()
@@ -524,7 +503,6 @@ export function SolicitacoesAbertasPage({
                 <div className="boname-page__table-wrap">
                   <Table
                     data={paginatedRecords}
-                    height={tableHeight}
                     virtualized
                     bordered
                     rowHeight={54}

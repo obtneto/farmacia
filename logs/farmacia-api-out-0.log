@@ -23,3 +23,113 @@
 2026-09-12 09:40:47 -03:00: GET /estoque/listar/*/2/FT 200 808 - 3.744 ms
 2026-09-12 09:40:49 -03:00: POST /solicitacoes/salvar 200 91 - 27.604 ms
 2026-09-12 09:40:52 -03:00: GET /solicitacoes/imprimir/4 200 152306 - 109.685 ms
+2026-09-12 10:47:06 -03:00: Server is running TS on port 3000
+2026-09-12 10:48:31 -03:00: POST /auth/simular 200 563 - 20.635 ms
+2026-09-12 10:48:45 -03:00: GET /parametros/boname/listar/* 200 1640 - 40.573 ms
+2026-09-12 10:48:50 -03:00: GET /parametros/boname/buscar/1 200 158 - 10.666 ms
+2026-09-12 10:48:50 -03:00: GET /parametros/diagnosticos/listar_ativos/* 200 344 - 6.328 ms
+2026-09-12 10:48:50 -03:00: GET /parametros/diagnosticos/buscar/1 200 94 - 3.175 ms
+2026-09-12 10:49:06 -03:00: POST /parametros/boname/salvar 200 65 - 49.021 ms
+2026-09-12 10:49:06 -03:00: GET /parametros/boname/listar/* 200 1640 - 3.213 ms
+2026-09-12 10:49:16 -03:00: GET /parametros/tipos_requisicoes/listar 200 182 - 9.384 ms
+2026-09-12 10:49:32 -03:00: GET /parametros/tipos_requisicoes/listar 200 182 - 3.111 ms
+2026-09-12 10:49:42 -03:00: GET /parametros/tipos_medicamentos/listar/* 200 515 - 10.375 ms
+2026-09-12 10:49:46 -03:00: GET /parametros/medicamentos/listar/* 200 63104 - 10.471 ms
+2026-09-12 10:49:58 -03:00: GET /parametros/medicamentos/buscar/1 200 298 - 3.887 ms
+2026-09-12 10:49:58 -03:00: GET /parametros/tipos_medicamentos/listar/* 200 515 - 2.532 ms
+2026-09-12 10:49:58 -03:00: GET /parametros/tipos_medicamentos/buscar-codigo/MD 200 132 - 3.332 ms
+2026-09-12 10:50:30 -03:00: GET /parametros/depositos/listar/* 200 319 - 9.111 ms
+2026-09-12 10:50:33 -03:00: GET /parametros/depositos/buscar/2 200 110 - 3.353 ms
+2026-09-12 10:51:14 -03:00: GET /parametros/depositos/buscar/1 200 106 - 3.060 ms
+2026-09-12 10:56:01 -03:00: POST /parametros/depositos/salvar 200 68 - 6.923 ms
+2026-09-12 10:56:01 -03:00: GET /parametros/depositos/listar/* 200 319 - 3.715 ms
+2026-09-12 10:56:55 -03:00: GET /parametros/setores/listar/* 200 323 - 8.621 ms
+2026-09-12 10:57:01 -03:00: GET /parametros/setores/buscar/4044 200 105 - 4.127 ms
+2026-09-12 11:01:30 -03:00: GET /pacientes/listar_pacientes/* 200 1459 - 42.717 ms
+2026-09-12 16:36:12 -03:00: Server is running TS on port 3000
+2026-09-12 16:36:39 -03:00: POST /auth/simular 200 563 - 23.005 ms
+2026-09-12 16:36:52 -03:00: GET /parametros/boname/listar/* 500 60 - 10029.763 ms
+2026-09-12 16:37:02 -03:00: GET /parametros/boname/listar/*  0 -  ms
+2026-09-12 16:37:48 -03:00: POST /auth/simular 200 563 - 2.958 ms
+2026-09-12 16:38:02 -03:00: GET /parametros/boname/listar/* 500 60 - 10003.478 ms
+2026-09-12 16:38:13 -03:00: GET /parametros/boname/listar/* 500 60 - 10003.051 ms
+2026-09-12 16:38:25 -03:00: Server is running TS on port 3000
+2026-09-12 16:38:29 -03:00: GET /parametros/boname/listar/* 500 60 - 10.999 ms
+2026-09-12 16:38:30 -03:00: GET /parametros/boname/listar/* 500 60 - 2.057 ms
+2026-09-12 16:38:57 -03:00: GET /parametros/boname/listar/* 500 60 - 2.099 ms
+2026-09-12 16:38:58 -03:00: GET /parametros/boname/listar/* 500 60 - 1.910 ms
+2026-09-12 16:40:43 -03:00: Server is running TS on port 3000
+2026-09-12 16:40:46 -03:00: GET /parametros/boname/listar/* 500 60 - 7.592 ms
+2026-09-12 16:40:47 -03:00: GET /parametros/boname/listar/* 500 60 - 2.304 ms
+2026-09-12 16:42:06 -03:00: POST /auth/simular 200 563 - 11.483 ms
+2026-09-12 16:42:11 -03:00: GET /parametros/boname/listar/* 500 60 - 2.273 ms
+2026-09-12 16:42:12 -03:00: GET /parametros/boname/listar/* 500 60 - 3.043 ms
+2026-09-12 16:42:37 -03:00: GET /parametros/boname/listar/* 500 60 - 2.349 ms
+2026-09-12 16:42:38 -03:00: GET /parametros/boname/listar/* 500 60 - 1.769 ms
+2026-09-12 16:45:27 -03:00: Server is running TS on port 3000
+2026-09-12 16:45:36 -03:00: GET /parametros/boname/listar/* 500 60 - 8.815 ms
+2026-09-12 16:45:37 -03:00: GET /parametros/boname/listar/* 500 60 - 2.281 ms
+2026-09-12 16:46:17 -03:00: Server is running TS on port 3000
+2026-09-12 16:46:21 -03:00: GET /parametros/boname/listar/* 500 60 - 7.859 ms
+2026-09-12 16:46:22 -03:00: GET /parametros/boname/listar/* 500 60 - 2.078 ms
+2026-09-12 16:47:30 -03:00: Server is running TS on port 3000
+2026-09-12 16:47:35 -03:00: GET /parametros/boname/listar/* 500 60 - 59.861 ms
+2026-09-12 16:47:36 -03:00: GET /parametros/boname/listar/* 500 60 - 3.477 ms
+2026-09-12 16:47:58 -03:00: Server is running TS on port 3000
+2026-09-12 16:48:07 -03:00: GET /parametros/boname/listar/* 200 1640 - 38.633 ms
+2026-09-12 16:48:58 -03:00: Server is running TS on port 3000
+2026-09-12 16:49:02 -03:00: GET /parametros/boname/listar/* 500 60 - 8.289 ms
+2026-09-12 16:49:03 -03:00: GET /parametros/boname/listar/* 500 60 - 2.277 ms
+2026-09-12 16:50:10 -03:00: Server is running TS on port 3000
+2026-09-12 16:50:14 -03:00: 192.168.0.8
+2026-09-12 16:50:14 -03:00: 3306
+2026-09-12 16:50:14 -03:00: apiuser
+2026-09-12 16:50:14 -03:00: Abcd@1234
+2026-09-12 16:50:14 -03:00: GET /parametros/boname/listar/* 500 60 - 8.325 ms
+2026-09-12 16:50:15 -03:00: 192.168.0.8
+2026-09-12 16:50:15 -03:00: 3306
+2026-09-12 16:50:15 -03:00: apiuser
+2026-09-12 16:50:15 -03:00: Abcd@1234
+2026-09-12 16:50:15 -03:00: GET /parametros/boname/listar/* 500 60 - 2.288 ms
+2026-09-12 16:51:24 -03:00: Server is running TS on port 3000
+2026-09-12 16:51:28 -03:00: 192.168.0.8
+2026-09-12 16:51:28 -03:00: 3306
+2026-09-12 16:51:28 -03:00: apiuser
+2026-09-12 16:51:28 -03:00: Abcd@1234
+2026-09-12 16:51:28 -03:00: GET /parametros/boname/listar/* 500 60 - 7.999 ms
+2026-09-12 16:51:29 -03:00: 192.168.0.8
+2026-09-12 16:51:29 -03:00: 3306
+2026-09-12 16:51:29 -03:00: apiuser
+2026-09-12 16:51:29 -03:00: Abcd@1234
+2026-09-12 16:51:29 -03:00: GET /parametros/boname/listar/* 500 60 - 2.129 ms
+2026-09-12 16:57:47 -03:00: Server is running TS on port 3000
+2026-09-12 16:57:51 -03:00: GET /parametros/boname/listar/* 200 1640 - 20.724 ms
+2026-09-12 16:59:18 -03:00: Server is running TS on port 3000
+2026-09-12 16:59:46 -03:00: Server is running TS on port 3000
+2026-09-12 16:59:50 -03:00: GET /parametros/boname/listar/* 500 60 - 7.470 ms
+2026-09-12 16:59:51 -03:00: GET /parametros/boname/listar/* 500 60 - 1.509 ms
+2026-09-12 17:00:08 -03:00: Server is running TS on port 3000
+2026-09-12 17:07:33 -03:00: Server is running TS on port 3000
+2026-09-12 17:07:36 -03:00: GET /parametros/boname/listar/* 200 1640 - 45.830 ms
+2026-09-12 17:11:28 -03:00: GET /parametros/tipos_medicamentos/listar/* 200 515 - 4.354 ms
+2026-09-12 17:11:30 -03:00: GET /parametros/medicamentos/listar/* 200 63104 - 4.923 ms
+2026-09-12 17:11:37 -03:00: GET /parametros/boname/listar/* 200 1640 - 2.555 ms
+2026-09-12 17:12:47 -03:00: GET /parametros/depositos/listar/* 200 319 - 3.498 ms
+2026-09-12 17:12:47 -03:00: GET /parametros/boname/listar/* 200 1640 - 2.422 ms
+2026-09-12 17:13:54 -03:00: GET /parametros/boname/listar/* 200 1640 - 2.302 ms
+2026-09-12 17:20:00 -03:00: GET /parametros/medicamentos/listar/* 200 63104 - 3.232 ms
+2026-09-12 17:20:12 -03:00: GET /parametros/tipos_medicamentos/listar/* 200 515 - 3.302 ms
+2026-09-12 17:20:14 -03:00: GET /parametros/setores/listar/* 200 323 - 3.132 ms
+2026-09-12 17:20:15 -03:00: GET /parametros/locais/listar/* 200 588 - 3.210 ms
+2026-09-12 17:20:17 -03:00: GET /parametros/fornecedores/listar/* 200 1053 - 3.514 ms
+2026-09-12 17:20:19 -03:00: GET /parametros/depositos/listar/* 200 319 - 2.261 ms
+2026-09-12 17:20:21 -03:00: GET /parametros/boname/listar/* 200 1640 - 1.888 ms
+2026-09-12 17:20:23 -03:00: GET /parametros/diagnosticos/listar/* 200 344 - 3.027 ms
+2026-09-12 17:20:32 -03:00: GET /pacientes/listar_pacientes/* 200 1459 - 3.480 ms
+2026-09-12 17:20:36 -03:00: GET /pacientes/visualizar_paciente/174 200 403 - 40.683 ms
+2026-09-12 17:23:21 -03:00: POST /auth/simular 200 563 - 9.353 ms
+2026-09-12 17:23:24 -03:00: GET /parametros/boname/listar/* 200 1640 - 2.650 ms
+2026-09-12 17:23:30 -03:00: GET /parametros/diagnosticos/listar/* 200 344 - 2.013 ms
+2026-09-12 17:23:32 -03:00: GET /parametros/diagnosticos/buscar/5 200 100 - 2.495 ms
+2026-09-12 17:23:35 -03:00: GET /parametros/medicamentos/listar/* 200 63104 - 3.839 ms
+2026-09-12 17:23:41 -03:00: GET /parametros/fornecedores/listar/* 200 1053 - 2.757 ms

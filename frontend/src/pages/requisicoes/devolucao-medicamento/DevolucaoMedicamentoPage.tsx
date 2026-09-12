@@ -169,7 +169,6 @@ export function DevolucaoMedicamentoPage() {
   const hasSearch = submittedReqNum !== undefined
   const hasItems = itens.length > 0
   const requisicaoDestino = requisicao ? getRequisicaoDestino(requisicao) : null
-  const tableHeight = isCompactLayout ? 360 : 420
   const saveDisabled = !requisicao || !hasItems || lastSavedDevolucao !== null
 
   const handleSearch = async () => {
@@ -376,7 +375,6 @@ export function DevolucaoMedicamentoPage() {
                 <div className="boname-page__table-wrap">
                   <Table
                     data={itens}
-                    height={tableHeight}
                     fillHeight
                     virtualized
                     bordered

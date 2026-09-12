@@ -42,7 +42,7 @@ const DEFAULT_FORM_VALUES: DiagnosticoRecord = {
 }
 
 const LOCAL_STORAGE_TOKEN_KEYS = ['authToken', 'access_token', 'token', 'jwtToken']
-const PAGE_SIZE = 11
+const PAGE_SIZE = 13
 const DIAGNOSTICO_DESCR_MAX_LENGTH = 255
 
 function getStoredToken(): string | null {

@@ -122,7 +122,7 @@ export interface EntradasCrudPageProps {
   historyOnly?: boolean
 }
 
-const PAGE_SIZE = 10
+const PAGE_SIZE = 13
 const LOCAL_STORAGE_TOKEN_KEYS = ['authToken', 'access_token', 'token', 'jwtToken']
 const MAX_DOC_LENGTH = 90
 const MAX_FORNECEDOR_LENGTH = 255
@@ -559,7 +559,6 @@ export function EntradasCrudPage({
   const paginatedRecordIds = paginatedRecords.map((rowData) => rowData.id)
   const hasData = records.length > 0
   const draftQuantityTotal = draftItems.reduce((total, item) => total + item.ent_qtde, 0)
-  const tableHeight = Math.min(Math.max(paginatedRecords.length * 54 + 104, 260), 560)
   const draftTableHeight = Math.min(Math.max(draftItems.length * 54 + 104, 220), 420)
   const detailTableHeight = Math.min(Math.max((selectedEntry?.itens.length ?? 0) * 54 + 104, 220), 420)
   const tableLabelStart = hasData ? pageStart + 1 : 0
@@ -1415,7 +1414,7 @@ export function EntradasCrudPage({
                 </div>
               ) : (
                 <div className="boname-page__table-wrap">
-                  <Table data={paginatedRecords} height={tableHeight} fillHeight virtualized bordered rowHeight={54} headerHeight={52} autoHeight={false}>
+                  <Table data={paginatedRecords} fillHeight virtualized bordered rowHeight={54} headerHeight={52} autoHeight={false}>
                     <Column width={64} align="center" fixed>
                       <HeaderCell>ID</HeaderCell>
                       <Cell dataKey="id" />

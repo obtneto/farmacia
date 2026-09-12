@@ -74,7 +74,7 @@ export interface EstoqueListPageProps {
 }
 
 const LOCAL_STORAGE_TOKEN_KEYS = ['authToken', 'access_token', 'token', 'jwtToken']
-const PAGE_SIZE = 10
+const PAGE_SIZE = 13
 const DEFAULT_FILTER_VALUES: FilterValues = {
   pesquisa: '',
   depositoId: null,
@@ -332,7 +332,6 @@ export function EstoqueListPage({
   const paginatedRecords = records.slice(pageStart, pageStart + PAGE_SIZE)
   const hasSubmittedFilters = submittedFilters !== null
   const hasRecords = records.length > 0
-  const tableHeight = isCompactLayout ? 360 : 420
   const tableLabelStart = hasRecords ? pageStart + 1 : 0
   const tableLabelEnd = hasRecords ? pageStart + paginatedRecords.length : 0
   const hasFiltersDependencyError = depositosQuery.isError || tiposMedicamentosQuery.isError
@@ -672,7 +671,6 @@ export function EstoqueListPage({
                 <div className="boname-page__table-wrap">
                   <Table
                     data={paginatedRecords}
-                    height={tableHeight}
                     fillHeight
                     virtualized
                     bordered

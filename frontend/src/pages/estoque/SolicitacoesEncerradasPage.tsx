@@ -47,7 +47,7 @@ export interface SolicitacoesEncerradasPageProps {
   pageSize?: number
 }
 
-const DEFAULT_PAGE_SIZE = 8
+const DEFAULT_PAGE_SIZE = 13
 
 function formatDateInputValue(date: Date): string {
   const year = date.getFullYear()
@@ -265,7 +265,6 @@ export function SolicitacoesEncerradasPage({
   const paginatedRecords = records.slice(pageStart, pageStart + pageSize)
   const hasSubmittedFilters = submittedFilters !== null
   const hasRecords = records.length > 0
-  const tableHeight = isCompactLayout ? 360 : 470
   const detailTableHeight = isCompactLayout ? 420 : 460
   const detailsModalOpen = selectedSolicitacao !== null
   const tableLabelStart = hasRecords ? pageStart + 1 : 0
@@ -479,7 +478,6 @@ export function SolicitacoesEncerradasPage({
                 <div className="boname-page__table-wrap">
                   <Table
                     data={paginatedRecords}
-                    height={tableHeight}
                     virtualized
                     bordered
                     rowHeight={56}

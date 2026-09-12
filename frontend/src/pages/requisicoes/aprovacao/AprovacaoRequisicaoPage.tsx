@@ -65,7 +65,7 @@ export interface AprovacaoRequisicaoPageProps {
   pageSize?: number
 }
 
-const DEFAULT_PAGE_SIZE = 8
+const DEFAULT_PAGE_SIZE = 13
 const LOCAL_STORAGE_TOKEN_KEYS = ['authToken', 'access_token', 'token', 'jwtToken']
 const SESSION_USER_STORAGE_KEY = 'sessionUser'
 
@@ -432,7 +432,6 @@ export function AprovacaoRequisicaoPage({
   const pageStart = (currentPage - 1) * pageSize
   const paginatedRecords = records.slice(pageStart, pageStart + pageSize)
   const hasRecords = records.length > 0
-  const tableHeight = isCompactLayout ? 360 : 420
   const tableLabelStart = hasRecords ? pageStart + 1 : 0
   const tableLabelEnd = hasRecords ? pageStart + paginatedRecords.length : 0
   const modalItems = detalhesRequisicaoQuery.data?.itens ?? []
@@ -757,7 +756,6 @@ export function AprovacaoRequisicaoPage({
                 <div className="boname-page__table-wrap">
                   <Table
                     data={paginatedRecords}
-                    height={tableHeight}
                     fillHeight
                     virtualized
                     bordered

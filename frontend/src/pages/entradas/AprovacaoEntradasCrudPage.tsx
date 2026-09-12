@@ -94,7 +94,7 @@ export interface AprovacaoEntradasCrudPageProps {
 const LOCAL_STORAGE_TOKEN_KEYS = ['authToken', 'access_token', 'token', 'jwtToken']
 const SESSION_USER_STORAGE_KEY = 'sessionUser'
 const MAX_PERIOD_DAYS = 45
-const PAGE_SIZE = 8
+const PAGE_SIZE = 13
 const MODAL_PAGE_SIZE = 8
 const MAX_LOTE_LENGTH = 60
 const MS_PER_DAY = 24 * 60 * 60 * 1000
@@ -495,7 +495,6 @@ const aprovarEntradaMutation = useMutation({
   const paginatedRecords = records.slice(pageStart, pageStart + PAGE_SIZE)
   const hasRecords = records.length > 0
   const hasSubmittedFilters = submittedFilters !== null
-  const tableHeight = isCompactLayout ? 360 : 420
   const tableLabelStart = hasRecords ? pageStart + 1 : 0
   const tableLabelEnd = hasRecords ? pageStart + paginatedRecords.length : 0
   const modalItems = detalhesEntradaQuery.data?.itens ?? []
@@ -888,7 +887,6 @@ size="sm"
                 <div className="boname-page__table-wrap">
                   <Table
                     data={paginatedRecords}
-                    height={tableHeight}
                     fillHeight
                     virtualized
                     bordered

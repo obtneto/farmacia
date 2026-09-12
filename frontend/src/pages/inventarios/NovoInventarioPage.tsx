@@ -64,7 +64,7 @@ type FormErrors = Partial<Record<keyof FormValues | 'itens', string>>
 type InventarioTipo = 'Parcial' | 'Total'
 
 const LOCAL_STORAGE_TOKEN_KEYS = ['authToken', 'access_token', 'token', 'jwtToken']
-const PAGE_SIZE = 10
+const PAGE_SIZE = 13
 const INVENTARIO_TIPO_OPTIONS: Array<SelectOption<InventarioTipo>> = [
   { label: 'Parcial', value: 'Parcial' },
   { label: 'Total', value: 'Total' },
@@ -435,7 +435,6 @@ export function NovoInventarioPage({
   const paginatedRecords = filteredRecords.slice(pageStart, pageStart + PAGE_SIZE)
   const tableLabelStart = hasFilteredRecords ? pageStart + 1 : 0
   const tableLabelEnd = hasFilteredRecords ? pageStart + paginatedRecords.length : 0
-  const tableHeight = isCompactLayout ? 360 : 430
 
   const handleToggleItem = (item: EstoqueRecord, checked: boolean) => {
     const itemKey = getItemKey(item)
@@ -716,7 +715,6 @@ export function NovoInventarioPage({
                         bordered
                         data={paginatedRecords}
                         fillHeight
-                        height={tableHeight}
                         rowHeight={54}
                         headerHeight={52}
                         virtualized

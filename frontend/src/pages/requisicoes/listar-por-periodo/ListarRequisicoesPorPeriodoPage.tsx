@@ -79,7 +79,7 @@ export interface ListarRequisicoesPorPeriodoPageProps {
 }
 
 const LOCAL_STORAGE_TOKEN_KEYS = ['authToken', 'access_token', 'token', 'jwtToken']
-const PAGE_SIZE = 10
+const PAGE_SIZE = 13
 
 function getStoredToken(): string | null {
   if (typeof window === 'undefined') {
@@ -353,7 +353,6 @@ export function ListarRequisicoesPorPeriodoPage({
   const paginatedRecords = records.slice(pageStart, pageStart + PAGE_SIZE)
   const tableLabelStart = hasRecords ? pageStart + 1 : 0
   const tableLabelEnd = hasRecords ? pageStart + paginatedRecords.length : 0
-  const tableHeight = isCompactLayout ? 360 : 430
   const detalhe = detalheQuery.data
   const detalheItens = detalhe?.itens ?? []
   const detalheNumero = detalhe ? getRequisicaoNumero(detalhe) : selectedRequisicao ? getRequisicaoNumero(selectedRequisicao) : null
@@ -604,7 +603,6 @@ export function ListarRequisicoesPorPeriodoPage({
                     bordered
                     data={paginatedRecords}
                     fillHeight
-                    height={tableHeight}
                     headerHeight={52}
                     rowHeight={56}
                     virtualized

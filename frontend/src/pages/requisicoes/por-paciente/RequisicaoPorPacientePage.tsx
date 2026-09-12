@@ -96,7 +96,7 @@ type SalvarRequisicaoResponse = {
 }
 
 const API_BASE_URL = getApiBaseUrl()
-const PAGE_SIZE = 10
+const PAGE_SIZE = 13
 const MAX_OBSERVACAO_LENGTH = 500
 const LOCAL_STORAGE_TOKEN_KEYS = ['authToken', 'access_token', 'token', 'jwtToken']
 const SESSION_USER_STORAGE_KEY = 'sessionUser'
@@ -532,7 +532,6 @@ export function RequisicaoPorPacientePage() {
   const pacienteLookupTableHeight = Math.min(Math.max(paginatedPacientes.length * 54 + 112, 280), 560)
   const estoqueMedicamentos = estoqueMedicamentosQuery.data ?? EMPTY_ESTOQUE_MEDICAMENTOS
   const hasBootstrapError = locaisQuery.isError || depositosQuery.isError
-  const tableHeight = isCompactLayout ? 320 : 360
   const filteredEstoqueMedicamentos = useMemo(() => {
     const normalizedSearch = medicamentoSearchValue.trim().toLocaleLowerCase('pt-BR')
 
@@ -913,7 +912,7 @@ export function RequisicaoPorPacientePage() {
                 </div>
               ) : (
                 <div className="boname-page__table-wrap">
-                  <Table key={`requisicao-itens-${itens.length}`} data={itens} height={tableHeight} fillHeight bordered rowHeight={54} headerHeight={52} autoHeight={false}>
+                  <Table key={`requisicao-itens-${itens.length}`} data={itens} fillHeight bordered rowHeight={54} headerHeight={52} autoHeight={false}>
                     <Column width={120} align="center">
                       <HeaderCell>Codigo</HeaderCell>
                       <Cell dataKey="medicamentoId" />

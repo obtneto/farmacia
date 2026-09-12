@@ -50,7 +50,7 @@ const DEFAULT_FORM_VALUES: TipoRequisicaoRecord = {
 }
 
 const LOCAL_STORAGE_TOKEN_KEYS = ['authToken', 'access_token', 'token', 'jwtToken']
-const PAGE_SIZE = 11
+const PAGE_SIZE = 13
 const TIP_CODIGO_MAX_LENGTH = 3
 const TIP_DESCR_MAX_LENGTH = 150
 
@@ -268,7 +268,6 @@ export function TiposRequisicoesCrudPage({
   const paginatedRecords = records.slice(pageStart, pageStart + PAGE_SIZE)
   const hasData = records.length > 0
   const isReadOnly = modalMode === 'view'
-  const tableHeight = Math.min(Math.max(paginatedRecords.length * 54 + 104, 260), 560)
 
   const handleSearch = () => {
     setSubmittedSearch(normalizeSearchTerm(searchValue))
@@ -480,7 +479,6 @@ export function TiposRequisicoesCrudPage({
                 <div className="boname-page__table-wrap">
                   <Table
                     data={paginatedRecords}
-                    height={tableHeight}
                     fillHeight
                     virtualized
                     bordered
