@@ -2,7 +2,7 @@
   "apps": [
     {
       "name": "farmacia-api",
-      "cwd": "/home/obtneto/farmacia/backend",
+      "cwd": "/home/ovidio-neto/farmacia/backend",
       "script": "farmacia.ts",
       "interpreter": "bun",
       "exec_mode": "fork",
@@ -18,8 +18,8 @@
         "NODE_ENV": "production",
         "PORT": "3000"
       },
-      "error_file": "/home/obtneto/farmacia/logs/farmacia-api-error.log",
-      "out_file": "/home/obtneto/farmacia/logs/farmacia-api-out.log",
+      "error_file": "/home/ovidio-neto/farmacia/logs/farmacia-api-error.log",
+      "out_file": "/home/ovidio-neto/farmacia/logs/farmacia-api-out.log",
       "log_date_format": "YYYY-MM-DD HH:mm:ss Z"
     }
   ]

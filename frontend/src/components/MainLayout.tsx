@@ -25,15 +25,29 @@ import {
   RiCloseLine,
   RiMenuLine,
   RiNotification3Line,
-  RiShieldCrossLine,
 } from 'react-icons/ri'
-import logoSidebarCollapsed from '../assets/img/logo-farmacia-ambulatorial-sider-colapsado.svg'
-import logoSidebarExpanded from '../assets/img/logo-farmacia-ambulatorial-sider-expandido.svg'
 import { NAVIGATION_GROUPS, type NavigationItem, type SectionKey } from '../config/navigation'
 import './MainLayout.css'
 
 const SIDEBAR_EXPANDED = 322
 const SIDEBAR_COLLAPSED = 88
+const PUBLIC_BASE_URL = import.meta.env.BASE_URL
+const getPublicAssetUrl = (assetName: string) => `${PUBLIC_BASE_URL}${assetName}`
+const HEADER_LOGO = {
+  src: getPublicAssetUrl('logo_simple.png'),
+  width: 358,
+  height: 459,
+}
+const SIDEBAR_EXPANDED_LOGO = {
+  src: getPublicAssetUrl('logo.png'),
+  width: 1353,
+  height: 409,
+}
+const SIDEBAR_COLLAPSED_LOGO = {
+  src: getPublicAssetUrl('logo-icon.png'),
+  width: 512,
+  height: 512,
+}
 const OVERVIEW_GROUP = 'Visao geral'
 const AUTH_TOKEN_STORAGE_KEYS = ['authToken', 'access_token', 'accessToken', 'token', 'jwt', 'jwtToken']
 const USER_PROFILE_STORAGE_KEYS = [
@@ -321,6 +335,7 @@ export function MainLayout({
 
   const isSidebarVisible = !isMobile || isMobileSidebarOpen
   const showSidebarLabels = isSidebarExpanded || isMobile
+  const sidebarLogo = showSidebarLabels ? SIDEBAR_EXPANDED_LOGO : SIDEBAR_COLLAPSED_LOGO
   const activeMenuKeys = SECTION_MENU_MAP[activeSidebarKey] ?? []
   const activeSubmenuKeys = SECTION_NESTED_MENU_MAP[activeSidebarKey] ?? []
   const sidebarNavId = 'main-layout-primary-nav'
@@ -334,7 +349,6 @@ export function MainLayout({
         left: sidebarWidth,
         paddingLeft: isSidebarCollapsed ? '3.6rem' : '4rem',
       }
-  const sidebarLogoSrc = showSidebarLabels ? logoSidebarExpanded : logoSidebarCollapsed
   const sidebarToggleLabel = isMobile
     ? isSidebarVisible
       ? 'Fechar menu lateral'
@@ -529,11 +543,18 @@ export function MainLayout({
 
             <div className="main-layout__brand-lockup">
               <div className="main-layout__brand-mark">
-                <RiShieldCrossLine size={18} />
+                <img
+                  src={HEADER_LOGO.src}
+                  alt=""
+                  aria-hidden
+                  width={HEADER_LOGO.width}
+                  height={HEADER_LOGO.height}
+                  className="main-layout__brand-logo"
+                />
               </div>
               <VStack spacing={2} alignItems="flex-start">
-                <strong>Farmacia Ambulatorial</strong>
-                <span>Workspace web corporativo</span>
+                <strong>Fundação de Saude Parreira Horta</strong>
+                <span>HEMOSE - Hemocentro de Sergipe</span>
               </VStack>
             </div>
           </HStack>
@@ -603,9 +624,11 @@ export function MainLayout({
                 <div className="main-layout__sidebar-brand">
                   <div className="main-layout__sidebar-logo-shell">
                     <img
-                      src={sidebarLogoSrc}
+                      src={sidebarLogo.src}
                       alt=""
                       aria-hidden
+                      width={sidebarLogo.width}
+                      height={sidebarLogo.height}
                       className="main-layout__sidebar-logo"
                     />
                   </div>

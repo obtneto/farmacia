@@ -7,6 +7,7 @@ import { iresdata } from "./interface_controllers.js";
 import { Request, Response } from "express";
 import { applyControllerError } from "../utils/controllerError.js";
 import GeraNumero from "../utils/GeraNumero.js";
+import { buildPdfBrandHeaderStack } from "../utils/pdfBrandHeader.js";
 import pdfMake from "pdfmake/build/pdfmake.js";
 import pdfFonts from "pdfmake/build/vfs_fonts.js";
 import Estoque from "../model/dao_estoque.js";
@@ -370,31 +371,16 @@ export default class Controller_Inventarios {
                 header: (currentPage: number, pageCount: number) => ({
                     margin: [24, 18, 24, 0],
                     stack: [
-                        {
-                            columns: [
-                                {
-                                    width: '*',
-                                    stack: [
-                                        { text: 'FARMACIA AMBULATORIAL HOSPITALAR', style: 'eyebrow' },
-                                        { text: 'Ficha de Inventario', style: 'reportTitle', margin: [0, 3, 0, 0] },
-                                        { text: 'Documento operacional de contagem de estoque', style: 'reportSubtitle', margin: [0, 2, 0, 0] },
-                                    ],
-                                },
-                                {
-                                    width: 170,
-                                    alignment: 'right',
-                                    stack: [
-                                        { text: inventarioNumeroFormatado, style: 'headerBadge' },
-                                        { text: `Pagina ${currentPage} de ${pageCount}`, style: 'headerMeta', margin: [0, 8, 0, 0] },
-                                    ],
-                                },
-                            ],
-                        },
-                        {
-                            canvas: [
-                                { type: 'line', x1: 0, y1: 12, x2: Controller_Inventarios.PAGE_CONTENT_WIDTH, y2: 12, lineWidth: 1.1, lineColor: '#b7c4d1' },
-                            ],
-                        },
+                        ...buildPdfBrandHeaderStack({
+                            badge: inventarioNumeroFormatado,
+                            contentWidth: Controller_Inventarios.PAGE_CONTENT_WIDTH,
+                            currentPage,
+                            lineColor: '#b7c4d1',
+                            lineWidth: 1.1,
+                            pageCount,
+                            title: 'Ficha de Inventario',
+                            subtitle: 'Documento operacional de contagem de estoque',
+                        }),
                         {
                             margin: [0, 10, 0, 0],
                             table: {

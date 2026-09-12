@@ -3,6 +3,7 @@ import Boname, {iBonameFields, iBonamePrintFields} from "../model/dao_boname.js"
 import { iresdata } from "./interface_controllers.js";
 import { Request, Response } from "express";
 import { applyControllerError } from "../utils/controllerError.js";
+import { buildPdfBrandHeaderStack } from "../utils/pdfBrandHeader.js";
 import pdfMake from "pdfmake/build/pdfmake.js";
 import pdfFonts from "pdfmake/build/vfs_fonts.js";
 
@@ -179,35 +180,17 @@ export default class Controller_Boname {
                 },
                 pageSize: 'A4',
                 pageOrientation: 'landscape',
-                pageMargins: [24, 72, 24, 42],
+                pageMargins: [24, 96, 24, 42],
                 header: (currentPage: number, pageCount: number) => ({
                     margin: [24, 18, 24, 0],
                     stack: [
-                        {
-                            columns: [
-                                {
-                                    width: '*',
-                                    stack: [
-                                        { text: 'FARMACIA AMBULATORIAL HOSPITALAR', style: 'eyebrow' },
-                                        { text: 'Relatorio de Bonames', style: 'reportTitle', margin: [0, 3, 0, 0] },
-                                        { text: 'Cadastro parametrico para consulta e impressao operacional', style: 'reportSubtitle', margin: [0, 2, 0, 0] },
-                                    ],
-                                },
-                                {
-                                    width: 176,
-                                    alignment: 'right',
-                                    stack: [
-                                        { text: 'Documento operacional', style: 'headerBadge' },
-                                        { text: `Pagina ${currentPage} de ${pageCount}`, style: 'headerMeta', margin: [0, 8, 0, 0] },
-                                    ],
-                                },
-                            ],
-                        },
-                        {
-                            canvas: [
-                                { type: 'line', x1: 0, y1: 12, x2: Controller_Boname.PAGE_CONTENT_WIDTH, y2: 12, lineWidth: 1, lineColor: '#d7e0ea' },
-                            ],
-                        },
+                        ...buildPdfBrandHeaderStack({
+                            contentWidth: Controller_Boname.PAGE_CONTENT_WIDTH,
+                            currentPage,
+                            pageCount,
+                            title: 'Relatorio de Bonames',
+                            subtitle: 'Cadastro parametrico para consulta e impressao operacional',
+                        }),
                     ],
                 }),
                 footer: (currentPage: number, pageCount: number) => ({

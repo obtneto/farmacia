@@ -12,6 +12,7 @@ import DemandasEspecificas from "../model/dao_demanda_especificas.js";
 import ItensDemandasEspecificas from "../model/dao_itens_demandas_especificas.js";
 import Estoque from "../model/dao_estoque.js";
 import GeraNumeroReq from "../utils/GeraNumero.js";
+import { buildPdfBrandHeaderStack } from "../utils/pdfBrandHeader.js";
 import pdfMake from "pdfmake/build/pdfmake.js";
 import pdfFonts from "pdfmake/build/vfs_fonts.js";
 import ItensDDU from "../model/dao_itens_ddu.js";
@@ -1176,31 +1177,14 @@ export default class Controller_Requisicoes {
                 header: (currentPage: number, pageCount: number) => ({
                     margin: [24, 18, 24, 0],
                     stack: [
-                        {
-                            columns: [
-                                {
-                                    width: '*',
-                                    stack: [
-                                        { text: 'FARMACIA AMBULATORIAL HOSPITALAR', style: 'eyebrow' },
-                                        { text: 'Comprovante da Requisicao', style: 'reportTitle', margin: [0, 3, 0, 0] },
-                                        { text: 'Documento operacional de dispensacao nominal', style: 'reportSubtitle', margin: [0, 2, 0, 0] },
-                                    ],
-                                },
-                                {
-                                    width: 170,
-                                    alignment: 'right',
-                                    stack: [
-                                        { text: numeroDocumento, style: 'headerBadge' },
-                                        { text: `Pagina ${currentPage} de ${pageCount}`, style: 'headerMeta', margin: [0, 8, 0, 0] },
-                                    ],
-                                },
-                            ],
-                        },
-                        {
-                            canvas: [
-                                { type: 'line', x1: 0, y1: 12, x2: Controller_Requisicoes.PAGE_CONTENT_WIDTH, y2: 12, lineWidth: 1, lineColor: '#d7e0ea' },
-                            ],
-                        },
+                        ...buildPdfBrandHeaderStack({
+                            badge: numeroDocumento,
+                            contentWidth: Controller_Requisicoes.PAGE_CONTENT_WIDTH,
+                            currentPage,
+                            pageCount,
+                            title: 'Comprovante da Requisicao',
+                            subtitle: 'Documento operacional de dispensacao nominal',
+                        }),
                         {
                             margin: [0, 10, 0, 0],
                             table: {
