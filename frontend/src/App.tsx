@@ -40,7 +40,10 @@ const TiposMedicamentosPage = lazy(() => import('./pages/TiposMedicamentosPage')
 const TiposRequisicoesPage = lazy(() => import('./pages/TiposRequisicoesPage'))
 
 function App() {
-  const [activeSectionKey, setActiveSectionKey] = useState<SectionKey>(DEFAULT_SECTION_KEY)
+  const [activeSectionKey, setActiveSectionKey] = useState<SectionKey>(() => {
+    const searchParam = new URLSearchParams(window.location.search).get('section') as SectionKey
+    return searchParam && APP_SECTIONS[searchParam] ? searchParam : DEFAULT_SECTION_KEY
+  })
   const [authReady, setAuthReady] = useState(false)
 
   const section = APP_SECTIONS[activeSectionKey]

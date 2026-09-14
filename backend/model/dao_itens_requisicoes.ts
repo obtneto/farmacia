@@ -103,6 +103,12 @@ export default class ItensRequisicoes extends BaseModel implements iItensRequisi
 
         const query = `SELECT r.req_date,
                         r.req_num,
+                        CASE 
+                            WHEN r.req_pac_id IS NULL THEN
+                                s.set_descr
+                            ELSE
+                                p.nom_paciente
+                        END as 'Paciente/Setor',
                         m.med_id,
                         m.med_descr,
                         m.med_descr_coml,
@@ -116,6 +122,8 @@ export default class ItensRequisicoes extends BaseModel implements iItensRequisi
                 FROM tb_itens_requisicoes ir
                 LEFT JOIN tb_medicamentos m ON ir.ite_med_id = m.med_id
                 LEFT JOIN tb_requisicoes r ON ir.ite_req_id = r.req_id
+                LEFT JOIN fsph_ambulatorio.tb_pacientes p ON r.req_pac_id = p.num_paciente
+                LEFT JOIN tb_setores s ON r.req_set_id = s.set_id
                 WHERE ir.ite_lote = :lote`
 
         const [rows] = await this.ExecuteQuery(query, { lote }) as [RowDataPacket[]]
