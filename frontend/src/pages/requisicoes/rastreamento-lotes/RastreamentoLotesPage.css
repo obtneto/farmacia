@@ -1,0 +1,143 @@
+.rastreamento-lotes-page__header-grid {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 1rem;
+  padding-bottom: 0.35rem;
+}
+
+.rastreamento-lotes-page .estoque-page__merged-section .page-section__body {
+  grid-template-rows: minmax(0, 1fr);
+}
+
+.rastreamento-lotes-page__header-grid .boname-page__control {
+  width: 100%;
+}
+
+.rastreamento-lotes-page__search-action {
+  justify-items: center;
+}
+
+.rastreamento-lotes-page__search-button.rs-btn {
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+}
+
+.rastreamento-lotes-page__content {
+  display: grid;
+  grid-template-columns: minmax(22rem, 0.46fr) minmax(0, 1fr);
+  gap: 1rem;
+  min-height: 0;
+  height: 100%;
+  align-items: stretch;
+}
+
+.rastreamento-lotes-page__summary-panel {
+  display: grid;
+  grid-template-rows: auto auto auto auto minmax(0, 1fr);
+  align-content: start;
+  gap: 0.8rem;
+  height: 100%;
+  min-height: 0;
+  padding: 0.95rem;
+  border: 1px solid #e3ebf4;
+  border-radius: 1.15rem;
+  background: #fff;
+}
+
+.rastreamento-lotes-page__metric-row {
+  display: grid;
+  grid-template-columns: minmax(9.5rem, 0.8fr) minmax(7rem, 1fr) auto;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.rastreamento-lotes-page__metric-row label {
+  color: var(--text-strong);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.rastreamento-lotes-page__number-input.rs-input-number,
+.rastreamento-lotes-page__number-input .rs-input-number-input {
+  min-height: 2.5rem;
+}
+
+.rastreamento-lotes-page__detail-button.rs-btn {
+  min-width: 2.35rem;
+  min-height: 2.35rem;
+  padding: 0;
+}
+
+.rastreamento-lotes-page__table-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+}
+
+.rastreamento-lotes-page__record-meta {
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+
+.rastreamento-lotes-page__details-meta {
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+.rastreamento-lotes-page__details-table {
+  display: flex;
+  flex: 1 1 auto;
+  height: 100%;
+  width: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.rastreamento-lotes-page__details-table .rs-table,
+.rastreamento-lotes-page__table-panel > .boname-page__table-wrap .rs-table {
+  flex: 1 1 auto;
+  width: 100%;
+  height: 100% !important;
+  min-height: 0;
+}
+
+.rastreamento-lotes-page__details-table .rs-table-body-wheel-area,
+.rastreamento-lotes-page__table-panel > .boname-page__table-wrap .rs-table-body-wheel-area {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  scrollbar-gutter: stable;
+}
+
+.rastreamento-lotes-page__details-table .rs-table-scrollbar-vertical,
+.rastreamento-lotes-page__table-panel > .boname-page__table-wrap .rs-table-scrollbar-vertical {
+  display: block;
+}
+
+@media (max-width: 1280px) {
+  .rastreamento-lotes-page__header-grid,
+  .rastreamento-lotes-page__content {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .rastreamento-lotes-page__search-action {
+    justify-items: start;
+  }
+}
+
+@media (max-width: 768px) {
+  .rastreamento-lotes-page__header-grid,
+  .rastreamento-lotes-page__content,
+  .rastreamento-lotes-page__metric-row {
+    grid-template-columns: 1fr;
+  }
+
+  .rastreamento-lotes-page__search-action,
+  .rastreamento-lotes-page__search-action .rs-btn {
+    width: 100%;
+  }
+
+  .rastreamento-lotes-page__search-action {
+    justify-items: stretch;
+  }
+}

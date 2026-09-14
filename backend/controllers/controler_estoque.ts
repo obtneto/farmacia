@@ -460,4 +460,71 @@ export default class Controller_Estoque {
 
         return res.status(resdata.status).json(resdata);
     }
+
+    static async ListarItensPorLote(req: Request, res: Response) {
+        const db: iDatabase = new Database('fsph_farmacia');
+
+        const resdata: iresdata = {
+            err: 0,
+            msg: '',
+            status: 200,
+            data: {}
+        }
+
+        try {
+
+            await db.Connect();
+
+            const lote = String(req.params.lote) || '';
+
+            if (!lote) {
+                const error = new Error('Lote não informado') as any;
+                error.statusCode = 400;
+                throw error;
+            }
+
+            const estoque = new Estoque(db.connection);
+
+            const result = await estoque.ListarItensLote(lote);
+
+            resdata.data = result;
+
+        } catch (error: any) {
+            applyControllerError(resdata, error, 'Controller Estoque - ListarItensPorLote');
+        }
+
+        return res.status(resdata.status).json(resdata);
+    }
+
+    static async AlertaValidade(req: Request, res: Response) {
+
+        const db: iDatabase = new Database('fsph_farmacia');
+
+        const resdata: iresdata = {
+            err: 0,
+            msg: '',
+            status: 200,
+            data: {}
+        }
+
+        try {
+
+            await db.Connect();
+
+            const query = `SELECT d.dep_descr, e.est_med_id,m.med_descr, m.med_und,e.est_lote,e.est_validade,m.med_alert,e.est_saldo_bloqueado,e.est_saldo_disponivel,DATEDIFF(e.est_validade,CURDATE()) as dias
+                            FROM tb_estoque e 
+                            LEFT JOIN tb_medicamentos m ON m.med_id = e.est_med_id
+                            LEFT JOIN tb_depositos d ON d.dep_id = e.est_dep_id
+                            WHERE (e.est_saldo_bloqueado + e.est_saldo_disponivel) > 0 AND DATEDIFF(e.est_validade,CURDATE()) <= m.med_alert`;
+
+            const [rows] = await db.connection.query(query);
+
+            resdata.data = rows;
+
+        } catch (error: any) {
+            applyControllerError(resdata, error, 'Controller Estoque - AlertaValidade');
+        }
+
+        return res.status(resdata.status).json(resdata);
+    }
 }

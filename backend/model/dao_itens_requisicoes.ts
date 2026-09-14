@@ -117,7 +117,7 @@ export default class ItensRequisicoes extends BaseModel implements iItensRequisi
                         ir.ite_validade,
                         ir.ite_qtde,
                         r.req_solicitado_por,
-                        r.req_aprovador_por,
+                        r.req_aprovado_por,
                         r.req_reprovado_por
                 FROM tb_itens_requisicoes ir
                 LEFT JOIN tb_medicamentos m ON ir.ite_med_id = m.med_id

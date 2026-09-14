@@ -24,6 +24,7 @@ import {
   RiPriceTag3Line,
   RiRefund2Line,
   RiRouteLine,
+  RiSearchEyeLine,
   RiShapesLine,
   RiSettings3Line,
   RiStethoscopeLine,
@@ -46,12 +47,14 @@ export type SectionKey =
   | 'estoque/transferencia_depositos/solicitacoes_abertas'
   | 'estoque/transferencia_depositos/solicitacoes_encerradas'
   | 'estoque/consultar_movimentacoes'
+  | 'estoque/alerta_validade'
   | 'requisicoes/aprovacao'
   | 'requisicoes/por_paciente'
   | 'requisicoes/por_setor'
   | 'requisicoes/listar_por_periodo'
   | 'requisicoes/devolucao_medicamento'
   | 'requisicoes/controle_dose_domiciliar'
+  | 'requisicoes/rastreamento_lotes'
   | 'operacao/entradas/nova'
   | 'operacao/entradas/listar'
   | 'operacao/entradas/demandas'
@@ -154,6 +157,12 @@ export const APP_SECTIONS: Record<SectionKey, SectionMeta> = {
     status: 'Consulta de movimentacoes',
     title: 'Consultar Movimentacoes',
   },
+  'estoque/alerta_validade': {
+    breadcrumbItems: ['Inicio', 'Operacao', 'Movimentacao de Estoque', 'Estoque', 'Alerta de Validade'],
+    description: '',
+    status: 'Alerta de validade',
+    title: 'Alerta de Validade',
+  },
   'requisicoes/por_paciente': {
     breadcrumbItems: ['Inicio', 'Operacao', 'Requisicoes Medicamentos', 'Por Paciente'],
     status: 'Modulo planejado',
@@ -187,6 +196,12 @@ export const APP_SECTIONS: Record<SectionKey, SectionMeta> = {
     description: '',
     status: 'Controle DDU',
     title: 'Controle Dose Domiciliar',
+  },
+  'requisicoes/rastreamento_lotes': {
+    breadcrumbItems: ['Inicio', 'Operacao', 'Requisicoes Medicamentos', 'Rastreamento de Lotes'],
+    description: '',
+    status: 'Rastreamento de lote',
+    title: 'Rastreamento de Lotes',
   },
   'operacao/entradas/nova': {
     breadcrumbItems: ['Inicio', 'Operacao', 'Movimentacao de Estoque', 'Entrada Medicamentos', 'Nova Entrada'],
@@ -325,6 +340,11 @@ export const NAVIGATION_GROUPS: NavigationGroup[] = [
                 icon: <RiFileHistoryLine size={18} />,
                 label: 'Listar Movimentacoes',
               },
+              {
+                eventKey: 'estoque/alerta_validade',
+                icon: <RiFileSearchLine size={18} />,
+                label: 'Alerta de Validade',
+              },
             ],
             icon: <RiDatabase2Line size={18} />,
             label: 'Estoque',
@@ -428,6 +448,11 @@ export const NAVIGATION_GROUPS: NavigationGroup[] = [
             icon: <RiHomeHeartLine size={18} />,
             label: 'Controle Dose Domiciliar',
           },
+          {
+            eventKey: 'requisicoes/rastreamento_lotes',
+            icon: <RiSearchEyeLine size={18} />,
+            label: 'Rastreamento de Lotes',
+          },
         ],
         icon: <RiClipboardLine size={18} />,
         label: 'Requisicoes Medicamentos',
@@ -511,5 +536,7 @@ export const QUICK_ACTIONS: Array<{ eventKey: SectionKey; label: string }> = [
   { eventKey: 'requisicoes/aprovacao', label: 'Aprovar requisicoes' },
   { eventKey: 'requisicoes/por_setor', label: 'Nova requisicao por setor' },
   { eventKey: 'requisicoes/listar_por_periodo', label: 'Listar requisicoes por periodo' },
+  { eventKey: 'requisicoes/rastreamento_lotes', label: 'Rastrear lotes' },
   { eventKey: 'estoque/listar', label: 'Consultar estoque' },
+  { eventKey: 'estoque/alerta_validade', label: 'Alerta de validade' },
 ]

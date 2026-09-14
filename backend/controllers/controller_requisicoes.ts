@@ -1602,4 +1602,40 @@ export default class Controller_Requisicoes {
 
     }
 
+    static async ListarItensPorLote(req: Request, res: Response) {
+
+        const db: iDatabase = new Database('fsph_farmacia');
+
+        const resdata: iresdata = {
+            err: 0,
+            msg: '',
+            status: 200,
+            data: {}
+        }
+
+        try {
+
+            await db.Connect();
+
+            const lote = String(req.params.lote || '');
+
+            if (!lote || lote === '') {
+                const error = new Error('Lote não informado') as any;
+                error.statusCode = 400;
+                throw error;
+            }
+
+            const itensRequisicoes = new ItensRequisicao(db.connection);
+
+            const result = await itensRequisicoes.ListarItensPorLote(lote);
+
+            resdata.data = result;
+
+        } catch (error: any) {
+            applyControllerError(resdata, error, 'Controller Requisicoes - ListarItensPorLote');
+        }
+
+        return res.status(resdata.status).json(resdata);
+    }
+
 }

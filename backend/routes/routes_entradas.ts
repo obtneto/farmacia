@@ -12,9 +12,10 @@ router.get('/listar/:pesq/:data_inicio/:data_fim', Controller_Entradas.ListarTod
 router.get('/buscar/:ent_id', Controller_Entradas.BuscarPorId);
 router.get('/listar-nao-aprovados/:pesq/:data_inicio/:data_fim/:dep_id', Controller_Entradas.ListarEntradasNaoAprovados);
 router.post('/aprovar-entradas', Controller_Entradas.AprovarEntradas);
-router.delete('/excluir/:ent_id',Controller_Entradas.ExcluirEntradas);
+router.delete('/excluir/:ent_id', Controller_Entradas.ExcluirEntradas);
 router.get('/itens/:ent_id', Controller_Entradas.ListarItens);
 router.put('/itens/:ite_id', Controller_Entradas.AtualizarItem);
 router.post('/salvar', Controller_Entradas.Salvar);
+router.get('/itens_lote/:lote', Controller_Entradas.ListarItensPorLote);
 
 export default router;

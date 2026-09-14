@@ -7,6 +7,8 @@ import { bootstrapAuthSession } from './lib/auth-session'
 
 const DEFAULT_SECTION_KEY: SectionKey = 'inicio'
 const AprovacaoEntradaPage = lazy(() => import('./pages/AprovacaoEntradaPage'))
+const AlertaValidadePage = lazy(() => import('./pages/estoque').then((module) => ({ default: module.AlertaValidadePage })))
+const AlertaValidadeStartupModal = lazy(() => import('./pages/estoque').then((module) => ({ default: module.AlertaValidadeStartupModal })))
 const BonamePage = lazy(() => import('./pages/BonamePage'))
 const ConsultarMovimentacoesPage = lazy(() => import('./pages/ConsultarMovimentacoesPage'))
 const DemandasEspecificasPage = lazy(() => import('./pages/DemandasEspecificasPage'))
@@ -31,6 +33,7 @@ const AprovacaoRequisicaoPage = lazy(() => import('./pages/requisicoes/aprovacao
 const ControleDoseDomiciliarPage = lazy(() => import('./pages/requisicoes/controle-dose-domiciliar'))
 const DevolucaoMedicamentoPage = lazy(() => import('./pages/requisicoes/devolucao-medicamento'))
 const ListarRequisicoesPorPeriodoPage = lazy(() => import('./pages/requisicoes/listar-por-periodo'))
+const RastreamentoLotesPage = lazy(() => import('./pages/requisicoes/rastreamento-lotes'))
 const RequisicaoPorPacientePage = lazy(() => import('./pages/requisicoes/por-paciente'))
 const RequisicaoPorSetorPage = lazy(() => import('./pages/requisicoes/por-setor'))
 const SolicitacoesAbertasPage = lazy(() => import('./pages/SolicitacoesAbertasPage'))
@@ -62,6 +65,7 @@ function App() {
     || activeSectionKey === 'estoque/transferencia_depositos/solicitacoes_abertas'
     || activeSectionKey === 'estoque/transferencia_depositos/solicitacoes_encerradas'
     || activeSectionKey === 'estoque/consultar_movimentacoes'
+    || activeSectionKey === 'estoque/alerta_validade'
     || activeSectionKey === 'pacientes/ambulatorio'
     || activeSectionKey === 'pacientes/demandas_especificas'
     || activeSectionKey === 'requisicoes/aprovacao'
@@ -70,6 +74,7 @@ function App() {
     || activeSectionKey === 'requisicoes/listar_por_periodo'
     || activeSectionKey === 'requisicoes/por_paciente'
     || activeSectionKey === 'requisicoes/por_setor'
+    || activeSectionKey === 'requisicoes/rastreamento_lotes'
     || activeSectionKey === 'parametros/locais'
     || activeSectionKey === 'parametros/medicamentos'
     || activeSectionKey === 'parametros/tipos_medicamentos'
@@ -117,71 +122,78 @@ function App() {
       quickActions={QUICK_ACTIONS}
     >
       <Suspense fallback={<PageLoader title="Carregando" variant="page" />}>
-        {activeSectionKey === 'inicio' ? (
-          <HomeDashboardPage onOpenSection={setActiveSectionKey} />
-        ) : activeSectionKey === 'parametros/boname' ? (
-          <BonamePage />
-        ) : activeSectionKey === 'parametros/depositos' ? (
-          <DepositosPage />
-        ) : activeSectionKey === 'parametros/fornecedores' ? (
-          <FornecedoresPage />
-        ) : activeSectionKey === 'operacao/entradas/nova' ? (
-          <EntradaMedicamentosPage />
-        ) : activeSectionKey === 'operacao/entradas/listar' ? (
-          <ListarEntradasPage />
-        ) : activeSectionKey === 'operacao/entradas/demandas' ? (
-          <EntradaMercadoriaDemandasPage />
-        ) : activeSectionKey === 'operacao/entradas/aprovacao' ? (
-          <AprovacaoEntradaPage />
-        ) : activeSectionKey === 'operacao/inventarios/listar' ? (
-          <ListarInventariosPage />
-        ) : activeSectionKey === 'operacao/inventarios/novo' ? (
-          <NovoInventarioPage />
-        ) : activeSectionKey === 'estoque/listar' ? (
-          <EstoquePage />
-        ) : activeSectionKey === 'estoque/transferencia_depositos/nova_solicitacao' ? (
-          <NovaSolicitacaoTransferenciaPage />
-        ) : activeSectionKey === 'estoque/transferencia_depositos/solicitacoes_abertas' ? (
-          <SolicitacoesAbertasPage />
-        ) : activeSectionKey === 'estoque/transferencia_depositos/solicitacoes_encerradas' ? (
-          <SolicitacoesEncerradasPage />
-        ) : activeSectionKey === 'estoque/consultar_movimentacoes' ? (
-          <ConsultarMovimentacoesPage />
-        ) : activeSectionKey === 'pacientes/ambulatorio' ? (
-          <PacientesAmbulatorioPage />
-        ) : activeSectionKey === 'pacientes/demandas_especificas' ? (
-          <DemandasEspecificasPage />
-        ) : activeSectionKey === 'requisicoes/aprovacao' ? (
-          <AprovacaoRequisicaoPage />
-        ) : activeSectionKey === 'requisicoes/devolucao_medicamento' ? (
-          <DevolucaoMedicamentoPage />
-        ) : activeSectionKey === 'requisicoes/controle_dose_domiciliar' ? (
-          <ControleDoseDomiciliarPage />
-        ) : activeSectionKey === 'requisicoes/listar_por_periodo' ? (
-          <ListarRequisicoesPorPeriodoPage />
-        ) : activeSectionKey === 'requisicoes/por_paciente' ? (
-          <RequisicaoPorPacientePage />
-        ) : activeSectionKey === 'requisicoes/por_setor' ? (
-          <RequisicaoPorSetorPage />
-        ) : activeSectionKey === 'parametros/locais' ? (
-          <LocaisRequisicaoPage />
-        ) : activeSectionKey === 'parametros/medicamentos' ? (
-          <MedicamentosPage />
-        ) : activeSectionKey === 'parametros/tipos_medicamentos' ? (
-          <TiposMedicamentosPage />
-        ) : activeSectionKey === 'parametros/setores' ? (
-          <SetoresPage />
-        ) : activeSectionKey === 'parametros/tipos_requisicoes' ? (
-          <TiposRequisicoesPage />
-        ) : activeSectionKey === 'parametros/diagnosticos' ? (
-          <DiagnosticosPage />
-        ) : (
-          <ModulePlaceholderPage
-            moduleKey={activeSectionKey}
-            moduleLabel={section.title}
-            onOpenDashboard={() => setActiveSectionKey('inicio')}
-          />
-        )}
+        <>
+          {activeSectionKey === 'inicio' ? (
+            <HomeDashboardPage onOpenSection={setActiveSectionKey} />
+          ) : activeSectionKey === 'parametros/boname' ? (
+            <BonamePage />
+          ) : activeSectionKey === 'parametros/depositos' ? (
+            <DepositosPage />
+          ) : activeSectionKey === 'parametros/fornecedores' ? (
+            <FornecedoresPage />
+          ) : activeSectionKey === 'operacao/entradas/nova' ? (
+            <EntradaMedicamentosPage />
+          ) : activeSectionKey === 'operacao/entradas/listar' ? (
+            <ListarEntradasPage />
+          ) : activeSectionKey === 'operacao/entradas/demandas' ? (
+            <EntradaMercadoriaDemandasPage />
+          ) : activeSectionKey === 'operacao/entradas/aprovacao' ? (
+            <AprovacaoEntradaPage />
+          ) : activeSectionKey === 'operacao/inventarios/listar' ? (
+            <ListarInventariosPage />
+          ) : activeSectionKey === 'operacao/inventarios/novo' ? (
+            <NovoInventarioPage />
+          ) : activeSectionKey === 'estoque/listar' ? (
+            <EstoquePage />
+          ) : activeSectionKey === 'estoque/transferencia_depositos/nova_solicitacao' ? (
+            <NovaSolicitacaoTransferenciaPage />
+          ) : activeSectionKey === 'estoque/transferencia_depositos/solicitacoes_abertas' ? (
+            <SolicitacoesAbertasPage />
+          ) : activeSectionKey === 'estoque/transferencia_depositos/solicitacoes_encerradas' ? (
+            <SolicitacoesEncerradasPage />
+          ) : activeSectionKey === 'estoque/consultar_movimentacoes' ? (
+            <ConsultarMovimentacoesPage />
+          ) : activeSectionKey === 'estoque/alerta_validade' ? (
+            <AlertaValidadePage />
+          ) : activeSectionKey === 'pacientes/ambulatorio' ? (
+            <PacientesAmbulatorioPage />
+          ) : activeSectionKey === 'pacientes/demandas_especificas' ? (
+            <DemandasEspecificasPage />
+          ) : activeSectionKey === 'requisicoes/aprovacao' ? (
+            <AprovacaoRequisicaoPage />
+          ) : activeSectionKey === 'requisicoes/devolucao_medicamento' ? (
+            <DevolucaoMedicamentoPage />
+          ) : activeSectionKey === 'requisicoes/controle_dose_domiciliar' ? (
+            <ControleDoseDomiciliarPage />
+          ) : activeSectionKey === 'requisicoes/listar_por_periodo' ? (
+            <ListarRequisicoesPorPeriodoPage />
+          ) : activeSectionKey === 'requisicoes/rastreamento_lotes' ? (
+            <RastreamentoLotesPage />
+          ) : activeSectionKey === 'requisicoes/por_paciente' ? (
+            <RequisicaoPorPacientePage />
+          ) : activeSectionKey === 'requisicoes/por_setor' ? (
+            <RequisicaoPorSetorPage />
+          ) : activeSectionKey === 'parametros/locais' ? (
+            <LocaisRequisicaoPage />
+          ) : activeSectionKey === 'parametros/medicamentos' ? (
+            <MedicamentosPage />
+          ) : activeSectionKey === 'parametros/tipos_medicamentos' ? (
+            <TiposMedicamentosPage />
+          ) : activeSectionKey === 'parametros/setores' ? (
+            <SetoresPage />
+          ) : activeSectionKey === 'parametros/tipos_requisicoes' ? (
+            <TiposRequisicoesPage />
+          ) : activeSectionKey === 'parametros/diagnosticos' ? (
+            <DiagnosticosPage />
+          ) : (
+            <ModulePlaceholderPage
+              moduleKey={activeSectionKey}
+              moduleLabel={section.title}
+              onOpenDashboard={() => setActiveSectionKey('inicio')}
+            />
+          )}
+          <AlertaValidadeStartupModal />
+        </>
       </Suspense>
     </MainLayout>
   )

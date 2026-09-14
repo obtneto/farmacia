@@ -647,4 +647,41 @@ export default class Controller_Entradas {
         await db.Disconnect();
         return res.status(resdata.status).json(resdata);
     }
+
+    static async ListarItensPorLote(req: Request, res: Response) {
+
+        const db: iDatabase = new Database('fsph_farmacia');
+
+        const resdata: iresdata = {
+            err: 0,
+            msg: '',
+            status: 200,
+            data: {}
+        }
+
+        try {
+
+            await db.Connect();
+
+            const lote = String(req.params.lote) || '';
+
+            if (!lote) {
+                const error = new Error('Lote não informado') as any;
+                error.statusCode = 400;
+                throw error;
+            }
+
+            const itensEntradas = new ItensEntradas(db.connection);
+
+            const result = await itensEntradas.BuscarLote(lote);
+
+            resdata.data = result;
+
+        } catch (error: any) {
+            applyControllerError(resdata, error, 'Controller Entradas - ListarItensPorLote');
+        }
+
+        return res.status(resdata.status).json(resdata);
+    }
 }
+
