@@ -1551,4 +1551,55 @@ export default class Controller_Requisicoes {
 
     }
 
+    static async RastrearLote(req: Request, res: Response) {
+
+        const db: iDatabase = new Database();
+
+        const resdata: iresdata = {
+            err: 0,
+            msg: '',
+            status: 200,
+            data: {}
+        }
+
+        try {
+
+            void await db.Connect();
+
+            const lote = String(req.params.lote || '');
+
+            if (!lote || lote === '') {
+                const error = new Error('Lote não informado') as any;
+                error.statusCode = 400;
+                throw error;
+            }
+
+            // Busca todas as informações de um lote
+            const query = `
+                SELECT * from vw_rastreamento_lote
+                WHERE est_lote = :ent_lote;
+            `;
+
+            const [rows] = await db.connection.query(query, { ent_lote: lote }) as RowDataPacket[];
+
+            if (!rows || rows.length === 0) {
+                const error = new Error(`Lote ${lote} não encontrado.`) as any;
+                error.statusCode = 404;
+                throw error;
+            }
+
+            resdata.data = rows[0];
+
+        } catch (error: any) {
+
+            applyControllerError(resdata, error, 'Controller Requisicoes - RastrearLote');
+
+        }
+
+        void await db.Disconnect();
+
+        return res.status(resdata.status).json(resdata);
+
+    }
+
 }

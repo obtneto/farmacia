@@ -116,4 +116,26 @@ export default class ItensEntradas extends BaseModel implements iBaseModel, iIte
     public async ExcluirPorEntrada(ent_id: number): Promise<void> {
         await this.ExecuteQuery('DELETE FROM tb_itens_entradas WHERE ite_ent_id = :ent_id', { ent_id });
     }
+
+    public async BuscarLote(lote: string): Promise<RowDataPacket[] | null> {
+        const query = `SELECT e.ent_date,
+                                    e.ent_doc,
+                                    f.for_razao_social,
+                                    i.ite_ent_med_id,
+                                    m.med_descr,
+                                    m.med_descr_coml,
+                                    m.med_und,
+                                    i.ite_ent_lote,
+                                    i.ite_ent_lote_validade,
+                                    i.ite_ent_qtde 
+                        FROM tb_itens_entradas i
+                        LEFT JOIN tb_medicamentos m ON m.med_id = i.ite_ent_med_id
+                        LEFT JOIN tb_entradas e ON e.ent_id = i.ite_ent_id
+                        LEFT JOIN tb_fornecedores f ON f.for_id = e.ent_for_id
+                        WHERE i.ite_ent_lote = :lote`;
+
+        const [rows] = await this.ExecuteQuery(query, { lote }) as [RowDataPacket[]];
+
+        return rows.length > 0 ? rows : null;
+    }
 }

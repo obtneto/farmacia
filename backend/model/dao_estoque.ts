@@ -97,6 +97,31 @@ export default class Estoque extends BaseModel implements iEstoqueFields, iBaseM
     return this._fields as RowDataPacket
   }
 
+  async ListarItensLote(lote: string): Promise<RowDataPacket[]> {
+
+    const query = `SELECT d.dep_descr,
+                m.med_id,
+                m.med_descr,
+                m.med_descr_coml,
+                m.med_und,
+                e.est_lote,
+                e.est_saldo_bloqueado,
+                e.est_saldo_disponivel,
+                e.est_validade,
+                CASE
+                  WHEN DATEDIFF(e.est_validade, CURDATE()) < 0 THEN '-'
+                  ELSE DATEDIFF(e.est_validade, CURDATE())
+                END AS dias_para_validade
+                FROM tb_estoque e
+                LEFT JOIN tb_medicamentos m ON e.est_med_id = m.med_id
+                LEFT JOIN tb_depositos d ON d.dep_id = e.est_dep_id
+                WHERE e.est_lote = :lote`
+
+    const [rows] = await this.ExecuteQuery(query, { lote }) as [RowDataPacket[]]
+
+    return rows as RowDataPacket[]
+  }
+
   async BuscarPorItemEstoqueForUpdate(dep_id: number, med_id: number, lote: string): Promise<RowDataPacket> {
 
     const query = `SELECT * FROM tb_estoque WHERE est_dep_id = :dep_id AND est_med_id = :med_id AND est_lote = :lote FOR UPDATE`
