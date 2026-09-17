@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
 import cors from 'cors';
 import 'dotenv/config';
 import routes_locais from './routes/routes_locais.js';
@@ -25,13 +25,13 @@ import router_itens_solicitacoes from './routes/routes_itens_solicitacoes.js';
 import router_controle_ddu from './routes/routes_controle_ddu.js';
 import router_inventarios from './routes/routes_inventarios.js';
 import router_dashboard from './routes/routes_dashboard.js'
+import router_settings from './routes/routes_settings.js';
+import router_notificacoes from './routes/routes_notificacoes.js';
 import morgan from 'morgan';
 import helmet from 'helmet';
 
-import settings from './utils/settings.js';
 import authMiddleware from './middleware/auth.js';
 import { config } from 'dotenv';
-import { iresdata } from './controllers/interface_controllers.js';
 
 declare global {
     interface Error {
@@ -164,14 +164,8 @@ app.use('/controle-ddu', router_controle_ddu);
 app.use('/inventarios', router_inventarios);
 app.use('/inventario', router_inventarios);
 app.use('/dashboard',router_dashboard);
-app.use('/settings', (req: Request, res: Response) => {
-
-    const resdata: iresdata = { err: 0, msg: '', status: 200, data: null }
-
-    resdata.data = { settings }
-
-    res.status(resdata.status).json(resdata)
-});
+app.use('/settings', router_settings);
+app.use('/notificacoes', router_notificacoes);
 app.use(globalErrorHandler);
 
 app.listen(port, () => {

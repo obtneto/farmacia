@@ -143,9 +143,14 @@ export function parseCookieHeader(cookieHeader?: string): Record<string, string>
 
 export function extractAuthToken(req: Request): string | null {
     const cookies = parseCookieHeader(req.headers.cookie);
+    const queryToken = req.query?.token;
 
     if (cookies[SIMULATED_AUTH_COOKIE_NAME]) {
         return cookies[SIMULATED_AUTH_COOKIE_NAME];
+    }
+
+    if (typeof queryToken === 'string' && queryToken.trim()) {
+        return queryToken.trim();
     }
 
     const authorization = req.headers.authorization;

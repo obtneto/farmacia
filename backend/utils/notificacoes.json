@@ -1,0 +1,12 @@
+[
+  {
+    "id": "estoque-alerta-validade",
+    "title": "Alerta de Validade",
+    "description": "1 lote com validade dentro do prazo de alerta.",
+    "tone": "warning",
+    "read": true,
+    "createdAt": "2026-09-17T13:35:30.393Z",
+    "actionLabel": "Abrir Alerta de Validade",
+    "actionSectionKey": "estoque/alerta_validade"
+  }
+]

@@ -5,6 +5,7 @@ import { iresdata } from "./interface_controllers.js";
 import Movimentacoes from "../model/dao_movimentacoes.js";
 import Depositos from "../model/dao_depositos.js";
 import Estoque from "../model/dao_estoque.js";
+import { notificationService } from "./controller_notificacoes.js";
 
 // Expoe consultas e ajustes de estoque controlados por deposito, medicamento e lote.
 export default class Controller_Estoque {
@@ -520,6 +521,19 @@ export default class Controller_Estoque {
             const [rows] = await db.connection.query(query);
 
             resdata.data = rows;
+
+            if (Array.isArray(rows) && rows.length > 0) {
+                await notificationService.publish({
+                    id: 'estoque-alerta-validade',
+                    title: 'Alerta de Validade',
+                    description: `${rows.length} lote${rows.length === 1 ? '' : 's'} com validade dentro do prazo de alerta.`,
+                    tone: 'warning',
+                    actionLabel: 'Abrir Alerta de Validade',
+                    actionSectionKey: 'estoque/alerta_validade',
+                });
+            } else {
+                await notificationService.remove('estoque-alerta-validade');
+            }
 
         } catch (error: any) {
             applyControllerError(resdata, error, 'Controller Estoque - AlertaValidade');

@@ -1,4 +1,4 @@
-import { useEffect, useState, type CSSProperties, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import {
   Avatar,
   Badge,
@@ -18,19 +18,27 @@ import {
   useMediaQuery,
 } from 'rsuite'
 import {
-  RiAddLine,
   RiArrowLeftSLine,
   RiArrowDownSLine,
   RiArrowRightSLine,
   RiCloseLine,
   RiMenuLine,
   RiNotification3Line,
+  RiCheckDoubleLine,
+  RiInformationLine,
+  RiAlertLine,
+  RiCheckboxCircleLine,
+  RiErrorWarningLine,
+  RiArrowRightLine,
+  RiInboxLine,
 } from 'react-icons/ri'
 import { NAVIGATION_GROUPS, type NavigationItem, type SectionKey } from '../config/navigation'
+import { getApiBaseUrl } from '../lib/api-base-url'
 import './MainLayout.css'
 
 const SIDEBAR_EXPANDED = 322
 const SIDEBAR_COLLAPSED = 88
+const USER_PROFILE_EXPANDED_DURATION_MS = 10000
 const PUBLIC_BASE_URL = import.meta.env.BASE_URL
 const getPublicAssetUrl = (assetName: string) => `${PUBLIC_BASE_URL}${assetName}`
 const HEADER_LOGO = {
@@ -78,6 +86,26 @@ const DEFAULT_LOGGED_IN_USER = {
   initials: 'UA',
   roleLabel: 'Sessao ativa',
 }
+const API_BASE_URL = getApiBaseUrl()
+
+type HeaderNotification = {
+  id: string
+  title: string
+  description: string
+  actionLabel?: string
+  actionSectionKey?: SectionKey
+  tone?: 'info' | 'warning' | 'success' | 'danger'
+  read?: boolean
+  createdAt?: string
+}
+
+type NotificationsPayload = {
+  notifications?: HeaderNotification[]
+}
+
+type NotificationRemovePayload = {
+  id?: string
+}
 
 const isNavigationItemWithChildren = (item: NavigationItem): item is Extract<NavigationItem, { children: NavigationItem[] }> =>
   'children' in item
@@ -90,7 +118,8 @@ const getNestedMenuEventKey = (parentMenuKey: string, itemLabel: string) =>
 const collectLeafSectionKeys = (items: NavigationItem[]): SectionKey[] =>
   items.flatMap((item) => (isNavigationItemWithChildren(item) ? collectLeafSectionKeys(item.children) : [item.eventKey]))
 
-const SIDEBAR_SECTION_KEYS = new Set<SectionKey>(NAVIGATION_GROUPS.flatMap((group) => collectLeafSectionKeys(group.items)))
+const SIDEBAR_SECTION_KEY_LIST = NAVIGATION_GROUPS.flatMap((group) => collectLeafSectionKeys(group.items))
+const SIDEBAR_SECTION_KEYS = new Set<SectionKey>(SIDEBAR_SECTION_KEY_LIST)
 
 type StoredRecord = Record<string, unknown>
 
@@ -255,6 +284,127 @@ function getLoggedInUserProfile(): LoggedInUserProfile {
   }
 }
 
+function parseServerEventData(event: Event): unknown {
+  if (!(event instanceof MessageEvent) || typeof event.data !== 'string') {
+    return null
+  }
+
+  try {
+    return JSON.parse(event.data)
+  } catch {
+    return null
+  }
+}
+
+function normalizeSectionKey(value: unknown): SectionKey | undefined {
+  if (typeof value !== 'string') {
+    return undefined
+  }
+
+  return SIDEBAR_SECTION_KEY_LIST.find((sectionKey) => sectionKey === value)
+}
+
+function normalizeNotificationTone(value: unknown): HeaderNotification['tone'] {
+  if (value === 'info' || value === 'warning' || value === 'success' || value === 'danger') {
+    return value
+  }
+
+  return undefined
+}
+
+function normalizeHeaderNotification(value: unknown): HeaderNotification | null {
+  if (
+    value
+    && typeof value === 'object'
+    && 'id' in value
+    && 'title' in value
+    && 'description' in value
+    && typeof value.id === 'string'
+    && typeof value.title === 'string'
+    && typeof value.description === 'string'
+  ) {
+    return {
+      id: value.id,
+      title: value.title,
+      description: value.description,
+      actionLabel: 'actionLabel' in value && typeof value.actionLabel === 'string' ? value.actionLabel : undefined,
+      actionSectionKey: 'actionSectionKey' in value ? normalizeSectionKey(value.actionSectionKey) : undefined,
+      createdAt: 'createdAt' in value && typeof value.createdAt === 'string' ? value.createdAt : undefined,
+      read: 'read' in value && typeof value.read === 'boolean' ? value.read : false,
+      tone: 'tone' in value ? normalizeNotificationTone(value.tone) : undefined,
+    }
+  }
+
+  return null
+}
+
+function normalizeNotificationsPayload(payload: unknown): HeaderNotification[] {
+  if (!payload || typeof payload !== 'object' || !('notifications' in payload)) {
+    return []
+  }
+
+  const notificationsValue = payload.notifications
+
+  if (!Array.isArray(notificationsValue)) {
+    return []
+  }
+
+  return notificationsValue.flatMap((item) => {
+    const notification = normalizeHeaderNotification(item)
+    return notification ? [notification] : []
+  })
+}
+
+function normalizeNotificationPayload(payload: unknown): HeaderNotification | null {
+  return normalizeHeaderNotification(payload)
+}
+
+function normalizeNotificationRemovePayload(payload: unknown): NotificationRemovePayload {
+  if (payload && typeof payload === 'object' && 'id' in payload && typeof payload.id === 'string') {
+    return { id: payload.id }
+  }
+
+  return {}
+}
+
+function markNotificationRead(notifications: HeaderNotification[], notificationId: string): HeaderNotification[] {
+  return notifications.map((notification) =>
+    notification.id === notificationId
+      ? { ...notification, read: true }
+      : notification
+  )
+}
+
+function getNotificationToneIcon(tone?: HeaderNotification['tone']) {
+  switch (tone) {
+    case 'warning':
+      return <RiAlertLine className="main-layout__notification-tone-icon main-layout__notification-tone-icon--warning" />
+    case 'success':
+      return <RiCheckboxCircleLine className="main-layout__notification-tone-icon main-layout__notification-tone-icon--success" />
+    case 'danger':
+      return <RiErrorWarningLine className="main-layout__notification-tone-icon main-layout__notification-tone-icon--danger" />
+    case 'info':
+    default:
+      return <RiInformationLine className="main-layout__notification-tone-icon main-layout__notification-tone-icon--info" />
+  }
+}
+
+function formatNotificationTime(createdAt?: string): string | null {
+  if (!createdAt) return null
+  try {
+    const date = new Date(createdAt)
+    if (isNaN(date.getTime())) return createdAt
+    const now = new Date()
+    const diffSeconds = Math.floor((now.getTime() - date.getTime()) / 1000)
+    if (diffSeconds < 60) return 'Agora'
+    if (diffSeconds < 3600) return `${Math.floor(diffSeconds / 60)} min`
+    if (diffSeconds < 86400) return `${Math.floor(diffSeconds / 3600)}h`
+    return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })
+  } catch {
+    return createdAt
+  }
+}
+
 const SECTION_MENU_MAP: Partial<Record<SectionKey, string[]>> = {}
 const SECTION_NESTED_MENU_MAP: Partial<Record<SectionKey, string[]>> = {}
 
@@ -284,48 +434,31 @@ export interface MainLayoutProps {
   activeSidebarKey: SectionKey
   breadcrumbItems?: string[]
   children: ReactNode
-  onQuickActionSelect?: (eventKey: SectionKey) => void
   onSidebarSelect?: (eventKey: SectionKey) => void
   pageBannerCompact?: boolean
   pageDescription?: string
   pageMetaVisible?: boolean
   pageStatus?: string
   pageTitle?: string
-  quickActions?: Array<{ eventKey: SectionKey; label: string }>
 }
-
-const NOTIFICATIONS = [
-  {
-    title: 'Aprovacoes pendentes',
-    description: 'Existem requisicoes aguardando priorizacao no modulo operacional.',
-  },
-  {
-    title: 'Padrao visual atualizado',
-    description: 'Shell corporativo aplicado e pronto para os proximos modulos.',
-  },
-  {
-    title: 'Integracao de Boname',
-    description: 'CRUD principal preparado com estados de carregamento, vazio e erro.',
-  },
-]
 
 export function MainLayout({
   activeSidebarKey,
   children,
-  onQuickActionSelect,
   onSidebarSelect,
   pageBannerCompact = false,
   pageDescription,
   pageMetaVisible = true,
   pageStatus = 'Operacao ativa',
   pageTitle = 'Dashboard corporativo',
-  quickActions = [],
 }: MainLayoutProps) {
   const [isMobile] = useMediaQuery('(max-width: 991px)')
-  const [isCompactMobile] = useMediaQuery('(max-width: 480px)')
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true)
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false)
+  const [isUserProfileExpanded, setIsUserProfileExpanded] = useState(false)
   const [loggedInUser, setLoggedInUser] = useState<LoggedInUserProfile>(() => getLoggedInUserProfile())
+  const [notifications, setNotifications] = useState<HeaderNotification[]>([])
+  const userProfileCollapseTimeoutRef = useRef<number | undefined>(undefined)
 
   const sidebarWidth = isMobile
     ? SIDEBAR_EXPANDED
@@ -356,6 +489,7 @@ export function MainLayout({
     : showSidebarLabels
       ? 'Recolher menu lateral'
       : 'Expandir menu lateral'
+  const userProfileToggleLabel = isUserProfileExpanded ? 'Recolher dados do usuario' : 'Expandir dados do usuario por 10 segundos'
 
   if (activeSidebarKey !== lastSyncedSidebarKey) {
     setLastSyncedSidebarKey(activeSidebarKey)
@@ -407,6 +541,125 @@ export function MainLayout({
     }
   }, [])
 
+  useEffect(() => {
+    return () => {
+      if (userProfileCollapseTimeoutRef.current !== undefined) {
+        window.clearTimeout(userProfileCollapseTimeoutRef.current)
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    let isActive = true
+    const authToken = readStoredAuthToken()
+    const streamUrl = new URL(`${API_BASE_URL}/notificacoes/stream`)
+
+    if (authToken) {
+      streamUrl.searchParams.set('token', authToken)
+    }
+
+    void fetch(`${API_BASE_URL}/notificacoes/listar`, {
+      headers: authToken ? { Authorization: `Bearer ${authToken}` } : undefined,
+    })
+      .then((response) => response.json())
+      .then((payload: { data?: NotificationsPayload }) => {
+        if (isActive) {
+          setNotifications(normalizeNotificationsPayload(payload.data))
+        }
+      })
+      .catch(() => undefined)
+
+    const eventSource = new EventSource(streamUrl.toString(), { withCredentials: true })
+
+    eventSource.addEventListener('snapshot', (event) => {
+      setNotifications(normalizeNotificationsPayload(parseServerEventData(event)))
+    })
+
+    eventSource.addEventListener('notification', (event) => {
+      const notification = normalizeNotificationPayload(parseServerEventData(event))
+
+      if (!notification) {
+        return
+      }
+
+      setNotifications((current) => [notification, ...current.filter((item) => item.id !== notification.id)])
+    })
+
+    eventSource.addEventListener('clear', () => {
+      setNotifications([])
+    })
+
+    eventSource.addEventListener('remove', (event) => {
+      const payload = normalizeNotificationRemovePayload(parseServerEventData(event))
+
+      if (payload.id) {
+        setNotifications((current) => current.filter((notification) => notification.id !== payload.id))
+      }
+    })
+
+    eventSource.addEventListener('read', (event) => {
+      const notification = normalizeNotificationPayload(parseServerEventData(event))
+
+      if (!notification) {
+        return
+      }
+
+      setNotifications((current) => current.map((item) => (item.id === notification.id ? notification : item)))
+    })
+
+    eventSource.onerror = () => {
+      eventSource.close()
+    }
+
+    return () => {
+      isActive = false
+      eventSource.close()
+    }
+  }, [])
+
+  const handleUserProfileToggle = () => {
+    if (userProfileCollapseTimeoutRef.current !== undefined) {
+      window.clearTimeout(userProfileCollapseTimeoutRef.current)
+      userProfileCollapseTimeoutRef.current = undefined
+    }
+
+    if (isUserProfileExpanded) {
+      setIsUserProfileExpanded(false)
+      return
+    }
+
+    setIsUserProfileExpanded(true)
+    userProfileCollapseTimeoutRef.current = window.setTimeout(() => {
+      setIsUserProfileExpanded(false)
+      userProfileCollapseTimeoutRef.current = undefined
+    }, USER_PROFILE_EXPANDED_DURATION_MS)
+  }
+
+  const handleOpenNotification = (notification: HeaderNotification) => {
+    setNotifications((current) => markNotificationRead(current, notification.id))
+
+    const authToken = readStoredAuthToken()
+
+    void fetch(`${API_BASE_URL}/notificacoes/read/${encodeURIComponent(notification.id)}`, {
+      method: 'PATCH',
+      headers: authToken ? { Authorization: `Bearer ${authToken}` } : undefined,
+    }).catch(() => undefined)
+
+    if (notification.actionSectionKey) {
+      onSidebarSelect?.(notification.actionSectionKey)
+    }
+  }
+
+  const handleMarkAllNotificationsRead = () => {
+    setNotifications((current) => current.map((notification) => ({ ...notification, read: true })))
+
+    const authToken = readStoredAuthToken()
+    void fetch(`${API_BASE_URL}/notificacoes/mark-all-read`, {
+      method: 'PATCH',
+      headers: authToken ? { Authorization: `Bearer ${authToken}` } : undefined,
+    }).catch(() => undefined)
+  }
+
   const handleMenuOpenChange = (nextOpenKeys: string[]) => {
     const nextOpenKey = nextOpenKeys.at(-1)
     const normalizedOpenKeys = nextOpenKey ? [nextOpenKey] : []
@@ -447,6 +700,8 @@ export function MainLayout({
 
     setIsSidebarExpanded((currentValue) => !currentValue)
   }
+
+  const unreadNotificationsCount = notifications.filter((notification) => !notification.read).length
 
   const renderNavigationItems = (items: NavigationItem[], parentMenuKey: string, submenuDepth = 1): ReactNode =>
     items.map((item) => {
@@ -509,23 +764,6 @@ export function MainLayout({
       )
     })
 
-  const quickActionsSpeaker = (
-    <Popover className="main-layout__notifications-popover">
-      <VStack spacing={10} alignItems="stretch">
-        {quickActions.map((action) => (
-          <Button
-            appearance="subtle"
-            className="main-layout__quick-action"
-            key={action.eventKey}
-            onClick={() => onQuickActionSelect?.(action.eventKey)}
-          >
-            {action.label}
-          </Button>
-        ))}
-      </VStack>
-    </Popover>
-  )
-
   return (
     <Container className="main-layout">
       <Header className="main-layout__header" style={headerStyle}>
@@ -565,47 +803,147 @@ export function MainLayout({
               trigger="click"
               speaker={
                 <Popover className="main-layout__notifications-popover">
-                  <VStack spacing={14} alignItems="stretch">
-                    {NOTIFICATIONS.map((notification) => (
-                      <div className="main-layout__notification" key={notification.title}>
-                        <strong>{notification.title}</strong>
-                        <p>{notification.description}</p>
+                  <div className="main-layout__notifications-header">
+                    <div className="main-layout__notifications-title-group">
+                      <h4 className="main-layout__notifications-title">Notificações</h4>
+                      {unreadNotificationsCount > 0 ? (
+                        <span className="main-layout__notifications-badge">
+                          {unreadNotificationsCount} {unreadNotificationsCount === 1 ? 'nova' : 'novas'}
+                        </span>
+                      ) : (
+                        <span className="main-layout__notifications-badge main-layout__notifications-badge--all-read">
+                          Lidas
+                        </span>
+                      )}
+                    </div>
+                    {unreadNotificationsCount > 0 ? (
+                      <Button
+                        appearance="subtle"
+                        size="xs"
+                        className="main-layout__notifications-mark-all"
+                        onClick={handleMarkAllNotificationsRead}
+                        title="Marcar todas como lidas"
+                      >
+                        <RiCheckDoubleLine size={15} />
+                        <span>Marcar lidas</span>
+                      </Button>
+                    ) : null}
+                  </div>
+
+                  <div className="main-layout__notifications-body">
+                    {notifications.length > 0 ? (
+                      <div className="main-layout__notifications-list">
+                        {notifications.map((notification) => {
+                          const formattedTime = formatNotificationTime(notification.createdAt)
+                          const isUnread = !notification.read
+
+                          if (notification.actionSectionKey) {
+                            return (
+                              <Button
+                                appearance="subtle"
+                                className={`main-layout__notification main-layout__notification--interactive ${
+                                  isUnread ? 'main-layout__notification--unread' : 'main-layout__notification--read'
+                                } ${notification.tone ? `main-layout__notification--tone-${notification.tone}` : ''}`.trim()}
+                                key={notification.id}
+                                onClick={() => handleOpenNotification(notification)}
+                              >
+                                <div className="main-layout__notification-icon-wrapper">
+                                  {getNotificationToneIcon(notification.tone)}
+                                </div>
+                                <div className="main-layout__notification-content">
+                                  <div className="main-layout__notification-top">
+                                    <strong className="main-layout__notification-title">{notification.title}</strong>
+                                    {formattedTime ? (
+                                      <span className="main-layout__notification-time">{formattedTime}</span>
+                                    ) : null}
+                                  </div>
+                                  <p className="main-layout__notification-desc">{notification.description}</p>
+                                  <div className="main-layout__notification-footer">
+                                    <span className="main-layout__notification-action">
+                                      {notification.actionLabel || 'Abrir'}
+                                      <RiArrowRightLine size={14} className="main-layout__notification-action-icon" />
+                                    </span>
+                                    {isUnread ? <span className="main-layout__notification-dot" aria-label="Não lida" /> : null}
+                                  </div>
+                                </div>
+                              </Button>
+                            )
+                          }
+
+                          return (
+                            <div
+                              className={`main-layout__notification ${
+                                isUnread ? 'main-layout__notification--unread' : 'main-layout__notification--read'
+                              } ${notification.tone ? `main-layout__notification--tone-${notification.tone}` : ''}`.trim()}
+                              key={notification.id}
+                              onClick={() => isUnread && handleOpenNotification(notification)}
+                            >
+                              <div className="main-layout__notification-icon-wrapper">
+                                {getNotificationToneIcon(notification.tone)}
+                              </div>
+                              <div className="main-layout__notification-content">
+                                <div className="main-layout__notification-top">
+                                  <strong className="main-layout__notification-title">{notification.title}</strong>
+                                  {formattedTime ? (
+                                    <span className="main-layout__notification-time">{formattedTime}</span>
+                                  ) : null}
+                                </div>
+                                <p className="main-layout__notification-desc">{notification.description}</p>
+                                {isUnread ? (
+                                  <div className="main-layout__notification-footer">
+                                    <span className="main-layout__notification-dot" aria-label="Não lida" />
+                                  </div>
+                                ) : null}
+                              </div>
+                            </div>
+                          )
+                        })}
                       </div>
-                    ))}
-                  </VStack>
+                    ) : (
+                      <div className="main-layout__notification-empty-state">
+                        <div className="main-layout__notification-empty-icon">
+                          <RiInboxLine size={30} />
+                        </div>
+                        <strong>Nenhuma notificação</strong>
+                        <p>Você está em dia! Novos alertas e atualizações aparecerão aqui.</p>
+                      </div>
+                    )}
+                  </div>
                 </Popover>
               }
             >
-              <Badge content={NOTIFICATIONS.length}>
+              <Badge content={unreadNotificationsCount}>
                 <IconButton
                   appearance="subtle"
                   circle
-                  aria-label="Notificacoes"
+                  aria-label={`${unreadNotificationsCount} notificacoes nao lidas`}
                   icon={<RiNotification3Line size={18} />}
                 />
               </Badge>
             </Whisper>
 
-            <Whisper placement="bottomEnd" trigger="click" speaker={quickActionsSpeaker}>
-              <Button appearance="primary" startIcon={<RiAddLine size={16} />}>
-                {isCompactMobile ? 'Acoes' : 'Acoes rapidas'}
-              </Button>
-            </Whisper>
-
-            <div className="main-layout__user-chip">
+            <Button
+              appearance="subtle"
+              aria-expanded={isUserProfileExpanded}
+              aria-label={userProfileToggleLabel}
+              className={`main-layout__user-chip ${isUserProfileExpanded ? 'main-layout__user-chip--expanded' : 'main-layout__user-chip--collapsed'}`.trim()}
+              onClick={handleUserProfileToggle}
+              title={`${userProfileToggleLabel}: ${loggedInUser.displayName} • ${loggedInUser.roleLabel}`}
+            >
               <Avatar circle size="sm" style={{ background: '#1d4ed8' }}>
                 {loggedInUser.initials}
               </Avatar>
-              <VStack
-                spacing={2}
-                alignItems="flex-start"
-                className="main-layout__user-copy"
-                title={`${loggedInUser.displayName} • ${loggedInUser.roleLabel}`}
-              >
-                <strong>{loggedInUser.displayName}</strong>
-                <span>{loggedInUser.roleLabel}</span>
-              </VStack>
-            </div>
+              {isUserProfileExpanded ? (
+                <VStack
+                  spacing={2}
+                  alignItems="flex-start"
+                  className="main-layout__user-copy"
+                >
+                  <strong>{loggedInUser.displayName}</strong>
+                  <span>{loggedInUser.roleLabel}</span>
+                </VStack>
+              ) : null}
+            </Button>
           </HStack>
         </HStack>
       </Header>

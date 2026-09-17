@@ -2,6 +2,7 @@ import Database, { iDatabase } from "../connections/dbconn.js";
 import { iresdata } from "./interface_controllers.js";
 import { Request, Response } from "express";
 import { applyControllerError } from "../utils/controllerError.js";
+import settings from "../utils/settings.js";
 
 // Controla o CRUD de Dashboard mantendo o contrato padrao das respostas HTTP.
 export default class Controller_Dashboard {
@@ -50,6 +51,8 @@ export default class Controller_Dashboard {
                 throw error;
             }
 
+            const local_id_ddu: number = settings.local_id || 0;
+
             /***************************************************
              * Atendimentos por Hemoderivados
             ****************************************************/
@@ -67,16 +70,65 @@ export default class Controller_Dashboard {
             /***************************************************
              * Dispensação de Fator por Frascos
             ****************************************************/
-            const query_frascos: string = "SELECT * FROM vw_fator_dispensado_por_frascos WHERE ano = :ano AND mes = :mes";
+            const query_frascos: string = `SELECT
+                                            YEAR(r.req_date) AS ano,
+                                            MONTH(r.req_date) AS mes,
+                                            (
+                                                CASE
+                                                    WHEN (l.local_tipo = 'INT') THEN
+                                                        'Hemocentro'
+                                                    WHEN ((l.local_tipo = 'EXT') AND (l.local_id <> :local_id_ddu)) THEN
+                                                        'Hospitalar'
+                                                    WHEN ((l.local_tipo = 'EXT') AND (l.local_id = :local_id_ddu)) THEN
+                                                        'DDU'
+                                                    ELSE
+                                                        'Não Identificado'
+                                                END
+                                            ) AS Local,
+                                            sum(ir.ite_qtde) AS qtde
+                                        FROM
+                                            (
+                                                (tb_itens_requisicoes ir LEFT JOIN tb_requisicoes r ON (r.req_id = ir.ite_req_id))
+                                                LEFT JOIN tb_locais l ON (l.local_id = r.req_local_id)
+                                            )
+                                        WHERE 
+                                            YEAR(r.req_date) = :ano 
+                                            AND MONTH(r.req_date) = :mes
+                                        GROUP BY
+                                            YEAR(r.req_date),
+                                            MONTH(r.req_date),
+                                            Local`;
 
-            const [frascos] = await db.connection.query(query_frascos, { ano, mes });
+            const [frascos] = await db.connection.query(query_frascos, { ano, mes, local_id_ddu });
 
             /***************************************************
              * Atendimentos a Hemofilicos
             ****************************************************/
-            const query_hemofilicos: string = "SELECT * FROM vw_atendimentos_hemofilicos WHERE ano = :ano AND mes = :mes";
+            const query_hemofilicos: string = `SELECT
+                                                YEAR(r.req_date) AS ano,
+                                                MONTH(r.req_date) AS mes,
+                                                (
+                                                    CASE
+                                                        WHEN (l.local_tipo = 'INT') THEN
+                                                            'Hemocentro'
+                                                        WHEN ((l.local_tipo = 'EXT') AND (l.local_id = :local_id_ddu)) THEN
+                                                            'DDU'
+                                                        WHEN ((l.local_tipo = 'EXT') AND (l.local_id <> :local_id_ddu)) THEN
+                                                            'Hospitalar'
+                                                    END
+                                                ) AS local,
+                                                count(r.req_id) AS atendimentos
+                                            FROM
+                                                (tb_requisicoes r LEFT JOIN tb_locais l ON ((l.local_id = r.req_local_id)))
+                                            WHERE 
+                                                YEAR(r.req_date) = :ano 
+                                                AND MONTH(r.req_date) = :mes
+                                            GROUP BY
+                                                YEAR(r.req_date),
+                                                MONTH(r.req_date),
+                                                local`;
 
-            const [hemnofilicos] = await db.connection.query(query_hemofilicos, { ano, mes });
+            const [hemnofilicos] = await db.connection.query(query_hemofilicos, { ano, mes, local_id_ddu });
 
             /**************************************************
             * Relatorio Boname

@@ -1,9 +1,8 @@
-import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import ReloadIcon from '@rsuite/icons/Reload'
 import { Button, Panel, useMediaQuery } from 'rsuite'
 import { Table, type TableColumn } from '../../components/Table'
-import { AppModal, DataState, PageSection, StatusBadge } from '../../components/ui'
+import { DataState, PageSection, StatusBadge } from '../../components/ui'
 import { getErrorMessage } from '../../hooks/useMessage'
 import { apiRequest } from '../../lib/api'
 import '../boname/BonameCrudPage.css'
@@ -151,7 +150,7 @@ const alertaValidadeColumns: TableColumn<AlertaValidadeRecord>[] = [
   },
 ]
 
-export async function listarAlertasValidade(): Promise<AlertaValidadeRecord[]> {
+async function listarAlertasValidade(): Promise<AlertaValidadeRecord[]> {
   return apiRequest<AlertaValidadeRecord[]>('/estoque/alerta_validade')
 }
 
@@ -267,36 +266,13 @@ export function AlertaValidadePage({ records: initialRecords }: AlertaValidadePa
   )
 }
 
-export function AlertaValidadeStartupModal() {
-  const [dismissed, setDismissed] = useState(false)
-  const [isCompactLayout] = useMediaQuery('(max-width: 768px)')
-  const listQuery = useQuery({
+export function AlertaValidadeStartupNotifier() {
+  useQuery({
     queryKey: ['estoque-alerta-validade'],
     queryFn: listarAlertasValidade,
   })
-  const records = listQuery.data ?? []
-  const shouldOpen = !dismissed && records.length > 0
 
-  return (
-    <AppModal
-      className="alerta-validade-page__startup-modal"
-      intent="view"
-      intentVisible={false}
-      open={shouldOpen}
-      overflow
-      size="lg"
-      title="Alerta de Validade"
-      subtitle="Lotes com saldo e validade dentro do prazo de alerta do medicamento."
-      onClose={() => setDismissed(true)}
-      footer={(
-        <Button appearance="primary" onClick={() => setDismissed(true)}>
-          Fechar
-        </Button>
-      )}
-    >
-      <AlertaValidadeContent isCompactLayout={isCompactLayout} records={records} />
-    </AppModal>
-  )
+  return null
 }
 
 export default AlertaValidadePage

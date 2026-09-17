@@ -144,6 +144,7 @@ export default class Controller_Locais {
 
             const local_id: number = Number(req.body?.local_id || 0);
             const local_descr: string = String(req.body.local_descr).toLocaleUpperCase().trim();
+            const local_tipo: string = String(req.body.local_tipo || null).toLocaleUpperCase().trim();
             const local_ativo: 0 | 1 = (req.body?.local_ativo || 0);
 
             if (local_id === 0 || local_id === undefined) {
@@ -176,6 +177,7 @@ export default class Controller_Locais {
 
             locais.local_descr = local_descr;
             locais.local_ativo = local_ativo;
+            locais.local_tipo = local_tipo;
 
             await locais.Salvar();
 

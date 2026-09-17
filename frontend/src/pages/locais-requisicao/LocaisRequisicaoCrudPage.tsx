@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Button, HStack, IconButton, Input, InputNumber, Pagination, Panel, Textarea, Tooltip, useMediaQuery, Whisper } from 'rsuite'
+import { Button, HStack, IconButton, Input, InputNumber, Pagination, Panel, SelectPicker, Textarea, Tooltip, useMediaQuery, Whisper } from 'rsuite'
 import { Cell, Column, HeaderCell, Table } from '../../components/Table'
 import SearchIcon from '@rsuite/icons/Search'
 import ReloadIcon from '@rsuite/icons/Reload'
@@ -13,10 +13,25 @@ import { getErrorMessage, useMessage } from '../../hooks/useMessage'
 import { getApiBaseUrl } from '../../lib/api-base-url'
 import '../boname/BonameCrudPage.css'
 
+type LocalTipo = 'INT' | 'EXT' | 'TRA'
+
 export interface LocalRequisicaoRecord {
   local_id: number
   local_descr: string
+  local_tipo: LocalTipo | ''
   local_ativo: 0 | 1
+}
+
+interface ApiLocalRequisicaoRecord {
+  local_id: number
+  local_descr: string | null
+  local_tipo?: string | null
+  local_ativo: 0 | 1 | null
+}
+
+interface SelectOption<TValue extends string> {
+  label: string
+  value: TValue
 }
 
 interface ApiResponse<T> {
@@ -37,12 +52,18 @@ export interface LocaisRequisicaoCrudPageProps {
 const DEFAULT_FORM_VALUES: LocalRequisicaoRecord = {
   local_id: 0,
   local_descr: '',
+  local_tipo: '',
   local_ativo: 1,
 }
 
 const LOCAL_STORAGE_TOKEN_KEYS = ['authToken', 'access_token', 'token', 'jwtToken']
 const PAGE_SIZE = 13
 const LOCAL_DESCR_MAX_LENGTH = 150
+const LOCAL_TIPO_OPTIONS: SelectOption<LocalTipo>[] = [
+  { label: 'INTERNO', value: 'INT' },
+  { label: 'EXTERNO', value: 'EXT' },
+  { label: 'TRANSFERENCIA ENTRE LOCAIS', value: 'TRA' },
+]
 
 function getStoredToken(): string | null {
   if (typeof window === 'undefined') {
@@ -79,6 +100,23 @@ function normalizeLocalDescriptionForSave(value: string): string {
   return normalizeLocalDescription(value).trim().toLocaleUpperCase('pt-BR')
 }
 
+function isLocalTipo(value: unknown): value is LocalTipo {
+  return value === 'INT' || value === 'EXT' || value === 'TRA'
+}
+
+function normalizeLocalTipo(value: unknown): LocalTipo | '' {
+  return isLocalTipo(value) ? value : ''
+}
+
+function normalizeLocalRecord(record: ApiLocalRequisicaoRecord): LocalRequisicaoRecord {
+  return {
+    local_id: Number(record.local_id || 0),
+    local_descr: record.local_descr ?? '',
+    local_tipo: normalizeLocalTipo(record.local_tipo),
+    local_ativo: record.local_ativo === 0 ? 0 : 1,
+  }
+}
+
 function validateForm(values: LocalRequisicaoRecord): FormErrors {
   const errors: FormErrors = {}
 
@@ -86,6 +124,10 @@ function validateForm(values: LocalRequisicaoRecord): FormErrors {
     errors.local_descr = 'Informe a descricao do local.'
   } else if (values.local_descr.length > LOCAL_DESCR_MAX_LENGTH) {
     errors.local_descr = `A descricao deve ter no maximo ${LOCAL_DESCR_MAX_LENGTH} caracteres.`
+  }
+
+  if (!values.local_tipo) {
+    errors.local_tipo = 'Informe o tipo do local.'
   }
 
   return errors
@@ -136,12 +178,14 @@ async function listarLocais(
   searchTerm: string,
   authToken?: string | null,
 ): Promise<LocalRequisicaoRecord[]> {
-  return requestLocais<LocalRequisicaoRecord[]>(
+  const locais = await requestLocais<ApiLocalRequisicaoRecord[]>(
     baseUrl,
     `/parametros/locais/listar/${encodeURIComponent(searchTerm)}`,
     { method: 'GET' },
     authToken,
   )
+
+  return locais.map(normalizeLocalRecord)
 }
 
 async function buscarLocal(
@@ -149,12 +193,14 @@ async function buscarLocal(
   localId: number,
   authToken?: string | null,
 ): Promise<LocalRequisicaoRecord> {
-  return requestLocais<LocalRequisicaoRecord>(
+  const local = await requestLocais<ApiLocalRequisicaoRecord>(
     baseUrl,
     `/parametros/locais/buscar/${localId}`,
     { method: 'GET' },
     authToken,
   )
+
+  return normalizeLocalRecord(local)
 }
 
 async function salvarLocal(
@@ -605,6 +651,27 @@ export function LocaisRequisicaoCrudPage({
                   }}
                 />
                 {formErrors.local_descr ? <span role="alert">{formErrors.local_descr}</span> : null}
+              </div>
+
+              <div className="boname-page__field boname-page__field--full">
+                <label id="local-tipo-label">Tipo do local</label>
+                <SelectPicker
+                  aria-label="Tipo do local"
+                  aria-labelledby="local-tipo-label"
+                  block
+                  cleanable={false}
+                  data={LOCAL_TIPO_OPTIONS}
+                  name="local_tipo"
+                  placeholder="Selecione o tipo do local"
+                  searchable={false}
+                  className={formErrors.local_tipo ? 'boname-page__control boname-page__control--error' : 'boname-page__control'}
+                  value={formValues.local_tipo || null}
+                  disabled={isReadOnly}
+                  onChange={(value) => {
+                    setFormValues((current) => ({ ...current, local_tipo: normalizeLocalTipo(value) }))
+                  }}
+                />
+                {formErrors.local_tipo ? <span role="alert">{formErrors.local_tipo}</span> : null}
               </div>
 
               <fieldset className="boname-page__field boname-page__field--full boname-page__status-fieldset">

@@ -1,14 +1,14 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
 import MainLayout from './components/MainLayout'
 import PageLoader from './components/ui/PageLoader'
-import { APP_SECTIONS, QUICK_ACTIONS, type SectionKey } from './config/navigation'
+import { APP_SECTIONS, type SectionKey } from './config/navigation'
 import './App.css'
 import { bootstrapAuthSession } from './lib/auth-session'
 
 const DEFAULT_SECTION_KEY: SectionKey = 'inicio'
 const AprovacaoEntradaPage = lazy(() => import('./pages/AprovacaoEntradaPage'))
 const AlertaValidadePage = lazy(() => import('./pages/estoque').then((module) => ({ default: module.AlertaValidadePage })))
-const AlertaValidadeStartupModal = lazy(() => import('./pages/estoque').then((module) => ({ default: module.AlertaValidadeStartupModal })))
+const AlertaValidadeStartupNotifier = lazy(() => import('./pages/estoque').then((module) => ({ default: module.AlertaValidadeStartupNotifier })))
 const BonamePage = lazy(() => import('./pages/BonamePage'))
 const ConsultarMovimentacoesPage = lazy(() => import('./pages/ConsultarMovimentacoesPage'))
 const DemandasEspecificasPage = lazy(() => import('./pages/DemandasEspecificasPage'))
@@ -39,6 +39,7 @@ const RequisicaoPorSetorPage = lazy(() => import('./pages/requisicoes/por-setor'
 const SolicitacoesAbertasPage = lazy(() => import('./pages/SolicitacoesAbertasPage'))
 const SolicitacoesEncerradasPage = lazy(() => import('./pages/SolicitacoesEncerradasPage'))
 const SetoresPage = lazy(() => import('./pages/SetoresPage'))
+const SettingsPage = lazy(() => import('./pages/SettingsPage'))
 const TiposMedicamentosPage = lazy(() => import('./pages/TiposMedicamentosPage'))
 const TiposRequisicoesPage = lazy(() => import('./pages/TiposRequisicoesPage'))
 
@@ -80,6 +81,7 @@ function App() {
     || activeSectionKey === 'parametros/tipos_medicamentos'
     || activeSectionKey === 'parametros/setores'
     || activeSectionKey === 'parametros/tipos_requisicoes'
+    || activeSectionKey === 'parametros/settings'
     || activeSectionKey === 'parametros/diagnosticos'
 
   useEffect(() => {
@@ -109,18 +111,16 @@ function App() {
   }
 
   return (
-    <MainLayout
-      activeSidebarKey={activeSectionKey}
-      breadcrumbItems={section.breadcrumbItems}
-      onQuickActionSelect={setActiveSectionKey}
-      onSidebarSelect={setActiveSectionKey}
-      pageBannerCompact={isCadastroSection}
-      pageDescription={section.description}
-      pageMetaVisible={!isCadastroSection && activeSectionKey !== 'inicio'}
-      pageStatus={section.status}
-      pageTitle={section.title}
-      quickActions={QUICK_ACTIONS}
-    >
+      <MainLayout
+        activeSidebarKey={activeSectionKey}
+        breadcrumbItems={section.breadcrumbItems}
+        onSidebarSelect={setActiveSectionKey}
+        pageBannerCompact={isCadastroSection}
+        pageDescription={section.description}
+        pageMetaVisible={!isCadastroSection && activeSectionKey !== 'inicio'}
+        pageStatus={section.status}
+        pageTitle={section.title}
+      >
       <Suspense fallback={<PageLoader title="Carregando" variant="page" />}>
         <>
           {activeSectionKey === 'inicio' ? (
@@ -183,6 +183,8 @@ function App() {
             <SetoresPage />
           ) : activeSectionKey === 'parametros/tipos_requisicoes' ? (
             <TiposRequisicoesPage />
+          ) : activeSectionKey === 'parametros/settings' ? (
+            <SettingsPage />
           ) : activeSectionKey === 'parametros/diagnosticos' ? (
             <DiagnosticosPage />
           ) : (
@@ -192,7 +194,7 @@ function App() {
               onOpenDashboard={() => setActiveSectionKey('inicio')}
             />
           )}
-          <AlertaValidadeStartupModal />
+          <AlertaValidadeStartupNotifier />
         </>
       </Suspense>
     </MainLayout>

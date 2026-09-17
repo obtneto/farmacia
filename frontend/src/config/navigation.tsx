@@ -70,6 +70,7 @@ export type SectionKey =
   | 'parametros/tipos_medicamentos'
   | 'parametros/setores'
   | 'parametros/tipos_requisicoes'
+  | 'parametros/settings'
 
 export type SectionMeta = {
   breadcrumbItems: string[]
@@ -293,6 +294,12 @@ export const APP_SECTIONS: Record<SectionKey, SectionMeta> = {
     status: 'Cadastro mestre',
     title: 'Cadastro de Tipos de Requisicoes',
   },
+  'parametros/settings': {
+    breadcrumbItems: ['Inicio', 'Cadastros', 'Settings'],
+    description: '',
+    status: 'Cadastro mestre',
+    title: 'Cadastro de Settings',
+  },
 }
 
 export const NAVIGATION_GROUPS: NavigationGroup[] = [
@@ -509,6 +516,11 @@ export const NAVIGATION_GROUPS: NavigationGroup[] = [
         icon: <RiStethoscopeLine size={18} />,
         label: 'Diagnosticos',
       },
+      {
+        eventKey: 'parametros/settings',
+        icon: <RiSettings3Line size={18} />,
+        label: 'Settings',
+      },
     ],
   },
 ]
@@ -530,6 +542,7 @@ export const QUICK_ACTIONS: Array<{ eventKey: SectionKey; label: string }> = [
   { eventKey: 'parametros/tipos_medicamentos', label: 'Abrir tipos de medicamentos' },
   { eventKey: 'parametros/tipos_requisicoes', label: 'Abrir tipos de requisicoes' },
   { eventKey: 'parametros/diagnosticos', label: 'Abrir cadastro de Diagnosticos' },
+  { eventKey: 'parametros/settings', label: 'Abrir cadastro de Settings' },
   { eventKey: 'pacientes/ambulatorio', label: 'Consultar pacientes do ambulatorio' },
   { eventKey: 'pacientes/demandas_especificas', label: 'Consultar demandas especificas' },
   { eventKey: 'requisicoes/por_paciente', label: 'Consultar requisicoes por paciente' },

@@ -9,6 +9,7 @@ enum eAtivo {
 export interface iLocaisFields {
     local_id: number,
     local_descr: string | null,
+    local_tipo: string | null,
     local_ativo: eAtivo | null,
 }
 
@@ -23,6 +24,7 @@ export default class Locais extends BaseModel implements iBaseModel, iLocaisFiel
         const initFields: iLocaisFields = {
             local_id: 0,
             local_descr: null,
+            local_tipo: null,
             local_ativo: null,
         };
 
@@ -37,6 +39,9 @@ export default class Locais extends BaseModel implements iBaseModel, iLocaisFiel
 
     set local_descr(descr: string | null) { this._fields.local_descr = descr; }
     get local_descr(): string | null { return this._fields.local_descr; }
+
+    set local_tipo(tipo: string | null) { this._fields.local_tipo = tipo; }
+    get local_tipo(): string | null { return this._fields.local_tipo; }
 
     set local_ativo(ativo: eAtivo | null) { this._fields.local_ativo = ativo; }
     get local_ativo(): eAtivo | null { return this._fields.local_ativo; }
