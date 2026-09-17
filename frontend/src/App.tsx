@@ -116,7 +116,7 @@ function App() {
       onSidebarSelect={setActiveSectionKey}
       pageBannerCompact={isCadastroSection}
       pageDescription={section.description}
-      pageMetaVisible={!isCadastroSection}
+      pageMetaVisible={!isCadastroSection && activeSectionKey !== 'inicio'}
       pageStatus={section.status}
       pageTitle={section.title}
       quickActions={QUICK_ACTIONS}

@@ -24,6 +24,7 @@ import router_solicitacoes from './routes/routes_solicitacoes.js';
 import router_itens_solicitacoes from './routes/routes_itens_solicitacoes.js';
 import router_controle_ddu from './routes/routes_controle_ddu.js';
 import router_inventarios from './routes/routes_inventarios.js';
+import router_dashboard from './routes/routes_dashboard.js'
 import morgan from 'morgan';
 import helmet from 'helmet';
 
@@ -162,6 +163,7 @@ app.use('/itens-solicitacoes', router_itens_solicitacoes);
 app.use('/controle-ddu', router_controle_ddu);
 app.use('/inventarios', router_inventarios);
 app.use('/inventario', router_inventarios);
+app.use('/dashboard',router_dashboard);
 app.use('/settings', (req: Request, res: Response) => {
 
     const resdata: iresdata = { err: 0, msg: '', status: 200, data: null }

@@ -255,6 +255,14 @@ function getRequisicaoDate(record: RequisicaoPeriodoRecord): Date | string | nul
   return record.data ?? record.req_date ?? null
 }
 
+function getRequisicaoLocal(record: RequisicaoPeriodoRecord): string {
+  return record.local || '-'
+}
+
+function getDetalhePacienteSetor(detalhe: RequisicaoDetalheRecord | undefined, selectedRequisicao: RequisicaoPeriodoRecord | null): string {
+  return detalhe?.paciente || detalhe?.nom_paciente || detalhe?.setor || selectedRequisicao?.paciente || selectedRequisicao?.nom_paciente || selectedRequisicao?.setor || '-'
+}
+
 function getRequisicaoDestino(record: RequisicaoPeriodoRecord): string {
   return record.paciente || record.nom_paciente || record.setor || record.local || '-'
 }
@@ -356,7 +364,8 @@ export function ListarRequisicoesPorPeriodoPage({
   const detalhe = detalheQuery.data
   const detalheItens = detalhe?.itens ?? []
   const detalheNumero = detalhe ? getRequisicaoNumero(detalhe) : selectedRequisicao ? getRequisicaoNumero(selectedRequisicao) : null
-  const detalheDestino = detalhe ? getRequisicaoDestino(detalhe) : selectedRequisicao ? getRequisicaoDestino(selectedRequisicao) : '-'
+  const detalheLocal = detalhe ? getRequisicaoLocal(detalhe) : selectedRequisicao ? getRequisicaoLocal(selectedRequisicao) : '-'
+  const detalhePacienteSetor = getDetalhePacienteSetor(detalhe, selectedRequisicao)
 
   const handleSubmitFilters = async () => {
     const nextErrors = validateFilters(filterValues)
@@ -727,8 +736,12 @@ export function ListarRequisicoesPorPeriodoPage({
                 <dd>{mask.requisitionNumber(detalheNumero) || mask.text(detalheNumero)}</dd>
               </div>
               <div>
-                <dt>Paciente / Setor</dt>
-                <dd>{detalheDestino}</dd>
+                <dt>Local</dt>
+                <dd>{detalheLocal}</dd>
+              </div>
+              <div>
+                <dt>Paciente/Setor</dt>
+                <dd>{detalhePacienteSetor}</dd>
               </div>
             </dl>
 

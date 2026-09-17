@@ -309,6 +309,7 @@ CREATE TABLE `tb_itens_demandas_especificas` (
   `ite_id` int NOT NULL,
   `ite_dem_id` int DEFAULT NULL,
   `ite_dem_med_id` int DEFAULT NULL,
+  `ite_dem_lote` varchar(60) COLLATE utf8mb4_general_ci DEFAULT NULL,
   `ite_dem_med_qtde` mediumint DEFAULT NULL,
   `ite_dem_med_ativo` tinyint DEFAULT NULL,
   `ite_ent_id` int DEFAULT NULL,

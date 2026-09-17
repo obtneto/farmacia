@@ -33,6 +33,14 @@ function formatDateForDisplay(value: Date | string | null | undefined): string {
     return '-'
   }
 
+  if (typeof value === 'string') {
+    const datePart = value.match(/^(\d{4})-(\d{2})-(\d{2})/)
+
+    if (datePart) {
+      return `${datePart[3]}/${datePart[2]}/${datePart[1]}`
+    }
+  }
+
   const parsedDate = value instanceof Date ? value : new Date(value)
 
   if (Number.isNaN(parsedDate.getTime())) {

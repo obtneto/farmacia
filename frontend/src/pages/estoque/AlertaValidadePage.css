@@ -21,8 +21,12 @@
 
 .alerta-validade-page__table-wrap .app-table tbody {
   overflow-x: hidden;
-  overflow-y: scroll;
-  scrollbar-gutter: stable;
+  overflow-y: auto;
+}
+
+.alerta-validade-page__table-wrap .app-table th:last-child,
+.alerta-validade-page__table-wrap .app-table td:last-child {
+  padding-right: 1.6rem;
 }
 
 .alerta-validade-page__table-copy {
@@ -51,10 +55,22 @@
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
 }
 
+.alerta-validade-page__startup-modal.rs-modal {
+  --rs-modal-size: min(96rem, calc(100% - 0.75rem));
+  --rs-modal-max-width: min(96rem, calc(100% - 0.75rem));
+  width: min(96rem, calc(100% - 0.75rem));
+  max-width: min(96rem, calc(100% - 0.75rem));
+}
+
+.alerta-validade-page__startup-modal .rs-modal-wrapper {
+  display: grid;
+  place-items: center;
+}
+
 .alerta-validade-page__startup-modal .rs-modal-dialog {
   height: min(42rem, calc(100vh - 2rem));
-  max-width: min(72rem, calc(100vw - 2rem));
-  width: min(72rem, calc(100vw - 2rem));
+  margin: auto;
+  width: 100%;
 }
 
 .alerta-validade-page__startup-modal .rs-modal-content {

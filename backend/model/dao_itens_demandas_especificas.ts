@@ -5,6 +5,7 @@ export interface iItensDemandasEspecificasFields {
     ite_id: number,
     ite_dem_id: number | null,
     ite_dem_med_id: number | null,
+    ite_dem_lote: string | null,
     ite_dem_med_qtde: number | null,
     ite_dem_med_ativo: number | null,
     ite_ent_id: number | null
@@ -22,6 +23,7 @@ export default class ItensDemandasEspecificas extends BaseModel implements iIten
             ite_id: 0,
             ite_dem_id: null,
             ite_dem_med_id: null,
+            ite_dem_lote: null,
             ite_dem_med_qtde: null,
             ite_dem_med_ativo: null,
             ite_ent_id: null
@@ -41,6 +43,9 @@ export default class ItensDemandasEspecificas extends BaseModel implements iIten
 
     set ite_dem_med_id(dem_med_id: number | null) { this._fields.ite_dem_med_id = dem_med_id }
     get ite_dem_med_id(): number | null { return this._fields.ite_dem_med_id }
+
+    set ite_dem_lote(dem_lote: string | null) { this._fields.ite_dem_lote = dem_lote }
+    get ite_dem_lote(): string | null { return this._fields.ite_dem_lote }
 
     set ite_dem_med_qtde(dem_med_qtde: number | null) { this._fields.ite_dem_med_qtde = dem_med_qtde }
     get ite_dem_med_qtde(): number { return this._fields.ite_dem_med_qtde }
@@ -77,6 +82,7 @@ export default class ItensDemandasEspecificas extends BaseModel implements iIten
                 ite_id: 0,
                 ite_dem_id: null,
                 ite_dem_med_id: null,
+                ite_dem_lote: null,
                 ite_dem_med_qtde: null,
                 ite_dem_med_ativo: null,
                 ite_ent_id: null

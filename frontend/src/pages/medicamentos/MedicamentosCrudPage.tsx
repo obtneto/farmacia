@@ -137,34 +137,38 @@ function normalizeSearchTerm(value: string): string {
   return trimmedValue.length === 0 ? '*' : trimmedValue
 }
 
-function normalizeText(value: string, maxLength: number): string {
-  return value.slice(0, maxLength)
+function normalizeString(value: string | null | undefined): string {
+  return String(value ?? '')
 }
 
-function normalizeTextForSave(value: string, maxLength: number): string {
+function normalizeText(value: string | null | undefined, maxLength: number): string {
+  return normalizeString(value).slice(0, maxLength)
+}
+
+function normalizeTextForSave(value: string | null | undefined, maxLength: number): string {
   return normalizeText(value, maxLength).trim().toLocaleUpperCase('pt-BR')
 }
 
 function validateForm(values: MedicamentoRecord, requiresVinculo: boolean): FormErrors {
   const errors: FormErrors = {}
 
-  if (!values.med_descr.trim()) {
+  if (!normalizeString(values.med_descr).trim()) {
     errors.med_descr = 'Informe a descricao do medicamento.'
   }
 
-  if (!values.med_descr_coml.trim()) {
+  if (!normalizeString(values.med_descr_coml).trim()) {
     errors.med_descr_coml = 'Informe a descricao comercial.'
   }
 
-  if (!values.med_und.trim()) {
+  if (!normalizeString(values.med_und).trim()) {
     errors.med_und = 'Informe a unidade.'
   }
 
-  if (!values.med_tipo_codigo.trim()) {
+  if (!normalizeString(values.med_tipo_codigo).trim()) {
     errors.med_tipo_codigo = 'Selecione o tipo de medicamento.'
   }
 
-  if (!values.med_tipo_med.trim()) {
+  if (!normalizeString(values.med_tipo_med).trim()) {
     errors.med_tipo_med = 'Informe a categoria do medicamento.'
   }
 
@@ -200,9 +204,22 @@ function normalizeNullableCode(value: string | null | undefined): string | null 
   return normalizedValue ? normalizedValue : null
 }
 
-function normalizeNullableId(value: number | null | undefined): number | null {
+function normalizeNullableId(value: number | string | null | undefined): number | null {
   const normalizedValue = Number(value)
   return Number.isFinite(normalizedValue) && normalizedValue > 0 ? normalizedValue : null
+}
+
+function normalizeMedicamentoRecord(value: MedicamentoRecord): MedicamentoRecord {
+  return {
+    ...value,
+    med_descr: normalizeString(value.med_descr),
+    med_descr_coml: normalizeString(value.med_descr_coml),
+    med_und: normalizeString(value.med_und),
+    med_tipo_codigo: normalizeString(value.med_tipo_codigo),
+    med_tipo_med: normalizeString(value.med_tipo_med),
+    med_bona_codigo: normalizeNullableCode(value.med_bona_codigo),
+    med_diag_id: normalizeNullableId(value.med_diag_id),
+  }
 }
 
 function normalizeLinkedFields(values: MedicamentoRecord): MedicamentoRecord {
@@ -288,11 +305,7 @@ async function buscarMedicamento(
     authToken,
   )
 
-  return {
-    ...data,
-    med_bona_codigo: normalizeNullableCode(data.med_bona_codigo),
-    med_diag_id: normalizeNullableId(data.med_diag_id),
-  }
+  return normalizeMedicamentoRecord(data)
 }
 
 async function listarTiposMedicamentos(baseUrl: string, authToken?: string | null): Promise<TipoMedicamentoRecord[]> {
@@ -503,7 +516,7 @@ export function MedicamentosCrudPage({
       med_descr_coml: normalizeTextForSave(effectiveFormValues.med_descr_coml, MED_DESCR_COML_MAX_LENGTH),
       med_und: normalizeTextForSave(effectiveFormValues.med_und, MED_UND_MAX_LENGTH),
       med_tipo_med: normalizeTextForSave(effectiveFormValues.med_tipo_med, MED_TIPO_MED_MAX_LENGTH),
-      med_tipo_codigo: effectiveFormValues.med_tipo_codigo.trim().toLocaleUpperCase('pt-BR'),
+      med_tipo_codigo: normalizeString(effectiveFormValues.med_tipo_codigo).trim().toLocaleUpperCase('pt-BR'),
       med_bona_codigo: normalizeNullableCode(effectiveFormValues.med_bona_codigo),
       med_diag_id: normalizeNullableId(effectiveFormValues.med_diag_id),
     })
@@ -983,7 +996,7 @@ export function MedicamentosCrudPage({
                       value={effectiveFormValues.med_diag_id}
                       disabled={diagnosticoSelectDisabled}
                       onChange={(value) => {
-                        setFormValues((current) => ({ ...current, med_diag_id: normalizeNullableId(value as number | null | undefined) }))
+                        setFormValues((current) => ({ ...current, med_diag_id: normalizeNullableId(value) }))
                         setFormErrors((current) => ({ ...current, med_diag_id: undefined }))
                       }}
                     />
@@ -1015,7 +1028,7 @@ export function MedicamentosCrudPage({
                       value={effectiveFormValues.med_bona_codigo}
                       disabled={bonameSelectDisabled}
                       onChange={(value) => {
-                        setFormValues((current) => ({ ...current, med_bona_codigo: normalizeNullableCode(value as string | null | undefined) }))
+                        setFormValues((current) => ({ ...current, med_bona_codigo: normalizeNullableCode(value) }))
                         setFormErrors((current) => ({ ...current, med_bona_codigo: undefined }))
                       }}
                     />

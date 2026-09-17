@@ -436,7 +436,7 @@ export default class Controller_DemandasEspecificas {
 
                 // Validar os dados do item
                 const itemMedId = Number(item.ent_med_id || 0);
-                const itemLote = String(item.ent_lote || '');
+                const itemLote = String(item.ent_lote || '').trim().toLocaleUpperCase('pt-BR');
                 const itemLoteValidade = item.ent_lote_validade;
                 const itemQtde = Number(item.ent_qtde || 0);
 
@@ -508,6 +508,7 @@ export default class Controller_DemandasEspecificas {
                 itensDemandas.ite_dem_med_qtde = itemQtde;
                 itensDemandas.ite_dem_id = demandas.dem_id;
                 itensDemandas.ite_dem_med_id = itemMedId;
+                itensDemandas.ite_dem_lote = itemLote;
                 itensDemandas.ite_ent_id = entradas.ent_id;
                 
                 await itensDemandas.Salvar();

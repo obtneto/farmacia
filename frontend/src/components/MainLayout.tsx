@@ -726,25 +726,27 @@ export function MainLayout({
                 bordered
                 className={`main-layout__page-shell ${pageBannerCompact ? 'main-layout__page-shell--compact' : ''}`.trim()}
               >
-                <div className="main-layout__page-header">
-                  <div className="main-layout__page-copy">
-                    <h3>{pageTitle}</h3>
-                    {pageDescription ? <p>{pageDescription}</p> : null}
-                  </div>
-
-                  {pageMetaVisible ? (
-                    <div className="main-layout__page-meta">
-                      <div>
-                        <span>Status</span>
-                        <strong>{pageStatus}</strong>
-                      </div>
-                      <div>
-                        <span>Padrao</span>
-                        <strong>RSuite + componentes reutilizaveis</strong>
-                      </div>
+                {activeSidebarKey !== 'inicio' ? (
+                  <div className="main-layout__page-header">
+                    <div className="main-layout__page-copy">
+                      <h3>{pageTitle}</h3>
+                      {pageDescription ? <p>{pageDescription}</p> : null}
                     </div>
-                  ) : null}
-                </div>
+
+                    {pageMetaVisible ? (
+                      <div className="main-layout__page-meta">
+                        <div>
+                          <span>Status</span>
+                          <strong>{pageStatus}</strong>
+                        </div>
+                        <div>
+                          <span>Padrao</span>
+                          <strong>RSuite + componentes reutilizaveis</strong>
+                        </div>
+                      </div>
+                    ) : null}
+                  </div>
+                ) : null}
 
                 <div className="main-layout__page-body">{children}</div>
               </Panel>

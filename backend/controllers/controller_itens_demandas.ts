@@ -11,10 +11,10 @@ export default class Controller_Itens_Demandas {
 
             const db: iDatabase = new Database('fsph_farmacia');
 
-            const resdata: iresdata = {err: 0, msg: '', status: 200, data: []}
+            const resdata: iresdata = { err: 0, msg: '', status: 200, data: [] }
 
             try {
-                  
+
                   await db.Connect();
 
                   const ite_id: number = Number(req.params.ite_id || 0);
@@ -50,7 +50,7 @@ export default class Controller_Itens_Demandas {
                   resdata.data = result;
 
             } catch (error) {
-                 applyControllerError(resdata,error,'Controller_itens_demandas')    
+                  applyControllerError(resdata, error, 'Controller_itens_demandas')
             }
 
             await db.Disconnect();
@@ -62,10 +62,10 @@ export default class Controller_Itens_Demandas {
 
             const db: iDatabase = new Database('fsph_farmacia');
 
-            const resdata: iresdata = {err: 0, msg: '', status: 200, data: []};
+            const resdata: iresdata = { err: 0, msg: '', status: 200, data: [] };
 
             try {
-                  
+
                   await db.Connect();
 
                   const dem_id: number = Number(req.params.dem_id || 0);
@@ -81,7 +81,7 @@ export default class Controller_Itens_Demandas {
                   resdata.data = itens.ListarAtivos(dem_id);
 
             } catch (error) {
-                  applyControllerError(resdata,error,'Controller_Itens_Demandas');
+                  applyControllerError(resdata, error, 'Controller_Itens_Demandas');
             }
 
             await db.Disconnect();
@@ -94,7 +94,7 @@ export default class Controller_Itens_Demandas {
 
             const db: iDatabase = new Database('fsph_farmacia');
 
-            const resdata: iresdata = {err: 0, msg: '', status: 200, data: []};
+            const resdata: iresdata = { err: 0, msg: '', status: 200, data: [] };
 
             try {
 
@@ -105,6 +105,7 @@ export default class Controller_Itens_Demandas {
                   const ite_dem_med_id: number = Number(req.body.dem_med_id || 0);
                   const ite_dem_med_qtde: number = Number(req.body.dem_med_qtde || 0);
                   const ite_dem_med_ativo: number = Number(req.body.dem_med_ativo || 1);
+                  const ite_dem_lote: string | null = req.body.dem_lote || null;
 
                   if (ite_dem_id === 0) {
                         const error = new Error('ID da Demanda invalido.');
@@ -139,6 +140,7 @@ export default class Controller_Itens_Demandas {
 
                   itens.ite_dem_id = ite_dem_id;
                   itens.ite_dem_med_id = ite_dem_med_id;
+                  itens.ite_dem_lote = ite_dem_lote;
                   itens.ite_dem_med_qtde = ite_dem_med_qtde;
                   itens.ite_dem_med_ativo = itens.found ? itens.ite_dem_med_ativo : ite_dem_med_ativo;
 
@@ -146,9 +148,9 @@ export default class Controller_Itens_Demandas {
 
                   resdata.msg = "Dados Salvo com Sucesso!";
 
-                  
+
             } catch (error) {
-                  applyControllerError(resdata,error,"Controller_Itens_Demandas");
+                  applyControllerError(resdata, error, "Controller_Itens_Demandas");
             }
 
             await db.Disconnect();
@@ -160,10 +162,10 @@ export default class Controller_Itens_Demandas {
 
             const db: iDatabase = new Database('fsph_farmacia');
 
-            const resdata: iresdata = {err: 0, msg: '', status: 200, data: []};
+            const resdata: iresdata = { err: 0, msg: '', status: 200, data: [] };
 
             try {
-                  
+
                   await db.Connect();
 
                   const ite_id: number = Number(req.params.ite_id || 0);
@@ -188,7 +190,7 @@ export default class Controller_Itens_Demandas {
                   }
 
             } catch (error) {
-                  applyControllerError(resdata,error,"Controller_Itens_Demandas")
+                  applyControllerError(resdata, error, "Controller_Itens_Demandas")
             }
 
             await db.Disconnect();
@@ -201,7 +203,7 @@ export default class Controller_Itens_Demandas {
 
             const db: iDatabase = new Database('fsph_farmacia');
 
-            const resdata: iresdata = {err: 0, msg: '', status: 200, data:[]};
+            const resdata: iresdata = { err: 0, msg: '', status: 200, data: [] };
 
             try {
 
@@ -225,12 +227,12 @@ export default class Controller_Itens_Demandas {
                         throw error;
                   }
 
-                  itens.ite_dem_med_ativo = itens.ite_dem_med_ativo === 1 ? 0 : 1; 
+                  itens.ite_dem_med_ativo = itens.ite_dem_med_ativo === 1 ? 0 : 1;
                   await itens.Salvar();
                   resdata.msg = 'Status do item atualizado com sucesso.';
-                  
+
             } catch (error) {
-                  applyControllerError(resdata,error,'Controller_Itens_Damandas.AtivarDesativar');
+                  applyControllerError(resdata, error, 'Controller_Itens_Damandas.AtivarDesativar');
             }
 
             await db.Disconnect();
