@@ -1,0 +1,260 @@
+[
+  {
+    "CodBona": "ACETA     ",
+    "Descr": "ACETATO DESMPPRESSINA 0,4 MCG/ML                                                                 ",
+    "Qtde_UI": 1,
+    "CodDiag": 9
+  },
+  {
+    "CodBona": "ACETA15   ",
+    "Descr": "ACETATO DESMPPRESSINA 15 MCG/ML                                                                  ",
+    "Qtde_UI": 1,
+    "CodDiag": 9
+  },
+  {
+    "CodBona": "ACID250   ",
+    "Descr": "ACIDOTRANEXAMICO 250 MG                                                                             ",
+    "Qtde_UI": 1,
+    "CodDiag": 9
+  },
+  {
+    "CodBona": "BER500    ",
+    "Descr": "COMPLEXO PROTROMBINICO 500 UI                                                                       ",
+    "Qtde_UI": 500,
+    "CodDiag": 9
+  },
+  {
+    "CodBona": "BER600    ",
+    "Descr": "COMPLEXO PROTROMBINICO 600 UI                                                                       ",
+    "Qtde_UI": 600,
+    "CodDiag": 9
+  },
+  {
+    "CodBona": "EM105",
+    "Descr": "EMICIZUMABE 105MG/0,7ML",
+    "Qtde_UI": 105,
+    "CodDiag": 1
+  },
+  {
+    "CodBona": "EM150",
+    "Descr": "EMICIZUMABE 150MG/ML",
+    "Qtde_UI": 150,
+    "CodDiag": 1
+  },
+  {
+    "CodBona": "EM30",
+    "Descr": "EMICIZUMABE 30MG/ML",
+    "Qtde_UI": 30,
+    "CodDiag": 1
+  },
+  {
+    "CodBona": "EM60",
+    "Descr": "EMICIZUMABE 60MG/0,4ML",
+    "Qtde_UI": 60,
+    "CodDiag": 1
+  },
+  {
+    "CodBona": "FEI1000   ",
+    "Descr": "FEIBA 1000 UI                                                                                       ",
+    "Qtde_UI": 1000,
+    "CodDiag": 9
+  },
+  {
+    "CodBona": "FEI2500   ",
+    "Descr": "FEIBA 2500 UI                                                                                       ",
+    "Qtde_UI": 2500,
+    "CodDiag": 9
+  },
+  {
+    "CodBona": "FEI500    ",
+    "Descr": "FEIBA 500 UI                                                                                        ",
+    "Qtde_UI": 500,
+    "CodDiag": 9
+  },
+  {
+    "CodBona": "GAU100    ",
+    "Descr": "MIGLUSTATE 100 MG",
+    "Qtde_UI": 100,
+    "CodDiag": 10
+  },
+  {
+    "CodBona": "GAU200    ",
+    "Descr": "TALIGLUCERASE ALFA 200IU",
+    "Qtde_UI": 200,
+    "CodDiag": 10
+  },
+  {
+    "CodBona": "GAU400    ",
+    "Descr": "IMIGLUCERASE 400 UI",
+    "Qtde_UI": 400,
+    "CodDiag": 10
+  },
+  {
+    "CodBona": "HPN300",
+    "Descr": "ECULIZUMAB 300MG",
+    "Qtde_UI": 300,
+    "CodDiag": 14
+  },
+  {
+    "CodBona": "IX1000    ",
+    "Descr": "FATOR IX 1000UI                                                                                     ",
+    "Qtde_UI": 1000,
+    "CodDiag": 2
+  },
+  {
+    "CodBona": "IX1200",
+    "Descr": "FATOR IX 1200UI",
+    "Qtde_UI": 1200,
+    "CodDiag": 2
+  },
+  {
+    "CodBona": "IX200     ",
+    "Descr": "FATOR IX 200 UI                                                                                     ",
+    "Qtde_UI": 200,
+    "CodDiag": 2
+  },
+  {
+    "CodBona": "IX250     ",
+    "Descr": "FATOR IX 250 UI                                                                                     ",
+    "Qtde_UI": 250,
+    "CodDiag": 2
+  },
+  {
+    "CodBona": "IX500     ",
+    "Descr": "FATOR IX 500 UI                                                                                     ",
+    "Qtde_UI": 500,
+    "CodDiag": 2
+  },
+  {
+    "CodBona": "IX600     ",
+    "Descr": "FATOR IX 600 UI                                                                                     ",
+    "Qtde_UI": 600,
+    "CodDiag": 2
+  },
+  {
+    "CodBona": "VII100R   ",
+    "Descr": "FATOR VII 100 KUI RECOMBINANTE                                                                      ",
+    "Qtde_UI": 100000,
+    "CodDiag": 9
+  },
+  {
+    "CodBona": "VII250R   ",
+    "Descr": "FATOR VII 250 KUI RECOMBINANTE                                                                      ",
+    "Qtde_UI": 250000,
+    "CodDiag": 9
+  },
+  {
+    "CodBona": "VII50R    ",
+    "Descr": "FATOR VII 50 KUI RECOMBINANTE                                                                       ",
+    "Qtde_UI": 50000,
+    "CodDiag": 9
+  },
+  {
+    "CodBona": "VIIA60    ",
+    "Descr": "FATOR VII A                                                                                         ",
+    "Qtde_UI": 60000,
+    "CodDiag": 9
+  },
+  {
+    "CodBona": "VIII1000  ",
+    "Descr": "FATOR VIII 1000 UI                                                                                  ",
+    "Qtde_UI": 1000,
+    "CodDiag": 1
+  },
+  {
+    "CodBona": "VIII1000R ",
+    "Descr": "FATOR VIII 1000 UI Recombinante                                                                     ",
+    "Qtde_UI": 1000,
+    "CodDiag": 1
+  },
+  {
+    "CodBona": "VIII1200  ",
+    "Descr": "FATOR VIIIY 1200 UI                                                                                 ",
+    "Qtde_UI": 1200,
+    "CodDiag": 3
+  },
+  {
+    "CodBona": "VIII1500R",
+    "Descr": "FATOR VIII 1500UI RECOMBINANTE",
+    "Qtde_UI": 1500,
+    "CodDiag": 1
+  },
+  {
+    "CodBona": "VIII250   ",
+    "Descr": "FATOR VIII 250 UI                                                                                   ",
+    "Qtde_UI": 250,
+    "CodDiag": 1
+  },
+  {
+    "CodBona": "VIII250R  ",
+    "Descr": "FATOR VIII 250 UI Recombinante                                                                      ",
+    "Qtde_UI": 250,
+    "CodDiag": 1
+  },
+  {
+    "CodBona": "VIII500   ",
+    "Descr": "FATOR VIII 500 UI                                                                                   ",
+    "Qtde_UI": 500,
+    "CodDiag": 1
+  },
+  {
+    "CodBona": "VIII500R  ",
+    "Descr": "FATOR VIII 500 UI Recombinante                                                                      ",
+    "Qtde_UI": 500,
+    "CodDiag": 1
+  },
+  {
+    "CodBona": "VIIIY1000 ",
+    "Descr": "FATOR VIIIY 1000 UI                                                                                 ",
+    "Qtde_UI": 1000,
+    "CodDiag": 1
+  },
+  {
+    "CodBona": "VIIIY1000I",
+    "Descr": "FATOR VIIIY 1000 UI IMUNOTOLERANCIA                                                                 ",
+    "Qtde_UI": 1000,
+    "CodDiag": 1
+  },
+  {
+    "CodBona": "VIIIY2400 ",
+    "Descr": "FATOR VIIIY 2400 UI                                                                                 ",
+    "Qtde_UI": 2400,
+    "CodDiag": 3
+  },
+  {
+    "CodBona": "VIIIY250  ",
+    "Descr": "FATOR VIIIY 250 UI                                                                                  ",
+    "Qtde_UI": 250,
+    "CodDiag": 3
+  },
+  {
+    "CodBona": "VIIIY250I ",
+    "Descr": "FATOR VIIIY 250 UI IMUNOTOLERANCIA                                                                  ",
+    "Qtde_UI": 250,
+    "CodDiag": 1
+  },
+  {
+    "CodBona": "VIIIY450  ",
+    "Descr": "FATOR VIIIY 450 UI                                                                                  ",
+    "Qtde_UI": 450,
+    "CodDiag": 3
+  },
+  {
+    "CodBona": "VIIIY500  ",
+    "Descr": "FATOR VIIIY 500 UI                                                                                  ",
+    "Qtde_UI": 500,
+    "CodDiag": 3
+  },
+  {
+    "CodBona": "VIIIY500I ",
+    "Descr": "FATOR VIIIY 500 UI IMUNOTOLERANCIA                                                                  ",
+    "Qtde_UI": 500,
+    "CodDiag": 1
+  },
+  {
+    "CodBona": "XIII250   ",
+    "Descr": "FATOR XIII 250                                                                                      ",
+    "Qtde_UI": 250,
+    "CodDiag": 4
+  }
+]

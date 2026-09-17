@@ -15,6 +15,7 @@ import {
   Sidenav,
   VStack,
   Whisper,
+  type WhisperInstance,
   useMediaQuery,
 } from 'rsuite'
 import {
@@ -31,6 +32,7 @@ import {
   RiErrorWarningLine,
   RiArrowRightLine,
   RiInboxLine,
+  RiDeleteBin6Line,
 } from 'react-icons/ri'
 import { NAVIGATION_GROUPS, type NavigationItem, type SectionKey } from '../config/navigation'
 import { getApiBaseUrl } from '../lib/api-base-url'
@@ -97,6 +99,7 @@ type HeaderNotification = {
   tone?: 'info' | 'warning' | 'success' | 'danger'
   read?: boolean
   createdAt?: string
+  critical?: boolean
 }
 
 type NotificationsPayload = {
@@ -332,6 +335,7 @@ function normalizeHeaderNotification(value: unknown): HeaderNotification | null 
       createdAt: 'createdAt' in value && typeof value.createdAt === 'string' ? value.createdAt : undefined,
       read: 'read' in value && typeof value.read === 'boolean' ? value.read : false,
       tone: 'tone' in value ? normalizeNotificationTone(value.tone) : undefined,
+      critical: 'critical' in value && typeof value.critical === 'boolean' ? value.critical : undefined,
     }
   }
 
@@ -458,6 +462,7 @@ export function MainLayout({
   const [isUserProfileExpanded, setIsUserProfileExpanded] = useState(false)
   const [loggedInUser, setLoggedInUser] = useState<LoggedInUserProfile>(() => getLoggedInUserProfile())
   const [notifications, setNotifications] = useState<HeaderNotification[]>([])
+  const notificationsWhisperRef = useRef<WhisperInstance>(null)
   const userProfileCollapseTimeoutRef = useRef<number | undefined>(undefined)
 
   const sidebarWidth = isMobile
@@ -583,6 +588,10 @@ export function MainLayout({
       }
 
       setNotifications((current) => [notification, ...current.filter((item) => item.id !== notification.id)])
+
+      if (notification.critical) {
+        notificationsWhisperRef.current?.open()
+      }
     })
 
     eventSource.addEventListener('clear', () => {
@@ -656,6 +665,19 @@ export function MainLayout({
     const authToken = readStoredAuthToken()
     void fetch(`${API_BASE_URL}/notificacoes/mark-all-read`, {
       method: 'PATCH',
+      headers: authToken ? { Authorization: `Bearer ${authToken}` } : undefined,
+    }).catch(() => undefined)
+  }
+
+  const handleRemoveNotification = (e: React.MouseEvent, notificationId: string) => {
+    e.stopPropagation()
+    e.preventDefault()
+
+    setNotifications((current) => current.filter((notification) => notification.id !== notificationId))
+
+    const authToken = readStoredAuthToken()
+    void fetch(`${API_BASE_URL}/notificacoes/${encodeURIComponent(notificationId)}`, {
+      method: 'DELETE',
       headers: authToken ? { Authorization: `Bearer ${authToken}` } : undefined,
     }).catch(() => undefined)
   }
@@ -799,6 +821,7 @@ export function MainLayout({
 
           <HStack spacing={12} alignItems="center" className="main-layout__header-actions">
             <Whisper
+              ref={notificationsWhisperRef}
               placement="bottomEnd"
               trigger="click"
               speaker={
@@ -853,9 +876,21 @@ export function MainLayout({
                                 <div className="main-layout__notification-content">
                                   <div className="main-layout__notification-top">
                                     <strong className="main-layout__notification-title">{notification.title}</strong>
-                                    {formattedTime ? (
-                                      <span className="main-layout__notification-time">{formattedTime}</span>
-                                    ) : null}
+                                    <div className="main-layout__notification-meta">
+                                      {formattedTime ? (
+                                        <span className="main-layout__notification-time">{formattedTime}</span>
+                                      ) : null}
+                                      <Button
+                                        appearance="subtle"
+                                        size="xs"
+                                        className="main-layout__notification-delete-btn"
+                                        aria-label="Excluir notificação"
+                                        title="Excluir notificação"
+                                        onClick={(e) => handleRemoveNotification(e, notification.id)}
+                                      >
+                                        <RiDeleteBin6Line size={14} />
+                                      </Button>
+                                    </div>
                                   </div>
                                   <p className="main-layout__notification-desc">{notification.description}</p>
                                   <div className="main-layout__notification-footer">
@@ -884,9 +919,21 @@ export function MainLayout({
                               <div className="main-layout__notification-content">
                                 <div className="main-layout__notification-top">
                                   <strong className="main-layout__notification-title">{notification.title}</strong>
-                                  {formattedTime ? (
-                                    <span className="main-layout__notification-time">{formattedTime}</span>
-                                  ) : null}
+                                  <div className="main-layout__notification-meta">
+                                    {formattedTime ? (
+                                      <span className="main-layout__notification-time">{formattedTime}</span>
+                                    ) : null}
+                                    <Button
+                                      appearance="subtle"
+                                      size="xs"
+                                      className="main-layout__notification-delete-btn"
+                                      aria-label="Excluir notificação"
+                                      title="Excluir notificação"
+                                      onClick={(e) => handleRemoveNotification(e, notification.id)}
+                                    >
+                                      <RiDeleteBin6Line size={14} />
+                                    </Button>
+                                  </div>
                                 </div>
                                 <p className="main-layout__notification-desc">{notification.description}</p>
                                 {isUnread ? (

@@ -17,6 +17,7 @@ export interface NotificationRecord {
     createdAt: string;
     actionLabel?: string;
     actionSectionKey?: string;
+    critical?: boolean;
 }
 
 const __filename = fileURLToPath(import.meta.url);
@@ -38,7 +39,7 @@ class NotificationService extends EventEmitter {
         return this.notifications;
     }
 
-    async publish(notification: Pick<NotificationRecord, 'title' | 'description'> & Partial<Pick<NotificationRecord, 'id' | 'tone' | 'actionLabel' | 'actionSectionKey'>>): Promise<NotificationRecord> {
+    async publish(notification: Pick<NotificationRecord, 'title' | 'description'> & Partial<Pick<NotificationRecord, 'id' | 'tone' | 'actionLabel' | 'actionSectionKey' | 'critical'>>): Promise<NotificationRecord> {
         const record: NotificationRecord = {
             id: notification.id || `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`,
             title: notification.title.trim(),
@@ -48,6 +49,7 @@ class NotificationService extends EventEmitter {
             createdAt: new Date().toISOString(),
             actionLabel: notification.actionLabel?.trim(),
             actionSectionKey: notification.actionSectionKey?.trim(),
+            critical: notification.critical !== undefined ? Boolean(notification.critical) : undefined,
         };
 
         this.notifications = [record, ...this.notifications.filter(item => item.id !== record.id)].slice(0, this.maxHistory);
@@ -181,6 +183,7 @@ export default class Controller_Notificacoes {
                     tone,
                     actionLabel: req.body?.actionLabel ? String(req.body.actionLabel) : undefined,
                     actionSectionKey: req.body?.actionSectionKey ? String(req.body.actionSectionKey) : undefined,
+                    critical: req.body?.critical !== undefined ? Boolean(req.body.critical) : undefined,
                 })
             };
         } catch (error: any) {
@@ -199,6 +202,30 @@ export default class Controller_Notificacoes {
             await notificationService.clear();
             resdata.msg = 'Notificações limpas com sucesso';
             resdata.data = { notifications: [] };
+        } catch (error: any) {
+            applyControllerError(resdata, error, 'Controller Notificacoes');
+        }
+
+        res.status(resdata.status).json(resdata);
+
+    }
+
+    static async Remover(req: Request, res: Response) {
+
+        const resdata = { err: 0, msg: '', status: 200, data: {} } as iresdata;
+
+        try {
+            const id = String(req.params?.id || '').trim();
+
+            if (!id) {
+                const error = new Error('Notificação não informada');
+                error.statusCode = 400;
+                throw error;
+            }
+
+            await notificationService.remove(id);
+            resdata.msg = 'Notificação removida com sucesso';
+            resdata.data = { id };
         } catch (error: any) {
             applyControllerError(resdata, error, 'Controller Notificacoes');
         }

@@ -530,6 +530,7 @@ export default class Controller_Estoque {
                     tone: 'warning',
                     actionLabel: 'Abrir Alerta de Validade',
                     actionSectionKey: 'estoque/alerta_validade',
+                    critical: true
                 });
             } else {
                 await notificationService.remove('estoque-alerta-validade');
