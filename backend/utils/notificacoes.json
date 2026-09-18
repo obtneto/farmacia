@@ -1,13 +1,1 @@
-[
-  {
-    "id": "estoque-alerta-validade",
-    "title": "Alerta de Validade",
-    "description": "33 lotes com validade dentro do prazo de alerta ou vencidos.",
-    "tone": "warning",
-    "read": true,
-    "createdAt": "2026-09-18T13:42:06.693Z",
-    "actionLabel": "Abrir Alerta de Validade",
-    "actionSectionKey": "estoque/alerta_validade",
-    "critical": false
-  }
-]
+[]

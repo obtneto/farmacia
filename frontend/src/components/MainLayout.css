@@ -415,7 +415,7 @@
 
 .main-layout__nav-group-title {
   padding: 0 0.75rem;
-  font-size: 0.76rem;
+  font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -599,6 +599,10 @@
   width: 100%;
 }
 
+.main-layout__nav > .rs-nav-item .main-layout__nav-item-label span {
+  font-size: 0.8rem;
+}
+
 .main-layout__nav-submenu-group {
   display: grid;
   gap: 0.15rem;
@@ -662,7 +666,7 @@
 }
 
 .main-layout__nav-item-shell--submenu-label .main-layout__nav-item-label span {
-  font-size: 0.9rem;
+  font-size: 0.75rem;
   font-weight: 800;
   letter-spacing: 0.04em;
   white-space: nowrap;
@@ -689,7 +693,7 @@
 }
 
 .main-layout__nav-submenu-group--depth-3 .main-layout__nav-item-label span {
-  font-size: 0.82rem;
+  font-size: 0.78rem;
 }
 
 .main-layout__nav-submenu-toggle:hover .main-layout__nav-item-shell--submenu-label,
@@ -772,7 +776,7 @@
 }
 
 .main-layout__nav-item-shell--submenu-child .main-layout__nav-item-label span {
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   white-space: nowrap;
 }
 
@@ -799,6 +803,7 @@
   align-items: center;
   gap: 0.85rem;
   width: 100%;
+  font-size: 0.8rem;
 }
 
 .main-layout__nav-menu-title > span:last-child {
