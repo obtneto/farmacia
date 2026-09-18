@@ -526,7 +526,7 @@ export default class Controller_Estoque {
                 await notificationService.publish({
                     id: 'estoque-alerta-validade',
                     title: 'Alerta de Validade',
-                    description: `${rows.length} lote${rows.length === 1 ? '' : 's'} com validade dentro do prazo de alerta.`,
+                    description: `${rows.length} lote${rows.length === 1 ? '' : 's'} com validade dentro do prazo de alerta ou vencidos.`,
                     tone: 'warning',
                     actionLabel: 'Abrir Alerta de Validade',
                     actionSectionKey: 'estoque/alerta_validade',

@@ -17,7 +17,7 @@ export interface NotificationRecord {
     createdAt: string;
     actionLabel?: string;
     actionSectionKey?: string;
-    critical?: boolean;
+    critical: boolean;
 }
 
 const __filename = fileURLToPath(import.meta.url);
@@ -25,6 +25,7 @@ const __dirname = path.dirname(__filename);
 const notificationsFilePath = path.resolve(__dirname, '../utils/notificacoes.json');
 
 class NotificationService extends EventEmitter {
+
     private notifications: NotificationRecord[] = [];
     private readonly maxHistory = 50;
     private persistQueue: Promise<void> = Promise.resolve();
@@ -49,7 +50,7 @@ class NotificationService extends EventEmitter {
             createdAt: new Date().toISOString(),
             actionLabel: notification.actionLabel?.trim(),
             actionSectionKey: notification.actionSectionKey?.trim(),
-            critical: notification.critical !== undefined ? Boolean(notification.critical) : undefined,
+            critical: false
         };
 
         this.notifications = [record, ...this.notifications.filter(item => item.id !== record.id)].slice(0, this.maxHistory);
