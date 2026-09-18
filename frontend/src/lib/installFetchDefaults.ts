@@ -1,4 +1,5 @@
 import { getApiBaseUrl } from './api-base-url'
+import { forceLoginRedirect, getAuthToken, setAuthToken } from './auth-helpers'
 
 const API_BASE_URL = getApiBaseUrl()
 
@@ -51,11 +52,32 @@ if (!globalScope.__farmaciaFetchDefaultsInstalled__) {
     if (isApiRequest(input)) {
       const headers = getRequestHeaders(input, init)
       headers.set('Cache-Control', 'no-cache')
+
+      const token = getAuthToken()
+      if (token && !headers.has('Authorization')) {
+        headers.set('Authorization', `Bearer ${token}`)
+      }
+
       nextInit.headers = headers
       nextInit.cache = 'no-store'
     }
 
-    return originalFetch(input, nextInit)
+    return originalFetch(input, nextInit).then((response) => {
+      if (!isApiRequest(input)) {
+        return response
+      }
+
+      const newToken = response.headers.get('x-new-token')
+      if (newToken) {
+        setAuthToken(newToken)
+      }
+
+      if (response.status === 401 || response.status === 503) {
+        forceLoginRedirect()
+      }
+
+      return response
+    })
   }) as typeof globalScope.fetch
 
   globalScope.__farmaciaFetchDefaultsInstalled__ = true

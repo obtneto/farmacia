@@ -3,6 +3,7 @@ import MainLayout from './components/MainLayout'
 import PageLoader from './components/ui/PageLoader'
 import { APP_SECTIONS, type SectionKey } from './config/navigation'
 import './App.css'
+import { isSectionAllowed } from './lib/auth-permissions'
 import { bootstrapAuthSession } from './lib/auth-session'
 
 const DEFAULT_SECTION_KEY: SectionKey = 'inicio'
@@ -88,11 +89,16 @@ function App() {
     let mounted = true
 
     void bootstrapAuthSession()
-      .catch(() => undefined)
-      .finally(() => {
-        if (mounted) {
-          setAuthReady(true)
+      .then(() => {
+        if (!mounted) {
+          return
         }
+
+        setActiveSectionKey((current) => (isSectionAllowed(current) ? current : DEFAULT_SECTION_KEY))
+        setAuthReady(true)
+      })
+      .catch(() => {
+        // redirect para o SA e tratado em bootstrapAuthSession / forceLoginRedirect
       })
 
     return () => {
@@ -100,10 +106,19 @@ function App() {
     }
   }, [])
 
+  const handleSidebarSelect = (eventKey: SectionKey) => {
+    if (!isSectionAllowed(eventKey)) {
+      setActiveSectionKey(DEFAULT_SECTION_KEY)
+      return
+    }
+
+    setActiveSectionKey(eventKey)
+  }
+
   if (!authReady) {
     return (
       <PageLoader
-        description="Sincronizando a sessao autenticada simulada."
+        description="Sincronizando a sessao autenticada do barramento."
         title="Autenticando"
         variant="page"
       />
@@ -114,7 +129,7 @@ function App() {
       <MainLayout
         activeSidebarKey={activeSectionKey}
         breadcrumbItems={section.breadcrumbItems}
-        onSidebarSelect={setActiveSectionKey}
+        onSidebarSelect={handleSidebarSelect}
         pageBannerCompact={isCadastroSection}
         pageDescription={section.description}
         pageMetaVisible={!isCadastroSection && activeSectionKey !== 'inicio'}

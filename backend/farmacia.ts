@@ -50,7 +50,9 @@ const allowedOrigins = new Set([
     'http://localhost:5173',
     'http://localhost:8080',
     'http://192.168.0.8',
-    'http://192.168.0.8:8080'
+    'http://192.168.0.8:8080',
+    'http://172.23.84.102:8080',
+    'http://172.23.84.102'
 ]);
 const corsAllowedHeaders = [
     'Authorization',

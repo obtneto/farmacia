@@ -23,6 +23,7 @@ import {
   RiArrowDownSLine,
   RiArrowRightSLine,
   RiCloseLine,
+  RiLogoutBoxRLine,
   RiMenuLine,
   RiNotification3Line,
   RiCheckDoubleLine,
@@ -34,8 +35,10 @@ import {
   RiInboxLine,
   RiDeleteBin6Line,
 } from 'react-icons/ri'
-import { NAVIGATION_GROUPS, type NavigationItem, type SectionKey } from '../config/navigation'
+import { NAVIGATION_GROUPS, type NavigationGroup, type NavigationItem, type SectionKey } from '../config/navigation'
 import { getApiBaseUrl } from '../lib/api-base-url'
+import { getAuthToken, getUserDisplayName, getUserProfile, logoutRedirect } from '../lib/auth-helpers'
+import { getAllowedRoutePaths, isSectionAllowed } from '../lib/auth-permissions'
 import './MainLayout.css'
 
 const SIDEBAR_EXPANDED = 322
@@ -59,30 +62,6 @@ const SIDEBAR_COLLAPSED_LOGO = {
   height: 512,
 }
 const OVERVIEW_GROUP = 'Visao geral'
-const AUTH_TOKEN_STORAGE_KEYS = ['authToken', 'access_token', 'accessToken', 'token', 'jwt', 'jwtToken']
-const USER_PROFILE_STORAGE_KEYS = [
-  'user',
-  'currentUser',
-  'authUser',
-  'sessionUser',
-  'profile',
-  'me',
-  'usuario',
-  'usuarioLogado',
-]
-const USER_NAME_FIELDS = [
-  'name',
-  'nome',
-  'displayName',
-  'display_name',
-  'fullName',
-  'full_name',
-  'preferred_username',
-  'user_name',
-  'username',
-  'login',
-]
-const USER_ROLE_FIELDS = ['role', 'roles', 'perfil', 'cargo', 'occupation', 'jobTitle', 'job_title']
 const DEFAULT_LOGGED_IN_USER = {
   displayName: 'Usuario autenticado',
   initials: 'UA',
@@ -124,65 +103,10 @@ const collectLeafSectionKeys = (items: NavigationItem[]): SectionKey[] =>
 const SIDEBAR_SECTION_KEY_LIST = NAVIGATION_GROUPS.flatMap((group) => collectLeafSectionKeys(group.items))
 const SIDEBAR_SECTION_KEYS = new Set<SectionKey>(SIDEBAR_SECTION_KEY_LIST)
 
-type StoredRecord = Record<string, unknown>
-
 interface LoggedInUserProfile {
   displayName: string
   initials: string
   roleLabel: string
-}
-
-function normalizeTextValue(value: unknown): string | null {
-  if (typeof value !== 'string') {
-    return null
-  }
-
-  const normalizedValue = value.trim()
-  return normalizedValue.length > 0 ? normalizedValue : null
-}
-
-function extractTextField(source: StoredRecord | null, candidateFields: string[]): string | null {
-  if (!source) {
-    return null
-  }
-
-  for (const field of candidateFields) {
-    const value = normalizeTextValue(source[field])
-
-    if (value) {
-      return value
-    }
-  }
-
-  return null
-}
-
-function extractRoleField(source: StoredRecord | null): string | null {
-  if (!source) {
-    return null
-  }
-
-  for (const field of USER_ROLE_FIELDS) {
-    const value = source[field]
-
-    if (Array.isArray(value)) {
-      const firstRole = value.map((item) => normalizeTextValue(item)).find(Boolean)
-
-      if (firstRole) {
-        return firstRole
-      }
-
-      continue
-    }
-
-    const normalizedValue = normalizeTextValue(value)
-
-    if (normalizedValue) {
-      return normalizedValue
-    }
-  }
-
-  return null
 }
 
 function buildInitials(displayName: string): string {
@@ -196,95 +120,63 @@ function buildInitials(displayName: string): string {
   return initials || DEFAULT_LOGGED_IN_USER.initials
 }
 
-function readStoredAuthToken(): string | null {
-  if (typeof window === 'undefined') {
-    return null
-  }
-
-  for (const key of AUTH_TOKEN_STORAGE_KEYS) {
-    const value = window.localStorage.getItem(key)?.trim()
-
-    if (value) {
-      return value
-    }
-  }
-
-  return null
-}
-
-function readStoredUserProfile(): StoredRecord | null {
-  if (typeof window === 'undefined') {
-    return null
-  }
-
-  for (const key of USER_PROFILE_STORAGE_KEYS) {
-    const rawValue = window.localStorage.getItem(key)
-
-    if (!rawValue) {
-      continue
-    }
-
-    try {
-      const parsedValue = JSON.parse(rawValue) as unknown
-
-      if (parsedValue && typeof parsedValue === 'object' && !Array.isArray(parsedValue)) {
-        return parsedValue as StoredRecord
-      }
-    } catch {
-      continue
-    }
-  }
-
-  return null
-}
-
-function decodeJwtPayload(token: string | null): StoredRecord | null {
-  if (!token) {
-    return null
-  }
-
-  const [, payload] = token.split('.')
-
-  if (!payload) {
-    return null
-  }
-
-  try {
-    const normalizedPayload = payload.replace(/-/g, '+').replace(/_/g, '/')
-    const paddedPayload = normalizedPayload.padEnd(Math.ceil(normalizedPayload.length / 4) * 4, '=')
-    const binaryPayload = window.atob(paddedPayload)
-    const bytes = Uint8Array.from(binaryPayload, (character) => character.charCodeAt(0))
-    const decodedPayload = new TextDecoder().decode(bytes)
-    const parsedPayload = JSON.parse(decodedPayload) as unknown
-
-    if (parsedPayload && typeof parsedPayload === 'object' && !Array.isArray(parsedPayload)) {
-      return parsedPayload as StoredRecord
-    }
-  } catch {
-    return null
-  }
-
-  return null
-}
-
 function getLoggedInUserProfile(): LoggedInUserProfile {
-  const storedProfile = readStoredUserProfile()
-  const tokenPayload = decodeJwtPayload(readStoredAuthToken())
+  const profile = getUserProfile()
+  const displayName = getUserDisplayName() || DEFAULT_LOGGED_IN_USER.displayName
+  const roleLabel = (() => {
+    if (!profile) {
+      return DEFAULT_LOGGED_IN_USER.roleLabel
+    }
 
-  const displayName =
-    extractTextField(storedProfile, USER_NAME_FIELDS)
-    || extractTextField(tokenPayload, USER_NAME_FIELDS)
-    || DEFAULT_LOGGED_IN_USER.displayName
-  const roleLabel =
-    extractRoleField(storedProfile)
-    || extractRoleField(tokenPayload)
-    || DEFAULT_LOGGED_IN_USER.roleLabel
+    const sector = typeof profile.sector === 'string' ? profile.sector.trim() : ''
+    if (sector) {
+      return sector
+    }
+
+    const groups = profile.groups_ids
+    if (Array.isArray(groups) && groups.length > 0) {
+      return `Grupos: ${groups.join(', ')}`
+    }
+
+    return DEFAULT_LOGGED_IN_USER.roleLabel
+  })()
 
   return {
     displayName,
     initials: buildInitials(displayName),
     roleLabel,
   }
+}
+
+function filterNavigationItems(items: NavigationItem[], allowedPaths: string[]): NavigationItem[] {
+  const filtered: NavigationItem[] = []
+
+  for (const item of items) {
+    if (isNavigationItemWithChildren(item)) {
+      const children = filterNavigationItems(item.children, allowedPaths)
+      if (children.length > 0) {
+        filtered.push({ ...item, children })
+      }
+      continue
+    }
+
+    if (isSectionAllowed(item.eventKey, allowedPaths)) {
+      filtered.push(item)
+    }
+  }
+
+  return filtered
+}
+
+function filterNavigationGroups(groups: NavigationGroup[], allowedPaths: string[]): NavigationGroup[] {
+  return groups.flatMap((group) => {
+    const items = filterNavigationItems(group.items, allowedPaths)
+    if (items.length === 0) {
+      return []
+    }
+
+    return [{ ...group, items }]
+  })
 }
 
 function parseServerEventData(event: Event): unknown {
@@ -461,9 +353,13 @@ export function MainLayout({
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false)
   const [isUserProfileExpanded, setIsUserProfileExpanded] = useState(false)
   const [loggedInUser, setLoggedInUser] = useState<LoggedInUserProfile>(() => getLoggedInUserProfile())
+  const [visibleNavigationGroups, setVisibleNavigationGroups] = useState<NavigationGroup[]>(() =>
+    filterNavigationGroups(NAVIGATION_GROUPS, getAllowedRoutePaths()),
+  )
   const [notifications, setNotifications] = useState<HeaderNotification[]>([])
   const notificationsWhisperRef = useRef<WhisperInstance>(null)
   const userProfileCollapseTimeoutRef = useRef<number | undefined>(undefined)
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
 
   const sidebarWidth = isMobile
     ? SIDEBAR_EXPANDED
@@ -536,6 +432,7 @@ export function MainLayout({
 
     const syncLoggedInUser = () => {
       setLoggedInUser(getLoggedInUserProfile())
+      setVisibleNavigationGroups(filterNavigationGroups(NAVIGATION_GROUPS, getAllowedRoutePaths()))
     }
 
     syncLoggedInUser()
@@ -556,7 +453,7 @@ export function MainLayout({
 
   useEffect(() => {
     let isActive = true
-    const authToken = readStoredAuthToken()
+    const authToken = getAuthToken()
     const streamUrl = new URL(`${API_BASE_URL}/notificacoes/stream`)
 
     if (authToken) {
@@ -647,7 +544,7 @@ export function MainLayout({
   const handleOpenNotification = (notification: HeaderNotification) => {
     setNotifications((current) => markNotificationRead(current, notification.id))
 
-    const authToken = readStoredAuthToken()
+    const authToken = getAuthToken()
 
     void fetch(`${API_BASE_URL}/notificacoes/read/${encodeURIComponent(notification.id)}`, {
       method: 'PATCH',
@@ -662,7 +559,7 @@ export function MainLayout({
   const handleMarkAllNotificationsRead = () => {
     setNotifications((current) => current.map((notification) => ({ ...notification, read: true })))
 
-    const authToken = readStoredAuthToken()
+    const authToken = getAuthToken()
     void fetch(`${API_BASE_URL}/notificacoes/mark-all-read`, {
       method: 'PATCH',
       headers: authToken ? { Authorization: `Bearer ${authToken}` } : undefined,
@@ -675,7 +572,7 @@ export function MainLayout({
 
     setNotifications((current) => current.filter((notification) => notification.id !== notificationId))
 
-    const authToken = readStoredAuthToken()
+    const authToken = getAuthToken()
     void fetch(`${API_BASE_URL}/notificacoes/${encodeURIComponent(notificationId)}`, {
       method: 'DELETE',
       headers: authToken ? { Authorization: `Bearer ${authToken}` } : undefined,
@@ -702,6 +599,10 @@ export function MainLayout({
       return
     }
 
+    if (!isSectionAllowed(eventKey)) {
+      return
+    }
+
     onSidebarSelect(eventKey as SectionKey)
 
     if (isSidebarCollapsed) {
@@ -712,6 +613,17 @@ export function MainLayout({
     if (isMobile) {
       setIsMobileSidebarOpen(false)
     }
+  }
+
+  const handleLogout = () => {
+    if (isLoggingOut) {
+      return
+    }
+
+    setIsLoggingOut(true)
+    void logoutRedirect().finally(() => {
+      setIsLoggingOut(false)
+    })
   }
 
   const toggleSidebar = () => {
@@ -991,6 +903,16 @@ export function MainLayout({
                 </VStack>
               ) : null}
             </Button>
+
+            <IconButton
+              appearance="subtle"
+              circle
+              aria-label="Sair da sessao"
+              disabled={isLoggingOut}
+              icon={<RiLogoutBoxRLine size={18} />}
+              onClick={handleLogout}
+              title="Sair"
+            />
           </HStack>
         </HStack>
       </Header>
@@ -1052,7 +974,7 @@ export function MainLayout({
                       activeKey={activeSidebarKey}
                       onSelect={handleSidebarSelect}
                     >
-                      {NAVIGATION_GROUPS.map((group) => {
+                      {visibleNavigationGroups.map((group) => {
                         if (group.title === OVERVIEW_GROUP) {
                           return group.items.flatMap((item) =>
                             isNavigationItemWithChildren(item) ? [] : (

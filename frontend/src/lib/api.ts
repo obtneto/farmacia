@@ -1,20 +1,7 @@
 import { getApiBaseUrl } from './api-base-url'
+import { forceLoginRedirect, getAuthToken, setAuthToken } from './auth-helpers'
 
 const API_BASE_URL = getApiBaseUrl()
-
-function getStoredAuthToken() {
-  const storageKeys = ['authToken', 'token', 'accessToken', 'jwt']
-
-  for (const key of storageKeys) {
-    const value = window.localStorage.getItem(key)
-
-    if (value) {
-      return value
-    }
-  }
-
-  return null
-}
 
 type ApiResponse<T> = {
   err: number
@@ -24,7 +11,7 @@ type ApiResponse<T> = {
 }
 
 export async function apiRequest<T>(path: string, init?: RequestInit) {
-  const token = getStoredAuthToken()
+  const token = getAuthToken()
   const headers = new Headers(init?.headers)
 
   if (!headers.has('Content-Type') && init?.body) {
@@ -40,6 +27,16 @@ export async function apiRequest<T>(path: string, init?: RequestInit) {
     credentials: init?.credentials ?? 'include',
     headers,
   })
+
+  const newToken = response.headers.get('x-new-token')
+  if (newToken) {
+    setAuthToken(newToken)
+  }
+
+  if (response.status === 401 || response.status === 503) {
+    forceLoginRedirect()
+    throw new Error(response.status === 401 ? 'Sessao expirada.' : 'Servico de autenticacao indisponivel.')
+  }
 
   const json = (await response.json()) as ApiResponse<T>
 
