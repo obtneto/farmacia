@@ -8,7 +8,7 @@ export default class Controller_Pacientes {
 
       static async ListarPacientes(req: Request, res: Response) {
 
-            const db: iDatabase = new Database('fsph_ambulatorio');
+            const db: iDatabase = new Database();
 
             const resdata: iresdata = { err: 0, msg: '', status: 200, data: [] };
 
@@ -43,7 +43,7 @@ export default class Controller_Pacientes {
 
       static async VisualizarPaciente(req: Request, res: Response) {
 
-            const db: iDatabase = new Database('fsph_ambulatorio');
+            const db: iDatabase = new Database();
 
             const resdata: iresdata = { err: 0, msg: '', status: 200, data: [] };
 

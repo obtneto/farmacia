@@ -354,7 +354,7 @@ export default class Controller_Estoque {
 
     static async BloquearSaldo(req: Request, res: Response) {
 
-        const db: iDatabase = new Database('fsph_ambulatorio');
+        const db: iDatabase = new Database();
 
         const resdata: iresdata = { err: 0, msg: '', status: 200, data: {} }
 
@@ -409,7 +409,7 @@ export default class Controller_Estoque {
 
     static async DesBloquearSaldo(req: Request, res: Response) {
 
-        const db: iDatabase = new Database('fsph_ambulatorio');
+        const db: iDatabase = new Database();
 
         const resdata: iresdata = { err: 0, msg: '', status: 200, data: {} }
 
@@ -516,7 +516,7 @@ export default class Controller_Estoque {
                             FROM tb_estoque e 
                             LEFT JOIN tb_medicamentos m ON m.med_id = e.est_med_id
                             LEFT JOIN tb_depositos d ON d.dep_id = e.est_dep_id
-                            WHERE (e.est_saldo_bloqueado + e.est_saldo_disponivel) > 0 AND DATEDIFF(e.est_validade,CURDATE()) <= m.med_alert`;
+                            WHERE (COALESCE(e.est_saldo_bloqueado,0) + COALESCE(e.est_saldo_disponivel,0)) > 0 AND DATEDIFF(e.est_validade,CURDATE()) <= m.med_alert`;
 
             const [rows] = await db.connection.query(query);
 
