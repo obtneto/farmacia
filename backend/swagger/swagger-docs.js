@@ -655,7 +655,7 @@ function buildOpenApiSpec() {
       description: 'Especificacao gerada automaticamente a partir das rotas Express do projeto farmacia.',
     },
     servers: [
-      { url: 'http://localhost:3000', description: 'Ambiente local' },
+      { url: 'http://localhost:3002', description: 'Ambiente local' },
     ],
     paths: {},
     components: {
@@ -814,7 +814,7 @@ function renderMarkdown(spec) {
     '',
     `- Titulo: ${spec.info.title}`,
     `- Versao: ${spec.info.version}`,
-    `- Base URL local: ${spec.servers[0]?.url || 'http://localhost:3000'}`,
+    `- Base URL local: ${spec.servers[0]?.url || 'http://localhost:3002'}`,
     '- Autenticacao: header `Authorization: Bearer <token>` quando a autenticacao estiver habilitada.',
     '',
     '## Endpoints',

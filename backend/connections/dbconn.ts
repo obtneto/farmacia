@@ -15,8 +15,8 @@ export default class Database implements iDatabase {
     private dbname: string = 'fsph_ambulatorio';
     private transactionActive = false;
 
-    constructor() {
-        this.dbname = dbname;
+    constructor(dbname?: string) {
+        this.dbname = dbname || process.env.DB_FARMACIA || 'fsph_farmacia';
     }
 
     // Abre a conexao somente quando ela ainda nao existe no ciclo atual.

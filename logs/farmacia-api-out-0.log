@@ -1,4 +1,4 @@
-2026-09-12 08:38:05 -03:00: Server is running TS on port 3000
+2026-09-12 08:38:05 -03:00: Server is running TS on port 3002
 2026-09-12 08:47:17 -03:00: POST /auth/simular 200 563 - 21.558 ms
 2026-09-12 08:47:35 -03:00: GET /parametros/boname/listar/* 200 1640 - 45.552 ms
 2026-09-12 08:47:56 -03:00: POST /auth/simular 200 563 - 1.163 ms
@@ -10,7 +10,7 @@
 2026-09-12 09:32:28 -03:00: POST /auth/simular 200 563 - 0.751 ms
 2026-09-12 09:38:36 -03:00: GET /parametros/boname/listar/* 200 1640 - 4.955 ms
 2026-09-12 09:38:38 -03:00: GET /parametros/boname/imprimir/* 200 27859 - 143.209 ms
-2026-09-12 09:39:10 -03:00: Server is running TS on port 3000
+2026-09-12 09:39:10 -03:00: Server is running TS on port 3002
 2026-09-12 09:39:16 -03:00: GET /parametros/boname/imprimir/* 200 287955 - 282.962 ms
 2026-09-12 09:40:25 -03:00: GET /parametros/medicamentos/listar/* 200 63104 - 14.805 ms
 2026-09-12 09:40:25 -03:00: GET /parametros/tipos_medicamentos/listar/* 200 515 - 17.311 ms
@@ -23,7 +23,7 @@
 2026-09-12 09:40:47 -03:00: GET /estoque/listar/*/2/FT 200 808 - 3.744 ms
 2026-09-12 09:40:49 -03:00: POST /solicitacoes/salvar 200 91 - 27.604 ms
 2026-09-12 09:40:52 -03:00: GET /solicitacoes/imprimir/4 200 152306 - 109.685 ms
-2026-09-12 10:47:06 -03:00: Server is running TS on port 3000
+2026-09-12 10:47:06 -03:00: Server is running TS on port 3002
 2026-09-12 10:48:31 -03:00: POST /auth/simular 200 563 - 20.635 ms
 2026-09-12 10:48:45 -03:00: GET /parametros/boname/listar/* 200 1640 - 40.573 ms
 2026-09-12 10:48:50 -03:00: GET /parametros/boname/buscar/1 200 158 - 10.666 ms
@@ -46,19 +46,19 @@
 2026-09-12 10:56:55 -03:00: GET /parametros/setores/listar/* 200 323 - 8.621 ms
 2026-09-12 10:57:01 -03:00: GET /parametros/setores/buscar/4044 200 105 - 4.127 ms
 2026-09-12 11:01:30 -03:00: GET /pacientes/listar_pacientes/* 200 1459 - 42.717 ms
-2026-09-12 16:36:12 -03:00: Server is running TS on port 3000
+2026-09-12 16:36:12 -03:00: Server is running TS on port 3002
 2026-09-12 16:36:39 -03:00: POST /auth/simular 200 563 - 23.005 ms
 2026-09-12 16:36:52 -03:00: GET /parametros/boname/listar/* 500 60 - 10029.763 ms
 2026-09-12 16:37:02 -03:00: GET /parametros/boname/listar/*  0 -  ms
 2026-09-12 16:37:48 -03:00: POST /auth/simular 200 563 - 2.958 ms
 2026-09-12 16:38:02 -03:00: GET /parametros/boname/listar/* 500 60 - 10003.478 ms
 2026-09-12 16:38:13 -03:00: GET /parametros/boname/listar/* 500 60 - 10003.051 ms
-2026-09-12 16:38:25 -03:00: Server is running TS on port 3000
+2026-09-12 16:38:25 -03:00: Server is running TS on port 3002
 2026-09-12 16:38:29 -03:00: GET /parametros/boname/listar/* 500 60 - 10.999 ms
 2026-09-12 16:38:30 -03:00: GET /parametros/boname/listar/* 500 60 - 2.057 ms
 2026-09-12 16:38:57 -03:00: GET /parametros/boname/listar/* 500 60 - 2.099 ms
 2026-09-12 16:38:58 -03:00: GET /parametros/boname/listar/* 500 60 - 1.910 ms
-2026-09-12 16:40:43 -03:00: Server is running TS on port 3000
+2026-09-12 16:40:43 -03:00: Server is running TS on port 3002
 2026-09-12 16:40:46 -03:00: GET /parametros/boname/listar/* 500 60 - 7.592 ms
 2026-09-12 16:40:47 -03:00: GET /parametros/boname/listar/* 500 60 - 2.304 ms
 2026-09-12 16:42:06 -03:00: POST /auth/simular 200 563 - 11.483 ms
@@ -66,21 +66,21 @@
 2026-09-12 16:42:12 -03:00: GET /parametros/boname/listar/* 500 60 - 3.043 ms
 2026-09-12 16:42:37 -03:00: GET /parametros/boname/listar/* 500 60 - 2.349 ms
 2026-09-12 16:42:38 -03:00: GET /parametros/boname/listar/* 500 60 - 1.769 ms
-2026-09-12 16:45:27 -03:00: Server is running TS on port 3000
+2026-09-12 16:45:27 -03:00: Server is running TS on port 3002
 2026-09-12 16:45:36 -03:00: GET /parametros/boname/listar/* 500 60 - 8.815 ms
 2026-09-12 16:45:37 -03:00: GET /parametros/boname/listar/* 500 60 - 2.281 ms
-2026-09-12 16:46:17 -03:00: Server is running TS on port 3000
+2026-09-12 16:46:17 -03:00: Server is running TS on port 3002
 2026-09-12 16:46:21 -03:00: GET /parametros/boname/listar/* 500 60 - 7.859 ms
 2026-09-12 16:46:22 -03:00: GET /parametros/boname/listar/* 500 60 - 2.078 ms
-2026-09-12 16:47:30 -03:00: Server is running TS on port 3000
+2026-09-12 16:47:30 -03:00: Server is running TS on port 3002
 2026-09-12 16:47:35 -03:00: GET /parametros/boname/listar/* 500 60 - 59.861 ms
 2026-09-12 16:47:36 -03:00: GET /parametros/boname/listar/* 500 60 - 3.477 ms
-2026-09-12 16:47:58 -03:00: Server is running TS on port 3000
+2026-09-12 16:47:58 -03:00: Server is running TS on port 3002
 2026-09-12 16:48:07 -03:00: GET /parametros/boname/listar/* 200 1640 - 38.633 ms
-2026-09-12 16:48:58 -03:00: Server is running TS on port 3000
+2026-09-12 16:48:58 -03:00: Server is running TS on port 3002
 2026-09-12 16:49:02 -03:00: GET /parametros/boname/listar/* 500 60 - 8.289 ms
 2026-09-12 16:49:03 -03:00: GET /parametros/boname/listar/* 500 60 - 2.277 ms
-2026-09-12 16:50:10 -03:00: Server is running TS on port 3000
+2026-09-12 16:50:10 -03:00: Server is running TS on port 3002
 2026-09-12 16:50:14 -03:00: 192.168.0.8
 2026-09-12 16:50:14 -03:00: 3306
 2026-09-12 16:50:14 -03:00: apiuser
@@ -91,7 +91,7 @@
 2026-09-12 16:50:15 -03:00: apiuser
 2026-09-12 16:50:15 -03:00: Abcd@1234
 2026-09-12 16:50:15 -03:00: GET /parametros/boname/listar/* 500 60 - 2.288 ms
-2026-09-12 16:51:24 -03:00: Server is running TS on port 3000
+2026-09-12 16:51:24 -03:00: Server is running TS on port 3002
 2026-09-12 16:51:28 -03:00: 192.168.0.8
 2026-09-12 16:51:28 -03:00: 3306
 2026-09-12 16:51:28 -03:00: apiuser
@@ -102,14 +102,14 @@
 2026-09-12 16:51:29 -03:00: apiuser
 2026-09-12 16:51:29 -03:00: Abcd@1234
 2026-09-12 16:51:29 -03:00: GET /parametros/boname/listar/* 500 60 - 2.129 ms
-2026-09-12 16:57:47 -03:00: Server is running TS on port 3000
+2026-09-12 16:57:47 -03:00: Server is running TS on port 3002
 2026-09-12 16:57:51 -03:00: GET /parametros/boname/listar/* 200 1640 - 20.724 ms
-2026-09-12 16:59:18 -03:00: Server is running TS on port 3000
-2026-09-12 16:59:46 -03:00: Server is running TS on port 3000
+2026-09-12 16:59:18 -03:00: Server is running TS on port 3002
+2026-09-12 16:59:46 -03:00: Server is running TS on port 3002
 2026-09-12 16:59:50 -03:00: GET /parametros/boname/listar/* 500 60 - 7.470 ms
 2026-09-12 16:59:51 -03:00: GET /parametros/boname/listar/* 500 60 - 1.509 ms
-2026-09-12 17:00:08 -03:00: Server is running TS on port 3000
-2026-09-12 17:07:33 -03:00: Server is running TS on port 3000
+2026-09-12 17:00:08 -03:00: Server is running TS on port 3002
+2026-09-12 17:07:33 -03:00: Server is running TS on port 3002
 2026-09-12 17:07:36 -03:00: GET /parametros/boname/listar/* 200 1640 - 45.830 ms
 2026-09-12 17:11:28 -03:00: GET /parametros/tipos_medicamentos/listar/* 200 515 - 4.354 ms
 2026-09-12 17:11:30 -03:00: GET /parametros/medicamentos/listar/* 200 63104 - 4.923 ms

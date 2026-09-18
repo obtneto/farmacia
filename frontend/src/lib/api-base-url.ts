@@ -7,7 +7,7 @@ function normalizeBaseUrl(baseUrl: string) {
 }
 
 function resolveBrowserBaseUrl() {
-  return `${window.location.protocol}//${window.location.hostname}:3000`
+  return `${window.location.protocol}//${window.location.hostname}:3002`
 }
 
 export function getApiBaseUrl() {
@@ -35,7 +35,7 @@ export function getApiBaseUrl() {
   }
 
   if (typeof window === 'undefined') {
-    return 'http://localhost:3000'
+    return 'http://localhost:3002'
   }
 
   return resolveBrowserBaseUrl()

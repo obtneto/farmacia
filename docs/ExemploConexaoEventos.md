@@ -89,7 +89,7 @@ export function useAppEvents() {
 
     useEffect(() => {
         // Conecta ao endpoint SSE do backend (ajuste a URL se necessário)
-        const eventSource = new EventSource('http://localhost:3000/stream', {
+        const eventSource = new EventSource('http://localhost:3002/stream', {
             withCredentials: true // se precisar enviar cookies/sessão
         });
 
