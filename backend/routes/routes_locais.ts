@@ -1,7 +1,8 @@
 import {Router} from 'express';
 import Controller_Locais from '../controllers/controller_locais.js';
-
+import authMiddleware from '../middleware/auth.js';
 const router = Router();
+router.use(authMiddleware);
 
 router.get('/buscar/:id_local',Controller_Locais.Buscar);
 router.get('/listar/:pesq',Controller_Locais.Listar);

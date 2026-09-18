@@ -1,7 +1,9 @@
 import {Router} from 'express'
 import Controller_TiposMedicamentos from '../controllers/controller_tipos_medicamentos.js';
+import authMiddleware from '../middleware/auth.js';
 
 const router = Router();
+router.use(authMiddleware);
 
 router.get('/listar/:pesq', Controller_TiposMedicamentos.Listar);
 router.get('/listar-ativos/:pesq', Controller_TiposMedicamentos.ListarAtivos);

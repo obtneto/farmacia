@@ -145,6 +145,10 @@ export function extractAuthToken(req: Request): string | null {
     const cookies = parseCookieHeader(req.headers.cookie);
     const queryToken = req.query?.token;
 
+    if (cookies.auth_token) {
+        return cookies.auth_token;
+    }
+
     if (cookies[SIMULATED_AUTH_COOKIE_NAME]) {
         return cookies[SIMULATED_AUTH_COOKIE_NAME];
     }

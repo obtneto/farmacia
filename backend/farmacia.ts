@@ -56,6 +56,10 @@ const corsAllowedHeaders = [
     'Authorization',
     'Cache-Control',
     'Content-Type',
+    'Cookie',
+];
+const corsExposedHeaders = [
+    'x-new-token',
 ];
 
 function isLoopbackOrigin(origin: string): boolean {
@@ -129,6 +133,7 @@ app.use(cors({
     },
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     allowedHeaders: corsAllowedHeaders,
+    exposedHeaders: corsExposedHeaders,
     credentials: true,
     optionsSuccessStatus: 204,
 

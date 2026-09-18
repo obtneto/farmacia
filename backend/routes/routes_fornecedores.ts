@@ -1,7 +1,8 @@
 import {Router} from 'express';
 import Controller_Fornecedores from '../controllers/controller_fornecedores.js';
-
+import authMiddleware from '../middleware/auth.js';
 const router = Router();
+router.use(authMiddleware);
 
 router.get('/buscar/:id_fornecedor',Controller_Fornecedores.Buscar);
 router.get('/listar/:pesq',Controller_Fornecedores.Listar);

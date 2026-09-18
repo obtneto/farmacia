@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import Controller_ItensSolicitacoes from '../controllers/constroller_itens_solicitacoes.js';
-
+import authMiddleware from '../middleware/auth.js';
 const router = Router();
+router.use(authMiddleware);
 
 router.get('/buscar/:iso_id', Controller_ItensSolicitacoes.BuscarPorId);
 router.get('/listar/:iso_sol_id', Controller_ItensSolicitacoes.ListarItensSolicitacoes);

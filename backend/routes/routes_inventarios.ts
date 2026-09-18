@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import Controller_Inventarios from '../controllers/controller_inventario.js';
-
+import authMiddleware from '../middleware/auth.js';
 const router = Router();
+router.use(authMiddleware);
 
 router.get('/listar/:date_ini/:date_fin/:dep_id', Controller_Inventarios.Listar);
 router.get('/detalhar/:inv_num', Controller_Inventarios.Detalhar);

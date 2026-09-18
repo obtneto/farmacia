@@ -1,7 +1,9 @@
 import { Router } from 'express';
 import Controller_Solicitacoes from '../controllers/controller_solicitacoes.js';
+import authMiddleware from '../middleware/auth.js';
 
 const router = Router();
+router.use(authMiddleware);
 
 router.get('/buscar/:sol_id', Controller_Solicitacoes.Buscar);
 router.get('/imprimir/:sol_id', Controller_Solicitacoes.Imprimir);

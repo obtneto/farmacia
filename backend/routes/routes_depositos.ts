@@ -1,8 +1,8 @@
 import {Router} from 'express';
 import Controller_Depositos from '../controllers/controller_depositos.js';
-
+import authMiddleware from '../middleware/auth.js';
 const router = Router();
-
+router.use(authMiddleware);
 router.get('/listar/:pesq',Controller_Depositos.Listar);
 router.get('/listar-ativos/:pesq',Controller_Depositos.ListarAtivos);
 router.get('/buscar/:dep_id',Controller_Depositos.Buscar);

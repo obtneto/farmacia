@@ -1,7 +1,9 @@
 import {Router} from 'express';
 import Controller_DemandasEspecificas from '../controllers/controller_demandas_especificas.js';
+import authMiddleware from '../middleware/auth.js';
 
 const router = Router();
+router.use(authMiddleware);
 
 router.get('/buscar/:id_demanda',Controller_DemandasEspecificas.Buscar);
 router.get('/listar/',Controller_DemandasEspecificas.Listar);

@@ -1,7 +1,8 @@
 import {Router} from 'express';
 import Controller_Diagnosticos from '../controllers/controller_diagnosticos.js';
-
+import authMiddleware from '../middleware/auth.js';
 const router = Router();
+router.use(authMiddleware);
 
 router.get('/listar/:pesq',Controller_Diagnosticos.Listar);
 router.get('/listar_ativos/:pesq',Controller_Diagnosticos.ListarAtivos);

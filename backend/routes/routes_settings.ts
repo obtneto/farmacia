@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import Controller_Settings from '../controllers/controller_settings.js';
-
+import authMiddleware from '../middleware/auth.js';
 const router = Router();
+router.use(authMiddleware);
 
 router.get('/', Controller_Settings.Listar);
 router.get('/listar', Controller_Settings.Listar);

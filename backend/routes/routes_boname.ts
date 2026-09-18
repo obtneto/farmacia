@@ -1,7 +1,8 @@
 import {Router} from 'express';
 import Controller_Boname from '../controllers/controller_boname.js';
-
+import authMiddleware from '../middleware/auth.js';
 const router = Router();
+router.use(authMiddleware);
 
 router.get('/listar/:pesq',Controller_Boname.Listar);
 router.get('/listar_ativos/:pesq',Controller_Boname.ListarAtivos);

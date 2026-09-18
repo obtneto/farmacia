@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import Controller_Estoque from '../controllers/controler_estoque.js';
-
+import authMiddleware from '../middleware/auth.js';
 const router = Router();
+router.use(authMiddleware);
 
 router.get('/listar/:pesq/:dep_id/:med_tipo_codigo', Controller_Estoque.Listar);
 router.get('/buscar/:est_id', Controller_Estoque.Buscar);

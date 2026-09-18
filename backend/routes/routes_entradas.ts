@@ -5,8 +5,10 @@ import { iresdata } from '../controllers/interface_controllers.js';
 import Entradas from '../model/dao_entradas.js';
 import ItensEntradas from '../model/dao_itens_entradas.js';
 import { applyControllerError } from '../utils/controllerError.js';
+import authMiddleware from '../middleware/auth.js';
 
 const router = Router();
+router.use(authMiddleware);
 
 router.get('/listar/:pesq/:data_inicio/:data_fim', Controller_Entradas.ListarTodos);
 router.get('/buscar/:ent_id', Controller_Entradas.BuscarPorId);

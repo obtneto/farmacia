@@ -1,7 +1,8 @@
 import { Router } from 'express';
 import Controller_Notificacoes from '../controllers/controller_notificacoes.js';
-
+import authMiddleware from '../middleware/auth.js';
 const router = Router();
+router.use(authMiddleware);
 
 router.get('/listar', Controller_Notificacoes.Listar);
 router.get('/stream', Controller_Notificacoes.Stream);
