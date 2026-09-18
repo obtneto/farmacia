@@ -8,7 +8,7 @@ export default class Controller_Movimentacoes {
 
     static async ListarMovimentacoes(req: Request, res: Response) {
 
-        const db: iDatabase = new Database('fsph_farmacia');
+        const db: iDatabase = new Database('fsph_ambulatorio');
 
         const resdata: iresdata = {err: 0, msg: '', status: 200, data: []};
 
@@ -46,7 +46,7 @@ export default class Controller_Movimentacoes {
     }
 
     static async ListaPorMedicamentos(req: Request, res: Response) {
-        const db: iDatabase = new Database('fsph_farmacia');
+        const db: iDatabase = new Database('fsph_ambulatorio');
         const resdata: iresdata = {err: 0, msg: '', status: 200, data: []};
 
         try {

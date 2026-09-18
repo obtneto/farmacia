@@ -7,7 +7,7 @@ const connection = await createConnection({
     port: Number(process.env.DB_PORT || 3306),
     user: process.env.DB_USER,
     password: process.env.DB_PASS,
-    database: process.env.DB_FARMACIA || 'fsph_farmacia',
+    database: process.env.DB_FARMACIA || 'fsph_ambulatorio',
     namedPlaceholders: true,
     decimalNumbers: true,
     dateStrings: true

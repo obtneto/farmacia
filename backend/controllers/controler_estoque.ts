@@ -354,7 +354,7 @@ export default class Controller_Estoque {
 
     static async BloquearSaldo(req: Request, res: Response) {
 
-        const db: iDatabase = new Database('fsph_farmacia');
+        const db: iDatabase = new Database('fsph_ambulatorio');
 
         const resdata: iresdata = { err: 0, msg: '', status: 200, data: {} }
 
@@ -409,7 +409,7 @@ export default class Controller_Estoque {
 
     static async DesBloquearSaldo(req: Request, res: Response) {
 
-        const db: iDatabase = new Database('fsph_farmacia');
+        const db: iDatabase = new Database('fsph_ambulatorio');
 
         const resdata: iresdata = { err: 0, msg: '', status: 200, data: {} }
 
@@ -463,7 +463,7 @@ export default class Controller_Estoque {
     }
 
     static async ListarItensPorLote(req: Request, res: Response) {
-        const db: iDatabase = new Database('fsph_farmacia');
+        const db: iDatabase = new Database('fsph_ambulatorio');
 
         const resdata: iresdata = {
             err: 0,
@@ -499,7 +499,7 @@ export default class Controller_Estoque {
 
     static async AlertaValidade(req: Request, res: Response) {
 
-        const db: iDatabase = new Database('fsph_farmacia');
+        const db: iDatabase = new Database('fsph_ambulatorio');
 
         const resdata: iresdata = {
             err: 0,

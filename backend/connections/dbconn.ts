@@ -12,10 +12,10 @@ export interface iDatabase {
 export default class Database implements iDatabase {
 
     private conn: Connection | null = null;
-    private dbname: string;
+    private dbname: string = 'fsph_ambulatorio';
     private transactionActive = false;
 
-    constructor(dbname: string = 'fsph_farmacia') {
+    constructor() {
         this.dbname = dbname;
     }
 
@@ -30,7 +30,7 @@ export default class Database implements iDatabase {
             port: Number(process.env.DB_PORT),
             user: process.env.DB_USER,
             password: process.env.DB_PASS,
-            database: this.dbname || 'fsph_farmacia',
+            database: this.dbname || 'fsph_ambulatorio',
             namedPlaceholders: true,
             decimalNumbers: true,
             dateStrings: true,

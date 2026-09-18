@@ -8,7 +8,7 @@ export default class Controller_Itens_Solicitacoes {
 
     static async BuscarPorId(req: Request, res: Response) {
 
-        const db: iDatabase = new Database('fsph_farmacia');
+        const db: iDatabase = new Database('fsph_ambulatorio');
 
         const resdata: iresdata = { err: 0, msg: '', status: 200, data: [] };
 
@@ -48,7 +48,7 @@ export default class Controller_Itens_Solicitacoes {
 
     static async ListarItensSolicitacoes(req: Request, res: Response) {
 
-        const db: iDatabase = new Database('fsph_farmacia');
+        const db: iDatabase = new Database('fsph_ambulatorio');
 
         const resdata: iresdata = { err: 0, msg: '', status: 200, data: [] };
 
@@ -82,7 +82,7 @@ export default class Controller_Itens_Solicitacoes {
 
     static async SalvarItemSolicitacao(req: Request, res: Response) {
 
-        const db: iDatabase = new Database('fsph_farmacia');
+        const db: iDatabase = new Database('fsph_ambulatorio');
 
         const resdata: iresdata = { err: 0, msg: '', status: 200, data: [] };
 
@@ -141,7 +141,7 @@ export default class Controller_Itens_Solicitacoes {
 
     static async ExcluirItemSolicitacao(req: Request, res: Response) {
 
-        const db: iDatabase = new Database('fsph_farmacia');
+        const db: iDatabase = new Database('fsph_ambulatorio');
 
         const resdata: iresdata = { err: 0, msg: '', status: 200, data: [] };
 

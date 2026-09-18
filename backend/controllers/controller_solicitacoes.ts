@@ -65,7 +65,7 @@ export default class Controller_Solicitacoes {
 
       static async Buscar(req: Request, res: Response) {
 
-            const db: iDatabase = new Database('fsph_farmacia');
+            const db: iDatabase = new Database('fsph_ambulatorio');
 
             const resdata: iresdata = {
                   err: 0,
@@ -108,7 +108,7 @@ export default class Controller_Solicitacoes {
 
       static async ListarAbertas(req: Request, res: Response) {
 
-            const db: iDatabase = new Database('fsph_farmacia');
+            const db: iDatabase = new Database('fsph_ambulatorio');
 
             const resdata: iresdata = {
                   err: 0,
@@ -139,7 +139,7 @@ export default class Controller_Solicitacoes {
 
       static async ListarEncerradas(req: Request, res: Response) {
 
-            const db: iDatabase = new Database('fsph_farmacia');
+            const db: iDatabase = new Database('fsph_ambulatorio');
 
             const resdata: iresdata = {
                   err: 0,
@@ -197,7 +197,7 @@ export default class Controller_Solicitacoes {
 
       static async Imprimir(req: Request, res: Response) {
 
-            const db: iDatabase = new Database('fsph_farmacia');
+            const db: iDatabase = new Database('fsph_ambulatorio');
 
             try {
 
@@ -609,7 +609,7 @@ export default class Controller_Solicitacoes {
 
       static async Excluir(req: Request, res: Response) {
 
-            const db: iDatabase = new Database('fsph_farmacia');
+            const db: iDatabase = new Database('fsph_ambulatorio');
 
             const resdata: iresdata = {
                   err: 0,
@@ -651,7 +651,7 @@ export default class Controller_Solicitacoes {
 
       static async Encerrar(req: Request, res: Response) {
 
-            const db: iDatabase = new Database('fsph_farmacia');
+            const db: iDatabase = new Database('fsph_ambulatorio');
 
             const resdata: iresdata = {
                   err: 0,
@@ -855,7 +855,7 @@ export default class Controller_Solicitacoes {
 
       static async Salvar(req: Request, res: Response) {
 
-            const db: iDatabase = new Database('fsph_farmacia');
+            const db: iDatabase = new Database('fsph_ambulatorio');
 
             const resdata: iresdata = { err: 0, msg: '', status: 200, data: [] };
 
