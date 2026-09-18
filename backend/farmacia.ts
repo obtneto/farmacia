@@ -46,6 +46,8 @@ const port: number = Number(process.env.PORT || 3002);
 const allowedOrigins = new Set([
     'http://localhost',
     'http://172.23.42.17',
+    'http://172.23.84.244',
+    'http://172.23.84.244:8080',
     'http://172.23.42.17:8080',
     'http://localhost:5173',
     'http://localhost:8080',
@@ -170,7 +172,7 @@ app.use('/itens-solicitacoes', router_itens_solicitacoes);
 app.use('/controle-ddu', router_controle_ddu);
 app.use('/inventarios', router_inventarios);
 app.use('/inventario', router_inventarios);
-app.use('/dashboard',router_dashboard);
+app.use('/dashboard', router_dashboard);
 app.use('/settings', router_settings);
 app.use('/notificacoes', router_notificacoes);
 app.use(globalErrorHandler);

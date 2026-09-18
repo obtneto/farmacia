@@ -70,7 +70,7 @@ export default class DemandasEspecificas extends BaseModel implements iBaseModel
 
         const query = `SELECT d.*, p.nom_paciente as nome_paciente, p.dt_nascimento as data_nascimento,dg.diag_descr as diagnostico
                        FROM tb_demandas_especificas d 
-                       LEFT JOIN fsph_ambulatorio.tb_pacientes p ON d.dem_pac_id = p.num_paciente
+                       LEFT JOIN tb_pacientes p ON d.dem_pac_id = p.num_paciente
                        LEFT JOIN tb_diagnosticos dg ON dg.diag_id = d.dem_diag_id
                        WHERE dem_pac_id = :pac_id`;
         
@@ -116,7 +116,7 @@ export default class DemandasEspecificas extends BaseModel implements iBaseModel
     async ListarPacientes(): Promise<RowDataPacket[]>  {
 
         const query = `SELECT d.dem_pac_id as num_paciente, p.nom_paciente FROM tb_demandas_especificas d 
-                       LEFT JOIN fsph_ambulatorio.tb_pacientes p ON d.dem_pac_id = p.num_paciente`;
+                       LEFT JOIN tb_pacientes p ON d.dem_pac_id = p.num_paciente`;
         
         const [rows] = await this.connection.query<RowDataPacket[]>(query);
 
