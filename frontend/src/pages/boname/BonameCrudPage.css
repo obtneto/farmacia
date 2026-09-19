@@ -381,6 +381,8 @@
 
 .boname-page__modal-shell {
   display: grid;
+  height: 100%;
+  grid-template-rows: minmax(0, 1fr);
   min-width: 0;
   gap: 1.5rem;
 }
@@ -388,18 +390,15 @@
 .boname-page__form-panel {
   display: grid;
   align-content: start;
+  height: 100%;
   gap: 1rem;
   min-width: 0;
   min-height: 19.5rem;
   padding: 1.05rem 0.9rem 1.05rem;
   border: 1px solid rgba(165, 243, 252, 0.38);
   border-radius: 1.15rem;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.99), rgba(247, 252, 255, 0.94)),
-    linear-gradient(135deg, rgba(34, 211, 238, 0.07), transparent 52%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.88),
-    0 18px 40px rgba(148, 163, 184, 0.1);
+  background: var(--app-modal-form-background, #f8fcff);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.88);
 }
 
 .medicamentos-page__record-modal.rs-modal {
