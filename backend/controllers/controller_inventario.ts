@@ -240,7 +240,7 @@ export default class Controller_Inventarios {
                 //atribui os valores ao item do inventário e salva
                 itens_inventarios.iti_inv_num = inv_num;
                 itens_inventarios.iti_med_id = Number(item.iti_med_id);
-                itens_inventarios.iti_lote = String(item.iti_lote);
+                itens_inventarios.iti_lote = String(item.iti_lote).trim().toUpperCase();
                 itens_inventarios.iti_validade = new Date(String(item.iti_validade));
                 itens_inventarios.iti_qtde_estoque = Number(item.iti_qtde_estoque);
 
@@ -815,7 +815,7 @@ export default class Controller_Inventarios {
 
                 estoque.est_dep_id = Number(inventarios.inv_dep_id);
                 estoque.est_med_id = Number(item.iti_med_id);
-                estoque.est_lote = String(item.iti_lote);
+                estoque.est_lote = String(item.iti_lote).trim().toUpperCase();
                 estoque.est_validade = item.iti_validade;
                 estoque.est_saldo_disponivel = Number(item.iti_qtde_invent);
 

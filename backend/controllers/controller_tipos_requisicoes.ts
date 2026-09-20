@@ -120,8 +120,8 @@ export default class Controller_TiposRequicoes {
             }
 
             tiposRequisicoes.tip_req_id = id_tipo;
-            tiposRequisicoes.tip_req_codigo = cod_tipo;
-            tiposRequisicoes.tip_req_descr = tipo_descr;
+            tiposRequisicoes.tip_req_codigo = cod_tipo.trim().toUpperCase();
+            tiposRequisicoes.tip_req_descr = tipo_descr.trim().toUpperCase();
 
             await tiposRequisicoes.Salvar();
 

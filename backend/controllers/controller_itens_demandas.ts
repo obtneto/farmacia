@@ -140,7 +140,7 @@ export default class Controller_Itens_Demandas {
 
                   itens.ite_dem_id = ite_dem_id;
                   itens.ite_dem_med_id = ite_dem_med_id;
-                  itens.ite_dem_lote = ite_dem_lote;
+                  itens.ite_dem_lote = ite_dem_lote && ite_dem_lote.trim().toUpperCase();
                   itens.ite_dem_med_qtde = ite_dem_med_qtde;
                   itens.ite_dem_med_ativo = itens.found ? itens.ite_dem_med_ativo : ite_dem_med_ativo;
 

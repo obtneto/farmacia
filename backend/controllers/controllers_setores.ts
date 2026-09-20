@@ -173,7 +173,7 @@ export default class Controller_Setores {
             }
 
             setores.set_id = id_setor;
-            setores.set_descr = setor_descr;
+            setores.set_descr = setor_descr.trim().toUpperCase();
             setores.set_ativo = setor_ativo;
 
             await setores.Salvar();

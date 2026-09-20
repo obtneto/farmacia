@@ -206,7 +206,7 @@ export default class Controller_Entradas {
 
                 //recebe os dados do item
                 const itemMedId = Number(item.ent_med_id || 0);
-                const itemLote = String(item.ent_lote || '');
+                const itemLote = String(item.ent_lote || '').trim().toUpperCase();
                 const itemLoteValidade = item.ent_lote_validade;
                 const itemQtde = Number(item.ent_qtde || 0);
 
@@ -368,7 +368,7 @@ export default class Controller_Entradas {
             }
 
             //atribui os valores ao item de entrada
-            itensEntradas.ite_ent_lote = ent_lote;
+            itensEntradas.ite_ent_lote = ent_lote.trim().toUpperCase();
             itensEntradas.ite_ent_lote_validade = ent_lote_validade;
             itensEntradas.ite_ent_qtde = ent_qtde;
 
@@ -516,7 +516,7 @@ export default class Controller_Entradas {
 
                 const est_dep_id = entradas.ent_dep_id || 0;
                 const est_med_id = item.id_medicacao || 0;
-                const est_lote = item.lote || '';
+                const est_lote = item.lote.trim().toUpperCase() || '';
                 const est_validade = item.validade || null;
                 const est_qtde = item.quantidade || 0;
 

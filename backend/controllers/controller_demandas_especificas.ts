@@ -45,9 +45,9 @@ export default class Controller_DemandasEspecificas {
 
     static async Buscar(req: Request, res: Response) {
 
-        const db : iDatabase = new Database();
+        const db: iDatabase = new Database();
 
-        const resdata :iresdata = {
+        const resdata: iresdata = {
             err: 0,
             msg: '',
             status: 200,
@@ -59,7 +59,7 @@ export default class Controller_DemandasEspecificas {
 
             void await db.Connect();
 
-            const demanda_id : number = Number(req.params.id_demanda || 0);
+            const demanda_id: number = Number(req.params.id_demanda || 0);
 
             if (demanda_id === 0) {
                 const error = new Error('ID Demanda Específica não informado');
@@ -68,7 +68,7 @@ export default class Controller_DemandasEspecificas {
             }
 
             const demandasEspecificas = new DemandasEspecificas(db.connection);
-            
+
             const dados = await demandasEspecificas.BuscarPorId(demanda_id) as RowDataPacket;
 
             if (!demandasEspecificas.found) {
@@ -81,25 +81,25 @@ export default class Controller_DemandasEspecificas {
 
             dados.nome_paciente = result.nome_paciente;
             dados.data_nascimento = result.data_nascimento;
-            
-            resdata.data = dados;
-            
 
-        } catch (error :any) {
+            resdata.data = dados;
+
+
+        } catch (error: any) {
             applyControllerError(resdata, error, 'Controller Demandas Específicas');
         }
 
         void await db.Disconnect();
 
         res.status(resdata.status).json(resdata);
-    
+
     }
-    
+
     static async Listar(req: Request, res: Response) {
 
-        const db : iDatabase = new Database();
+        const db: iDatabase = new Database();
 
-        const resdata :iresdata = {
+        const resdata: iresdata = {
             err: 0,
             msg: '',
             status: 200,
@@ -115,21 +115,21 @@ export default class Controller_DemandasEspecificas {
 
             resdata.data = dados;
 
-        } catch (error :any) {
+        } catch (error: any) {
             applyControllerError(resdata, error, 'Controller Demandas Específicas');
         }
 
         void await db.Disconnect();
 
         res.status(resdata.status).json(resdata);
-    
+
     }
 
     static async BuscarPorPaciente(req: Request, res: Response) {
 
-        const db : iDatabase = new Database();
+        const db: iDatabase = new Database();
 
-        const resdata :iresdata = {
+        const resdata: iresdata = {
             err: 0,
             msg: '',
             status: 200,
@@ -140,7 +140,7 @@ export default class Controller_DemandasEspecificas {
 
             void await db.Connect();
 
-            const pac_id : number = Number(req.params.pac_id || 0);
+            const pac_id: number = Number(req.params.pac_id || 0);
 
             if (pac_id === 0) {
                 const error = new Error('ID Paciente não informado');
@@ -152,21 +152,21 @@ export default class Controller_DemandasEspecificas {
 
             resdata.data = await demandasEspecificas.BuscarPorPaciente(pac_id) as RowDataPacket[];
 
-        } catch (error :any) {
+        } catch (error: any) {
             applyControllerError(resdata, error, 'Controller Demandas Específicas');
         }
 
         void await db.Disconnect();
 
         res.status(resdata.status).json(resdata);
-    
+
     }
-    
+
     static async Salvar(req: Request, res: Response) {  // repensar esse controller
 
-        const db : iDatabase = new Database();
+        const db: iDatabase = new Database();
 
-        const resdata :iresdata = {
+        const resdata: iresdata = {
             err: 0,
             msg: '',
             status: 200,
@@ -179,7 +179,7 @@ export default class Controller_DemandasEspecificas {
             void await db.Begin();
 
             const dem_id: number = Number(req.body?.id || 0);
-            const dem_pac_id: number = Number(req.body.dem_pac_id || 0 );
+            const dem_pac_id: number = Number(req.body.dem_pac_id || 0);
             const dem_medico_assis_raw = req.body.dem_medico_assis ?? req.body.dem_medico_assit ?? '';
             const dem_medico_assis: string = String(dem_medico_assis_raw || '').trim();
             const dem_medico_crm: string = String(req.body.dem_medico_crm || '').trim();
@@ -215,9 +215,9 @@ export default class Controller_DemandasEspecificas {
             await demandasEspecificas.BuscarPorId(dem_id);
 
             demandasEspecificas.dem_pac_id = dem_pac_id;
-            demandasEspecificas.dem_medico_assis = dem_medico_assis.toUpperCase();
-            demandasEspecificas.dem_medico_crm = dem_medico_crm;
-            demandasEspecificas.dem_responsavel = dem_responsavel.toUpperCase();
+            demandasEspecificas.dem_medico_assis = dem_medico_assis.trim().toUpperCase();
+            demandasEspecificas.dem_medico_crm = dem_medico_crm.trim().toUpperCase();
+            demandasEspecificas.dem_responsavel = dem_responsavel.trim().toUpperCase();
             demandasEspecificas.dem_diag_id = dem_diag_id;
 
             await demandasEspecificas.Salvar();
@@ -255,10 +255,10 @@ export default class Controller_DemandasEspecificas {
             await db.Commit();
 
             resdata.msg = "Dados Salvo com Sucesso."
-            resdata.data = {dem_id}
-           
+            resdata.data = { dem_id }
 
-        } catch (error :any) {
+
+        } catch (error: any) {
             void await db.Rollback();
             applyControllerError(resdata, error, 'Controller Demandas Específicas');
         }
@@ -268,12 +268,12 @@ export default class Controller_DemandasEspecificas {
         res.status(resdata.status).json(resdata);
 
     }
-    
+
     static async Excluir(req: Request, res: Response) {
 
-        const db : iDatabase = new Database();
+        const db: iDatabase = new Database();
 
-        const resdata :iresdata = {
+        const resdata: iresdata = {
             err: 0,
             msg: '',
             status: 200,
@@ -284,7 +284,7 @@ export default class Controller_DemandasEspecificas {
 
             void await db.Connect();
 
-            const demanda_id : number = Number(req.params.id_demanda || 0);
+            const demanda_id: number = Number(req.params.id_demanda || 0);
 
             if (demanda_id === 0) {
                 const error = new Error('ID Demanda Específica não informado');
@@ -295,7 +295,7 @@ export default class Controller_DemandasEspecificas {
             const demandasEspecificas = new DemandasEspecificas(db.connection);
             await demandasEspecificas.Excluir(demanda_id);
 
-        } catch (error :any) {
+        } catch (error: any) {
             applyControllerError(resdata, error, 'Controller Demandas Específicas');
         }
 
@@ -303,13 +303,13 @@ export default class Controller_DemandasEspecificas {
 
         res.status(resdata.status).json(resdata);
 
-    } 
-    
+    }
+
     static async ListarItensDemandas(req: Request, res: Response) {
 
-        const db : iDatabase = new Database();
+        const db: iDatabase = new Database();
 
-        const resdata :iresdata = {
+        const resdata: iresdata = {
             err: 0,
             msg: '',
             status: 200,
@@ -333,21 +333,21 @@ export default class Controller_DemandasEspecificas {
 
             resdata.data = dados;
 
-        } catch (error :any) {
+        } catch (error: any) {
             applyControllerError(resdata, error, 'Controller Demandas Específicas');
         }
 
         void await db.Disconnect();
 
         res.status(resdata.status).json(resdata);
-    
+
     }
 
     static async SalvarEntradas(req: Request, res: Response) {
 
-        const db : iDatabase = new Database();
+        const db: iDatabase = new Database();
 
-        const resdata :iresdata = {
+        const resdata: iresdata = {
             err: 0,
             msg: '',
             status: 200,
@@ -376,7 +376,7 @@ export default class Controller_DemandasEspecificas {
                 throw error;
             }
 
-            if(ent_for_id <= 0) {
+            if (ent_for_id <= 0) {
                 const error = new Error('Fornecedor não informado.');
                 error.statusCode = 400;
                 throw error;
@@ -404,9 +404,9 @@ export default class Controller_DemandasEspecificas {
             if (!ent_doc) {
 
                 const anoAtual = new Date().getFullYear();
-                const mesAtual = (new Date().getMonth() + 1).toString().padStart(2,'0');
+                const mesAtual = (new Date().getMonth() + 1).toString().padStart(2, '0');
                 const numeroAleatorio = Math.floor(Math.random() * 11333).toString().padStart(4, '0');
-                
+
                 ent_doc = `${anoAtual}-${mesAtual}-${numeroAleatorio}`;
             }
 
@@ -416,7 +416,7 @@ export default class Controller_DemandasEspecificas {
             const medicamentos = new Medicamentos(db.connection);
             const demandas = new DemandasEspecificas(db.connection);
             const itensDemandas = new ItensDemandasEspecificas(db.connection);
-        
+
             // Buscar a entrada existente ou criar uma nova
             void await entradas.BuscarPorId(ent_id);
 
@@ -491,7 +491,7 @@ export default class Controller_DemandasEspecificas {
                 itensEntradas.ite_ent_lote = itemLote;
                 itensEntradas.ite_ent_lote_validade = itemLoteValidade;
                 itensEntradas.ite_ent_qtde = itemQtde;
-            
+
                 await itensEntradas.Salvar();
 
                 await demandas.BuscarPorPaciente(ent_pac_id);
@@ -510,9 +510,9 @@ export default class Controller_DemandasEspecificas {
                 itensDemandas.ite_dem_med_id = itemMedId;
                 itensDemandas.ite_dem_lote = itemLote;
                 itensDemandas.ite_ent_id = entradas.ent_id;
-                
+
                 await itensDemandas.Salvar();
-                
+
             }
 
             await db.Commit();
@@ -525,12 +525,12 @@ export default class Controller_DemandasEspecificas {
                 ent_doc_auto_generated: !ent_doc_informado,
                 total_itens: itens.length
             };
-           
-        } catch (error :any) {
+
+        } catch (error: any) {
             void await db.Rollback();
             applyControllerError(resdata, error, 'Controller Demandas Específicas');
         }
-        
+
         void await db.Disconnect();
 
         res.status(resdata.status).json(resdata);
@@ -539,9 +539,9 @@ export default class Controller_DemandasEspecificas {
 
     static async ListarPacientes(req: Request, res: Response) {
 
-        const db : iDatabase = new Database();
+        const db: iDatabase = new Database();
 
-        const resdata :iresdata = {
+        const resdata: iresdata = {
             err: 0,
             msg: '',
             status: 200,
@@ -556,7 +556,7 @@ export default class Controller_DemandasEspecificas {
             const dados = await demandasEspecificas.ListarPacientes();
 
             resdata.data = dados;
-            
+
         } catch (error) {
             applyControllerError(resdata, error, 'Controller Demandas Específicas.ListarPacientes');
         }
@@ -564,12 +564,12 @@ export default class Controller_DemandasEspecificas {
         void await db.Disconnect();
 
         res.status(resdata.status).json(resdata);
-    
+
     }
 
     static async ImprimirRecibo(req: Request, res: Response) {
 
-        const db : iDatabase = new Database();
+        const db: iDatabase = new Database();
 
         try {
 
@@ -864,8 +864,8 @@ export default class Controller_DemandasEspecificas {
             res.setHeader('Content-Disposition', `inline; filename=\"recibo-entrada-demanda-${ent_id}.pdf\"`);
             res.status(200).send(pdfBuffer);
 
-        } catch (error :any) {
-            const resdata : iresdata = {
+        } catch (error: any) {
+            const resdata: iresdata = {
                 err: 0,
                 msg: '',
                 status: 200,
@@ -878,5 +878,5 @@ export default class Controller_DemandasEspecificas {
 
         void await db.Disconnect();
     }
-        
+
 }

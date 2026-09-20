@@ -10,9 +10,9 @@ export default class Controller_Depositos {
     static async Listar(req: Request, res: Response) {
 
         // Inicializa infraestrutura da requisicao e o envelope padrao da resposta.
-        const db : iDatabase = new Database();
-        
-        const resdata : iresdata = {
+        const db: iDatabase = new Database();
+
+        const resdata: iresdata = {
             err: 0,
             msg: '',
             status: 200,
@@ -22,7 +22,7 @@ export default class Controller_Depositos {
         try {
 
             // Valida o filtro antes da consulta.
-            const pesq : string = String(req.params.pesq || '*');
+            const pesq: string = String(req.params.pesq || '*');
 
             void await db.Connect();
 
@@ -30,13 +30,13 @@ export default class Controller_Depositos {
                 const error = new Error('Texto de pesquisa não informado');
                 error.statusCode = 400;
                 throw error;
-            } 
+            }
 
             // Executa a consulta no DAO e devolve a lista filtrada.
             const depositos = new Depositos(db.connection);
-        
-            resdata.data = await depositos.Listar(pesq) as iDepositosFields[]; 
-            
+
+            resdata.data = await depositos.Listar(pesq) as iDepositosFields[];
+
         } catch (error: any) {
             applyControllerError(resdata, error, 'Controller Depositos');
         }
@@ -49,8 +49,8 @@ export default class Controller_Depositos {
 
     static async ListarAtivos(req: Request, res: Response) {
 
-        const db : iDatabase = new Database();
-        const resdata : iresdata = {
+        const db: iDatabase = new Database();
+        const resdata: iresdata = {
             err: 0,
             msg: '',
             status: 200,
@@ -59,7 +59,7 @@ export default class Controller_Depositos {
 
         try {
 
-            const pesq : string = String(req.params.pesq || '*');
+            const pesq: string = String(req.params.pesq || '*');
 
             void await db.Connect();
 
@@ -70,8 +70,8 @@ export default class Controller_Depositos {
             }
 
             const depositos = new Depositos(db.connection);
-            resdata.data = await depositos.ListarAtivos() as iDepositosFields[]; 
-            
+            resdata.data = await depositos.ListarAtivos() as iDepositosFields[];
+
         } catch (error: any) {
             applyControllerError(resdata, error, 'Controller Depositos');
         }
@@ -84,8 +84,8 @@ export default class Controller_Depositos {
     static async Buscar(req: Request, res: Response) {
 
         // Inicializa infraestrutura da requisicao e o envelope padrao da resposta.
-        const db : iDatabase = new Database();
-        const resdata : iresdata = {
+        const db: iDatabase = new Database();
+        const resdata: iresdata = {
             err: 0,
             msg: '',
             status: 200,
@@ -95,7 +95,7 @@ export default class Controller_Depositos {
         try {
 
             // Valida o identificador antes da busca.
-            const dep_id : number = Number(req.params.dep_id || 0);
+            const dep_id: number = Number(req.params.dep_id || 0);
 
             void await db.Connect();
 
@@ -109,14 +109,14 @@ export default class Controller_Depositos {
             const depositos = new Depositos(db.connection);
             const dados = await depositos.BuscarPorId(dep_id) as iDepositosFields;
 
-            if (!depositos.found) { 
+            if (!depositos.found) {
                 const error = new Error('Depósito não encontrado');
                 error.statusCode = 404
                 throw error;
             }
 
-            resdata.data = dados; 
-            
+            resdata.data = dados;
+
         } catch (error: any) {
             applyControllerError(resdata, error, 'Controller Depositos');
         }
@@ -130,8 +130,8 @@ export default class Controller_Depositos {
     static async Salvar(req: Request, res: Response) {
 
         // Inicializa infraestrutura da requisicao e o envelope padrao da resposta.
-        const db : iDatabase = new Database();
-        const resdata : iresdata = {
+        const db: iDatabase = new Database();
+        const resdata: iresdata = {
             err: 0,
             msg: '',
             status: 200,
@@ -145,9 +145,9 @@ export default class Controller_Depositos {
             void await db.Begin();
 
             // Normaliza os campos vindos da requisicao.
-            const dep_id : number = Number(req.body.dep_id ?? req.body.depo_id ?? 0);
-            const dep_descr : string = String(req.body.dep_descr ?? req.body.depo_descr ?? '').trim().toLocaleUpperCase();
-            const dep_ativo : 0 | 1 = Number(req.body.dep_ativo ?? req.body.depo_ativo ?? 0) === 1 ? 1 : 0;
+            const dep_id: number = Number(req.body.dep_id ?? req.body.depo_id ?? 0);
+            const dep_descr: string = String(req.body.dep_descr ?? req.body.depo_descr ?? '').trim();
+            const dep_ativo: 0 | 1 = Number(req.body.dep_ativo ?? req.body.depo_ativo ?? 0) === 1 ? 1 : 0;
 
             if (!dep_descr) {
                 const error = new Error('Descrição do depósito não informada');
@@ -163,11 +163,11 @@ export default class Controller_Depositos {
 
             // Carrega o registro atual quando houver ID e persiste a alteracao.
             const depositos = new Depositos(db.connection);
-           
+
             void await depositos.BuscarPorId(dep_id);
-            
+
             depositos.dep_id = dep_id;
-            depositos.dep_descr = dep_descr.toLocaleUpperCase();
+            depositos.dep_descr = dep_descr.trim().toUpperCase();
             depositos.dep_ativo = dep_ativo;
             depositos.dep_bloqueado = depositos.found ? depositos.dep_bloqueado : 0;
 
@@ -175,8 +175,8 @@ export default class Controller_Depositos {
 
             void await db.Commit();
 
-            resdata.msg = "Depósito salvo com sucesso";   
-            
+            resdata.msg = "Depósito salvo com sucesso";
+
         } catch (error: any) {
             void await db.Rollback();
             applyControllerError(resdata, error, 'Controller Depositos');
@@ -187,12 +187,12 @@ export default class Controller_Depositos {
         res.status(resdata.status).json(resdata);
 
     }
-    
+
     static async Excluir(req: Request, res: Response) {
 
         // Inicializa infraestrutura da requisicao e o envelope padrao da resposta.
-        const db : iDatabase = new Database();
-        const resdata : iresdata = {
+        const db: iDatabase = new Database();
+        const resdata: iresdata = {
             err: 0,
             msg: '',
             status: 200,
@@ -206,7 +206,7 @@ export default class Controller_Depositos {
             void await db.Begin();
 
             // Valida o identificador e garante que o deposito exista.
-            const dep_id : number = Number(req.params.dep_id || 0);
+            const dep_id: number = Number(req.params.dep_id || 0);
 
             if (dep_id === 0) {
                 const error = new Error('ID do depósito não informado');
@@ -223,7 +223,7 @@ export default class Controller_Depositos {
                 error.statusCode = 404;
                 throw error;
             }
-            
+
             await depositos.Excluir();
 
             void await db.Commit();
@@ -238,7 +238,7 @@ export default class Controller_Depositos {
         void await db.Disconnect();
 
         res.status(resdata.status).json(resdata);
-  
+
     }
 
 }
