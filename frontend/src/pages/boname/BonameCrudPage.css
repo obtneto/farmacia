@@ -923,6 +923,16 @@
   overflow: hidden;
 }
 
+.boname-page__record-modal .app-modal__body-content,
+.boname-page__record-modal .boname-page__modal-shell,
+.boname-page__record-modal .boname-page__form-panel {
+  height: auto;
+}
+
+.boname-page__record-modal .boname-page__modal-shell {
+  padding-bottom: 0.85rem;
+}
+
 .boname-page__record-modal .rs-modal-header-close {
   top: 1rem;
   right: 1rem;
