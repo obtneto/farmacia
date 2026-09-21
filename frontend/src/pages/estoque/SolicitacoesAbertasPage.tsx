@@ -10,6 +10,7 @@ import { AppModal, DataState, PageSection, StatusBadge } from '../../components/
 import { getErrorMessage, useMessage } from '../../hooks/useMessage'
 import { apiRequest } from '../../lib/api'
 import { getApiBaseUrl } from '../../lib/api-base-url'
+import { getSessionUsername } from '../../lib/auth-helpers'
 import '../boname/BonameCrudPage.css'
 import './SolicitacoesAbertasPage.css'
 
@@ -37,7 +38,6 @@ export interface SolicitacoesAbertasPageProps {
 }
 
 const DEFAULT_PAGE_SIZE = 13
-const SESSION_USER_STORAGE_KEY = 'sessionUser'
 const AUTH_STORAGE_KEYS = ['authToken', 'token', 'accessToken', 'jwt']
 const EMPTY_SOLICITACAO_ABERTA_ITEMS: SolicitacaoAbertaItemRecord[] = []
 const EMPTY_SOLICITACAO_ABERTA_RECORDS: SolicitacaoAbertaRecord[] = []
@@ -59,33 +59,6 @@ function formatDateForDisplay(value?: string | null): string {
 function formatText(value?: string | number | null): string {
   const text = String(value ?? '').trim()
   return text || '-'
-}
-
-function getStoredSessionUsername(): string {
-  if (typeof window === 'undefined') {
-    return ''
-  }
-
-  const rawSessionUser = window.localStorage.getItem(SESSION_USER_STORAGE_KEY)
-
-  if (!rawSessionUser) {
-    return ''
-  }
-
-  try {
-    const sessionUser = JSON.parse(rawSessionUser) as Record<string, unknown>
-
-    return String(
-      sessionUser.username
-      || sessionUser.user
-      || sessionUser.user_name
-      || sessionUser.preferred_username
-      || sessionUser.id
-      || ''
-    ).trim()
-  } catch {
-    return ''
-  }
 }
 
 function getStoredAuthToken(): string {
@@ -304,7 +277,7 @@ export function SolicitacoesAbertasPage({
       return
     }
 
-    const userAprov = getStoredSessionUsername()
+    const userAprov = getSessionUsername()
 
     if (!userAprov) {
       void message.error('Sessao invalida', 'Nao foi possivel identificar o usuario aprovador da solicitacao.')

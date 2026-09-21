@@ -9,6 +9,7 @@ import { AppModal, DataState, PageSection, ReferenceNotification } from '../comp
 import { getErrorMessage, useMessage } from '../hooks/useMessage'
 import { useMask } from '../hooks/useMask'
 import { getApiBaseUrl } from '../lib/api-base-url'
+import { getSessionUsername } from '../lib/auth-helpers'
 import './boname/BonameCrudPage.css'
 
 type DraftItemForm = {
@@ -76,7 +77,6 @@ type HeaderFormErrors = Partial<Record<keyof HeaderForm, string>>
 type DraftItemFormErrors = Partial<Record<keyof DraftItemForm, string>>
 
 const LOCAL_STORAGE_TOKEN_KEYS = ['authToken', 'access_token', 'token', 'jwtToken']
-const SESSION_USER_STORAGE_KEY = 'sessionUser'
 const MAX_DOC_LENGTH = 90
 const MAX_LOTE_LENGTH = 60
 const API_BASE_URL = getApiBaseUrl()
@@ -103,33 +103,6 @@ function getStoredToken(): string | null {
   }
 
   return null
-}
-
-function getStoredSessionUsername(): string {
-  if (typeof window === 'undefined') {
-    return ''
-  }
-
-  const rawSessionUser = window.localStorage.getItem(SESSION_USER_STORAGE_KEY)
-
-  if (!rawSessionUser) {
-    return ''
-  }
-
-  try {
-    const sessionUser = JSON.parse(rawSessionUser) as Record<string, unknown>
-
-    return String(
-      sessionUser.username
-      || sessionUser.user
-      || sessionUser.user_name
-      || sessionUser.preferred_username
-      || sessionUser.id
-      || ''
-    ).trim()
-  } catch {
-    return ''
-  }
 }
 
 function buildUrl(baseUrl: string, path: string): string {
@@ -245,7 +218,7 @@ async function listarTiposMedicamentosOptions(authToken?: string | null): Promis
 }
 
 async function salvarEntrada(headerForm: HeaderForm, draftItems: DraftItemForm[], authToken?: string | null) {
-  const entUserDigit = getStoredSessionUsername()
+  const entUserDigit = getSessionUsername()
 
   return requestEntrada<SaveEntradaResponse>(
     '/entradas/salvar',
@@ -464,7 +437,7 @@ const [headerErrors, setHeaderErrors] = useState<HeaderFormErrors>({})
   }
 
 const handleSaveEntry = () => {
-    if (!getStoredSessionUsername()) {
+    if (!getSessionUsername()) {
       message.error('Sessao invalida', 'Nao foi possivel identificar o usuario digitador da entrada.')
       return
     }

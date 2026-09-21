@@ -341,3 +341,50 @@ export function getUserDisplayName(): string {
 export function getUserProfile(): JsonRecord | null {
   return getSession<JsonRecord>('_upf')
 }
+
+/**
+ * Login/username do usuario autenticado (Barramento `_upf`).
+ * Usado em payloads que exigem digitador, solicitante, aprovador, etc.
+ */
+export function getSessionUsername(): string {
+  const profile = getUserProfile()
+
+  if (profile) {
+    const fromProfile = String(
+      profile.user
+      || profile.username
+      || profile.user_name
+      || profile.preferred_username
+      || (typeof profile.id === 'string' || typeof profile.id === 'number' ? profile.id : '')
+      || ''
+    ).trim()
+
+    if (fromProfile) {
+      return fromProfile
+    }
+  }
+
+  // Fallback legado (sessao simulada antiga em localStorage)
+  if (typeof window === 'undefined') {
+    return ''
+  }
+
+  try {
+    const raw = window.localStorage.getItem('sessionUser')
+    if (!raw) {
+      return ''
+    }
+
+    const sessionUser = JSON.parse(raw) as JsonRecord
+    return String(
+      sessionUser.username
+      || sessionUser.user
+      || sessionUser.user_name
+      || sessionUser.preferred_username
+      || sessionUser.id
+      || ''
+    ).trim()
+  } catch {
+    return ''
+  }
+}

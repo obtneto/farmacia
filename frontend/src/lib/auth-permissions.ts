@@ -16,7 +16,7 @@ export type PermissionRoute = {
   [key: string]: unknown
 }
 
-function extractGroupIds(upf: JsonRecord): number[] {
+export function extractGroupIds(upf: JsonRecord): number[] {
   const directGroupIds =
     upf.groups_ids
     ?? upf.groupsIds
@@ -123,6 +123,19 @@ export function getAllowedRoutes(): PermissionRoute[] {
 
 export function getAllowedRoutePaths(): string[] {
   return [...new Set(getAllowedRoutes().map((route) => normalizeRouteValue(route)).filter(Boolean) as string[])]
+}
+
+export function getUserGroupIds(profile?: JsonRecord | null): number[] {
+  const upf = profile ?? getSession<JsonRecord>('_upf')
+  if (!upf) {
+    return []
+  }
+
+  return extractGroupIds(upf)
+}
+
+export function userHasGroup(groupId: number, profile?: JsonRecord | null): boolean {
+  return getUserGroupIds(profile).includes(Number(groupId))
 }
 
 export function isSectionAllowed(sectionKey: string, allowedPaths = getAllowedRoutePaths()): boolean {

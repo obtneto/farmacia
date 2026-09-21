@@ -10,6 +10,7 @@ import { AppModal, DataState, PageSection, ReferenceNotification } from '../../c
 import { getErrorMessage, useMessage } from '../../hooks/useMessage'
 import { useMask } from '../../hooks/useMask'
 import { getApiBaseUrl } from '../../lib/api-base-url'
+import { getSessionUsername } from '../../lib/auth-helpers'
 import '../boname/BonameCrudPage.css'
 
 type DraftItemForm = {
@@ -91,7 +92,6 @@ type DraftItemFormErrors = Partial<Record<keyof DraftItemForm, string>>
 
 const API_BASE_URL = getApiBaseUrl()
 const LOCAL_STORAGE_TOKEN_KEYS = ['authToken', 'access_token', 'token', 'jwtToken']
-const SESSION_USER_STORAGE_KEY = 'sessionUser'
 const MAX_DOC_LENGTH = 90
 const MAX_LOTE_LENGTH = 60
 
@@ -117,33 +117,6 @@ function getStoredToken(): string | null {
   }
 
   return null
-}
-
-function getStoredSessionUsername(): string {
-  if (typeof window === 'undefined') {
-    return ''
-  }
-
-  const rawSessionUser = window.localStorage.getItem(SESSION_USER_STORAGE_KEY)
-
-  if (!rawSessionUser) {
-    return ''
-  }
-
-  try {
-    const sessionUser = JSON.parse(rawSessionUser) as Record<string, unknown>
-
-    return String(
-      sessionUser.username
-      || sessionUser.user
-      || sessionUser.user_name
-      || sessionUser.preferred_username
-      || sessionUser.id
-      || ''
-    ).trim()
-  } catch {
-    return ''
-  }
 }
 
 function buildUrl(baseUrl: string, path: string): string {
@@ -328,7 +301,7 @@ async function salvarEntradaDemanda(headerForm: HeaderForm, draftItems: DraftIte
         ent_for_id: headerForm.fornecedorId ?? 0,
         ent_dep_id: headerForm.depositoId ?? 0,
         ent_pac_id: headerForm.pacienteId ?? 0,
-        ent_user_digit: getStoredSessionUsername(),
+        ent_user_digit: getSessionUsername(),
         itens: draftItems.map((item) => ({
           ent_med_id: item.medicamentoId ?? 0,
           ent_lote: normalizeText(item.lote, MAX_LOTE_LENGTH).trim().toLocaleUpperCase('pt-BR'),
@@ -605,7 +578,7 @@ export default function EntradaMercadoriaDemandasCrudPage() {
   }
 
   const handleSaveEntry = () => {
-    if (!getStoredSessionUsername()) {
+    if (!getSessionUsername()) {
       message.error('Sessao invalida', 'Nao foi possivel identificar o usuario digitador da entrada.')
       return
     }

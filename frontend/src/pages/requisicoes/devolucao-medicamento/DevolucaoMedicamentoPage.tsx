@@ -8,6 +8,7 @@ import { DataState, PageSection, ReferenceNotification, StatusBadge } from '../.
 import { getErrorMessage, useMessage } from '../../../hooks/useMessage'
 import { useMask } from '../../../hooks/useMask'
 import { apiRequest } from '../../../lib/api'
+import { getSessionUsername } from '../../../lib/auth-helpers'
 import '../../boname/BonameCrudPage.css'
 
 type RequisicaoDevolucaoRecord = {
@@ -64,8 +65,6 @@ type SalvarDevolucaoResponse = {
   req_num?: string | null
 }
 
-const SESSION_USER_STORAGE_KEY = 'sessionUser'
-
 async function buscarRequisicaoParaDevolucao(reqNum: string): Promise<BuscarRequisicaoParaDevolucaoResponse> {
   return apiRequest<BuscarRequisicaoParaDevolucaoResponse>(`/requisicoes/buscar_para_devolucao/${encodeURIComponent(reqNum)}`)
 }
@@ -75,33 +74,6 @@ async function salvarDevolucao(payload: SalvarDevolucaoPayload): Promise<SalvarD
     method: 'POST',
     body: JSON.stringify(payload),
   })
-}
-
-function getStoredSessionUsername(): string {
-  if (typeof window === 'undefined') {
-    return ''
-  }
-
-  const rawSessionUser = window.localStorage.getItem(SESSION_USER_STORAGE_KEY)
-
-  if (!rawSessionUser) {
-    return ''
-  }
-
-  try {
-    const sessionUser = JSON.parse(rawSessionUser) as Record<string, unknown>
-
-    return String(
-      sessionUser.username
-      || sessionUser.user
-      || sessionUser.user_name
-      || sessionUser.preferred_username
-      || sessionUser.id
-      || ''
-    ).trim()
-  } catch {
-    return ''
-  }
 }
 
 function formatDateForInput(date: Date): string {
@@ -190,7 +162,7 @@ export function DevolucaoMedicamentoPage() {
       throw new Error('Requisicao de dispensacao invalida.')
     }
 
-    const solicitadoPor = getStoredSessionUsername()
+    const solicitadoPor = getSessionUsername()
 
     if (!solicitadoPor) {
       throw new Error('Nao foi possivel identificar o solicitante.')

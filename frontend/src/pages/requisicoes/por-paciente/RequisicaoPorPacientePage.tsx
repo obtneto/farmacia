@@ -13,6 +13,7 @@ import { AppModal, DataState, PageSection, ReferenceNotification, StatusBadge } 
 import { getErrorMessage, useMessage } from '../../../hooks/useMessage'
 import { maskDate, useMask } from '../../../hooks/useMask'
 import { getApiBaseUrl } from '../../../lib/api-base-url'
+import { getSessionUsername } from '../../../lib/auth-helpers'
 import '../../boname/BonameCrudPage.css'
 
 type ApiResponse<T> = {
@@ -99,7 +100,6 @@ const API_BASE_URL = getApiBaseUrl()
 const PAGE_SIZE = 13
 const MAX_OBSERVACAO_LENGTH = 500
 const LOCAL_STORAGE_TOKEN_KEYS = ['authToken', 'access_token', 'token', 'jwtToken']
-const SESSION_USER_STORAGE_KEY = 'sessionUser'
 const TIPO_REQUISICAO_OPTIONS: SelectOption<number>[] = [{ label: 'Dispensacao', value: 1 }]
 
 function getStoredToken(): string | null {
@@ -116,33 +116,6 @@ function getStoredToken(): string | null {
   }
 
   return null
-}
-
-function getStoredSessionUsername(): string {
-  if (typeof window === 'undefined') {
-    return ''
-  }
-
-  const rawSessionUser = window.localStorage.getItem(SESSION_USER_STORAGE_KEY)
-
-  if (!rawSessionUser) {
-    return ''
-  }
-
-  try {
-    const sessionUser = JSON.parse(rawSessionUser) as Record<string, unknown>
-
-    return String(
-      sessionUser.username
-      || sessionUser.user
-      || sessionUser.user_name
-      || sessionUser.preferred_username
-      || sessionUser.id
-      || ''
-    ).trim()
-  } catch {
-    return ''
-  }
 }
 
 function buildUrl(path: string): string {
@@ -374,7 +347,7 @@ async function salvarRequisicao(headerForm: HeaderForm, itens: RequisicaoItem[],
         observacao: normalizeText(headerForm.observacao, MAX_OBSERVACAO_LENGTH).trim(),
         pac_id: headerForm.pacienteId ?? 0,
         req_id: 0,
-        solicitado_por: getStoredSessionUsername(),
+        solicitado_por: getSessionUsername(),
         tipo_req_id: headerForm.tipoRequisicaoId,
       }),
     },
@@ -688,7 +661,7 @@ export function RequisicaoPorPacientePage() {
   }
 
   const handleSave = () => {
-    if (!getStoredSessionUsername()) {
+    if (!getSessionUsername()) {
       message.error('Sessao invalida', 'Nao foi possivel identificar o solicitante.')
       return
     }
