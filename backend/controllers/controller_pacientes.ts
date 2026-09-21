@@ -19,7 +19,7 @@ export default class Controller_Pacientes {
                   const pesq: string = String(req.params.pesq || '*');
 
                   let query: string = `SELECT num_paciente, nom_paciente,nom_social,dt_nascimento,cpf,email 
-                                       FROM tb_pacientes`;
+                                       FROM fsph_ambulatorio.tb_pacientes`;
 
                   if (pesq !== '*') {
                         query += `  WHERE cpf LIKE CONCAT('%', :pesq, '%') OR MATCH(nom_paciente,nom_social) AGAINST(:pesq IN BOOLEAN MODE)`;
@@ -55,7 +55,7 @@ export default class Controller_Pacientes {
 
                   let query: string = `SELECT p.num_paciente, p.nom_paciente,p.nom_social,p.dt_nascimento,p.cpf,p.email,
                                        p.nom_pai,p.nom_mae,p.telefone,p.endereco,p.bairro,c.nome as cidade,p.uf
-                                       FROM tb_pacientes p
+                                       FROM fsph_ambulatorio.tb_pacientes p
                                        LEFT JOIN tb_cidades c ON c.id = p.cod_cidade
                                        WHERE p.num_paciente = :num_paciente`;
 
