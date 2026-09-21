@@ -1,10 +1,14 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
+import { Button } from 'rsuite'
 import MainLayout from './components/MainLayout'
+import { AppModal } from './components/ui'
 import PageLoader from './components/ui/PageLoader'
 import { APP_SECTIONS, type SectionKey } from './config/navigation'
 import './App.css'
+import { forceLoginRedirect } from './lib/auth-helpers'
 import { isSectionAllowed } from './lib/auth-permissions'
 import { bootstrapAuthSession } from './lib/auth-session'
+import { startIdleSessionWatch, stopIdleSessionWatch } from './lib/idle-session'
 
 const DEFAULT_SECTION_KEY: SectionKey = 'inicio'
 const AprovacaoEntradaPage = lazy(() => import('./pages/AprovacaoEntradaPage'))
@@ -50,6 +54,7 @@ function App() {
     return searchParam && APP_SECTIONS[searchParam] ? searchParam : DEFAULT_SECTION_KEY
   })
   const [authReady, setAuthReady] = useState(false)
+  const [idleExpired, setIdleExpired] = useState(false)
 
   const section = APP_SECTIONS[activeSectionKey]
   const isCadastroSection =
@@ -96,6 +101,9 @@ function App() {
 
         setActiveSectionKey((current) => (isSectionAllowed(current) ? current : DEFAULT_SECTION_KEY))
         setAuthReady(true)
+        startIdleSessionWatch(() => {
+          setIdleExpired(true)
+        })
       })
       .catch(() => {
         // redirect para o SA e tratado em bootstrapAuthSession / forceLoginRedirect
@@ -103,8 +111,13 @@ function App() {
 
     return () => {
       mounted = false
+      stopIdleSessionWatch()
     }
   }, [])
+
+  const handleIdleModalClose = () => {
+    forceLoginRedirect()
+  }
 
   const handleSidebarSelect = (eventKey: SectionKey) => {
     if (!isSectionAllowed(eventKey)) {
@@ -212,6 +225,26 @@ function App() {
           <AlertaValidadeStartupNotifier />
         </>
       </Suspense>
+
+      <AppModal
+        open={idleExpired}
+        backdrop="static"
+        intent="confirm"
+        intentVisible={false}
+        onClose={handleIdleModalClose}
+        size="xs"
+        title="Sessao expirada"
+        footer={(
+          <Button appearance="primary" onClick={handleIdleModalClose}>
+            Fechar
+          </Button>
+        )}
+      >
+        <p>
+          Voce ficou muito tempo inativo. A sessao foi encerrada.
+          Ao fechar, voce sera redirecionado ao hub.
+        </p>
+      </AppModal>
     </MainLayout>
   )
 }
