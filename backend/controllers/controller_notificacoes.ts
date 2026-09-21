@@ -17,7 +17,7 @@ export interface NotificationRecord {
     createdAt: string;
     actionLabel?: string;
     actionSectionKey?: string;
-    critical: boolean;
+    critical: boolean | null;
 }
 
 const __filename = fileURLToPath(import.meta.url);
@@ -50,7 +50,7 @@ class NotificationService extends EventEmitter {
             createdAt: new Date().toISOString(),
             actionLabel: notification.actionLabel?.trim(),
             actionSectionKey: notification.actionSectionKey?.trim(),
-            critical: false
+            critical: notification.critical ?? false
         };
 
         this.notifications = [record, ...this.notifications.filter(item => item.id !== record.id)].slice(0, this.maxHistory);
