@@ -7,10 +7,29 @@
 }
 
 .alerta-validade-page__section,
-.alerta-validade-page__section > .rs-panel-body,
 .alerta-validade-page__section .page-section__body {
   height: 100%;
   min-height: 0;
+}
+
+.alerta-validade-page__section > .rs-panel-body {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  height: 100%;
+  min-height: 0;
+}
+
+.alerta-validade-page__section .page-section__body {
+  height: auto;
+}
+
+.alerta-validade-page__section .page-section__header {
+  padding-bottom: 0.35rem;
+}
+
+.alerta-validade-page__section .page-section__actions {
+  width: auto;
+  margin-left: auto;
 }
 
 .alerta-validade-page__content,

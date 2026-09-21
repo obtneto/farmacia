@@ -234,7 +234,19 @@ export function AlertaValidadePage({ records: initialRecords }: AlertaValidadePa
 
   return (
     <section className="boname-page estoque-page alerta-validade-page">
-      <PageSection className="estoque-page__merged-section alerta-validade-page__section">
+      <PageSection
+        className="estoque-page__merged-section alerta-validade-page__section"
+        actions={(
+          <Button
+            appearance="ghost"
+            startIcon={<ReloadIcon />}
+            loading={listQuery.isFetching && !listQuery.isPending}
+            onClick={() => void listQuery.refetch()}
+          >
+            Atualizar
+          </Button>
+        )}
+      >
         {listQuery.isPending ? (
           <DataState
             state="loading"

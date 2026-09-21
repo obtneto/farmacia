@@ -644,7 +644,7 @@ export function MainLayout({
     }, USER_PROFILE_EXPANDED_DURATION_MS)
   }
 
-  const handleOpenNotification = (notification: HeaderNotification) => {
+  const markNotificationAsRead = (notification: HeaderNotification) => {
     setNotifications((current) => markNotificationRead(current, notification.id))
 
     const authToken = readStoredAuthToken()
@@ -653,6 +653,10 @@ export function MainLayout({
       method: 'PATCH',
       headers: authToken ? { Authorization: `Bearer ${authToken}` } : undefined,
     }).catch(() => undefined)
+  }
+
+  const handleOpenNotification = (notification: HeaderNotification) => {
+    markNotificationAsRead(notification)
 
     if (notification.actionSectionKey) {
       onSidebarSelect?.(notification.actionSectionKey)
@@ -911,7 +915,7 @@ export function MainLayout({
                                 isUnread ? 'main-layout__notification--unread' : 'main-layout__notification--read'
                               } ${notification.tone ? `main-layout__notification--tone-${notification.tone}` : ''}`.trim()}
                               key={notification.id}
-                              onClick={() => isUnread && handleOpenNotification(notification)}
+                              onClick={() => handleOpenNotification(notification)}
                             >
                               <div className="main-layout__notification-icon-wrapper">
                                 {getNotificationToneIcon(notification.tone)}

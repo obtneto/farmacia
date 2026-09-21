@@ -51,7 +51,7 @@ const DEFAULT_FORM_VALUES: DepositoRecord = {
 
 const LOCAL_STORAGE_TOKEN_KEYS = ['authToken', 'access_token', 'token', 'jwtToken']
 const PAGE_SIZE = 13
-const DEPOSITO_DESCR_MAX_LENGTH = 255
+const DEPOSITO_DESCR_MAX_LENGTH = 17
 
 function getStoredToken(): string | null {
   if (typeof window === 'undefined') {

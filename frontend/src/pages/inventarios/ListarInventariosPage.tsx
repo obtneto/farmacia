@@ -150,9 +150,12 @@ function formatDateForInput(value: Date): string {
 }
 
 function getDefaultFilters(): FilterValues {
+  const today = new Date()
+  const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1)
+
   return {
-    dataFinal: formatDateForInput(new Date()),
-    dataInicial: '1970-01-01',
+    dataFinal: formatDateForInput(today),
+    dataInicial: formatDateForInput(firstDayOfMonth),
     depositoId: null,
   }
 }
