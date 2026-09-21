@@ -41,6 +41,12 @@ class NotificationService extends EventEmitter {
     }
 
     async publish(notification: Pick<NotificationRecord, 'title' | 'description'> & Partial<Pick<NotificationRecord, 'id' | 'tone' | 'actionLabel' | 'actionSectionKey' | 'critical'>>): Promise<NotificationRecord> {
+        const existingNotification = this.findExistingNotification(notification.id);
+
+        if (existingNotification) {
+            return existingNotification;
+        }
+
         const record: NotificationRecord = {
             id: this.createNotificationId(notification.id),
             title: notification.title.trim(),
@@ -60,20 +66,18 @@ class NotificationService extends EventEmitter {
         return record;
     }
 
+    private findExistingNotification(requestedId?: string): NotificationRecord | null {
+        const id = requestedId?.trim();
+
+        if (!id) {
+            return null;
+        }
+
+        return this.notifications.find(item => item.id === id) || null;
+    }
+
     private createNotificationId(requestedId?: string): string {
-        const baseId = requestedId?.trim() || `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
-
-        if (!this.notifications.some(item => item.id === baseId)) {
-            return baseId;
-        }
-
-        let nextId = `${baseId}-${Date.now()}`;
-
-        while (this.notifications.some(item => item.id === nextId)) {
-            nextId = `${baseId}-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
-        }
-
-        return nextId;
+        return requestedId?.trim() || `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
     }
 
     async clear(): Promise<void> {
