@@ -5,7 +5,7 @@
     "description": "33 lotes com validade dentro do prazo de alerta ou vencidos.",
     "tone": "warning",
     "read": false,
-    "createdAt": "2026-09-21T11:43:19.191Z",
+    "createdAt": "2026-09-21T11:50:26.232Z",
     "actionLabel": "Abrir Alerta de Validade",
     "actionSectionKey": "estoque/alerta_validade",
     "critical": false

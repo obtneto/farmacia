@@ -10,7 +10,7 @@ node_modules/
 dist/
 
 # Notificações
-utils/notificacoes.json
+backend/utils/notificacoes.json
 
 # Ambientes locais
 .env
