@@ -223,15 +223,15 @@ export default class Controller_Medicamentos {
             }
 
             medicamentos.med_id = med_id;
-            medicamentos.med_descr = med_descr;
-            medicamentos.med_descr_coml = med_descr_coml;
-            medicamentos.med_und = med_und;
-            medicamentos.med_tipo_codigo = med_tipo_codigo;
-            medicamentos.med_tipo_med = med_tipo_med;
+            medicamentos.med_descr = med_descr.trim().toUpperCase();
+            medicamentos.med_descr_coml = med_descr_coml.trim().toUpperCase();
+            medicamentos.med_und = med_und.trim().toUpperCase();
+            medicamentos.med_tipo_codigo = med_tipo_codigo.trim().toUpperCase();
+            medicamentos.med_tipo_med = med_tipo_med.trim().toUpperCase();
             medicamentos.med_max = med_max;
             medicamentos.med_min = med_min;
             medicamentos.med_ui_cx = med_ui_cx;
-            medicamentos.med_bona_codigo = med_bona_codigo;
+            medicamentos.med_bona_codigo = med_bona_codigo && med_bona_codigo.trim().toUpperCase();
             medicamentos.med_alert = med_alert;
             medicamentos.med_diag_id = med_diag_id;
             medicamentos.med_ativo = med_ativo;

@@ -1,0 +1,12 @@
+alterado em :
+.app-table: 0.8rem
+Cabeçalho .app-table th: 0.85rem
+Células .app-table td: 0.75rem
+
+Alterar em [MainLayout.css (line 416)](/home/ovidio-neto/farmacia/frontend/src/components/MainLayout.css:416):
+Menu principal: 0.8rem
+Submenu pai: 0.75rem
+Submenu filho: 0.78rem
+Submenu depth: 0.78rem
+Título de grupo: 0.7rem
+

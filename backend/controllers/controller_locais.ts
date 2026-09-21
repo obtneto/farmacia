@@ -165,6 +165,12 @@ export default class Controller_Locais {
                 throw error;
             }
 
+            if (!local_tipo && local_tipo.trim() === '') {
+                const error = new Error('Tipo inválido');
+                error.statusCode = 400;
+                throw error;
+            }
+
             const locais = new Locais(db.connection);
 
             void await locais.BuscarPorId(local_id);
@@ -175,9 +181,9 @@ export default class Controller_Locais {
                 throw error;
             }
 
-            locais.local_descr = local_descr;
+            locais.local_descr = local_descr.trim().toUpperCase();
             locais.local_ativo = local_ativo;
-            locais.local_tipo = local_tipo;
+            locais.local_tipo = local_tipo && local_tipo.trim().toUpperCase();
 
             await locais.Salvar();
 

@@ -220,16 +220,16 @@ export default class Controller_Fornecedores {
             void await fornecedores.BuscarPorId(for_id);
 
             fornecedores.for_id = for_id;
-            fornecedores.for_razao_social = for_razao_social;
-            fornecedores.for_nome_fantasia = for_nome_fantasia;
-            fornecedores.for_cnpj = for_cnpj === '' ? null : for_cnpj;
-            fornecedores.for_logradouro = for_logradouro === '' ? null : for_logradouro;
-            fornecedores.for_numero = for_numero === '' ? null : for_numero;
-            fornecedores.for_bairro = for_bairro === '' ? null : for_bairro;
-            fornecedores.for_cidade = for_cidade === '' ? null : for_cidade;
-            fornecedores.for_uf = for_uf === '' ? null : for_uf;
-            fornecedores.for_telefone = for_telefone === '' ? null : for_telefone;
-            fornecedores.for_email = for_email === '' ? null : for_email;
+            fornecedores.for_razao_social = for_razao_social.trim().toUpperCase();
+            fornecedores.for_nome_fantasia = for_nome_fantasia.trim().toUpperCase();
+            fornecedores.for_cnpj = for_cnpj === '' ? null : for_cnpj.trim().toUpperCase();
+            fornecedores.for_logradouro = for_logradouro === '' ? null : for_logradouro.trim().toUpperCase();
+            fornecedores.for_numero = for_numero === '' ? null : for_numero.trim().toUpperCase();
+            fornecedores.for_bairro = for_bairro === '' ? null : for_bairro.trim().toUpperCase();
+            fornecedores.for_cidade = for_cidade === '' ? null : for_cidade.trim().toUpperCase();
+            fornecedores.for_uf = for_uf === '' ? null : for_uf.trim().toUpperCase();
+            fornecedores.for_telefone = for_telefone === '' ? null : for_telefone.trim();
+            fornecedores.for_email = for_email === '' ? null : for_email.trim().toLowerCase();
             fornecedores.for_ativo = for_ativo;
 
             void await fornecedores.Salvar();

@@ -161,7 +161,7 @@ export default class Controller_Estoque {
 
             estoque.est_dep_id = est_dep_id;
             estoque.est_med_id = est_med_id;
-            estoque.est_lote = est_lote;
+            estoque.est_lote = est_lote.trim().toUpperCase();
             estoque.est_saldo_disponivel = est_saldo;
             estoque.est_validade = est_validade;
 

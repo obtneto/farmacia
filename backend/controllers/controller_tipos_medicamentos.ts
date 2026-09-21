@@ -1,5 +1,5 @@
-import Database, {iDatabase} from "../connections/dbconn.js";
-import TiposMedicamentos, {iTiposMedicamentosFields} from '../model/dao_tipos_medicamentos.js'
+import Database, { iDatabase } from "../connections/dbconn.js";
+import TiposMedicamentos, { iTiposMedicamentosFields } from '../model/dao_tipos_medicamentos.js'
 import { Request, Response } from "express";
 import { iresdata } from "./interface_controllers.js";
 import { applyControllerError } from "../utils/controllerError.js";
@@ -9,8 +9,8 @@ export default class Controller_TiposMedicamentos {
 
     static async Listar(req: Request, res: Response) {
 
-        const db : iDatabase = new Database();
-        const resdata : iresdata = {
+        const db: iDatabase = new Database();
+        const resdata: iresdata = {
             err: 0,
             msg: '',
             status: 200,
@@ -19,7 +19,7 @@ export default class Controller_TiposMedicamentos {
 
         try {
 
-            const pesq : string = String(req.params.pesq || '*');
+            const pesq: string = String(req.params.pesq || '*');
 
             void await db.Connect();
 
@@ -32,7 +32,7 @@ export default class Controller_TiposMedicamentos {
             const tiposMedicamentos = new TiposMedicamentos(db.connection);
             resdata.data = await tiposMedicamentos.Listar(pesq) as iTiposMedicamentosFields[];
 
-        } catch (error :any) {
+        } catch (error: any) {
 
             applyControllerError(resdata, error, 'Controller Tipos Medicamentos');
 
@@ -44,10 +44,10 @@ export default class Controller_TiposMedicamentos {
 
     }
 
-     static async ListarAtivos(req: Request, res: Response) {
+    static async ListarAtivos(req: Request, res: Response) {
 
-        const db : iDatabase = new Database();
-        const resdata : iresdata = {
+        const db: iDatabase = new Database();
+        const resdata: iresdata = {
             err: 0,
             msg: '',
             status: 200,
@@ -56,7 +56,7 @@ export default class Controller_TiposMedicamentos {
 
         try {
 
-            const pesq : string = String(req.params.pesq || '*');
+            const pesq: string = String(req.params.pesq || '*');
 
             void await db.Connect();
 
@@ -69,7 +69,7 @@ export default class Controller_TiposMedicamentos {
             const tiposMedicamentos = new TiposMedicamentos(db.connection);
             resdata.data = await tiposMedicamentos.ListarAtivos(pesq) as iTiposMedicamentosFields[];
 
-        } catch (error :any) {
+        } catch (error: any) {
 
             applyControllerError(resdata, error, 'Controller Tipos Medicamentos');
 
@@ -83,8 +83,8 @@ export default class Controller_TiposMedicamentos {
 
     static async Buscar(req: Request, res: Response) {
 
-        const db : iDatabase = new Database();
-        const resdata : iresdata = {
+        const db: iDatabase = new Database();
+        const resdata: iresdata = {
             err: 0,
             msg: '',
             status: 200,
@@ -93,7 +93,7 @@ export default class Controller_TiposMedicamentos {
 
         try {
 
-            const tipo_id : number = Number(req.params.tipo_id || 0);
+            const tipo_id: number = Number(req.params.tipo_id || 0);
 
             void await db.Connect();
 
@@ -128,8 +128,8 @@ export default class Controller_TiposMedicamentos {
 
     static async BuscarPorCodigo(req: Request, res: Response) {
 
-        const db : iDatabase = new Database();
-        const resdata : iresdata = {
+        const db: iDatabase = new Database();
+        const resdata: iresdata = {
             err: 0,
             msg: '',
             status: 200,
@@ -140,7 +140,7 @@ export default class Controller_TiposMedicamentos {
 
             void await db.Connect();
 
-            const tipo_codigo : string = String(req.params.tipo_codigo || '').toLocaleUpperCase();
+            const tipo_codigo: string = String(req.params.tipo_codigo || '').toLocaleUpperCase();
 
             if (!tipo_codigo) {
                 const error = new Error('Código do tipo de medicamento não informado');
@@ -149,7 +149,7 @@ export default class Controller_TiposMedicamentos {
             }
 
             const tiposMedicamentos = new TiposMedicamentos(db.connection);
-            const dados : iTiposMedicamentosFields = await tiposMedicamentos.BuscarPorCodigo(tipo_codigo);
+            const dados: iTiposMedicamentosFields = await tiposMedicamentos.BuscarPorCodigo(tipo_codigo);
 
             if (!tiposMedicamentos.found) {
                 const error = new Error('Tipo de medicamento não encontrado');
@@ -159,7 +159,7 @@ export default class Controller_TiposMedicamentos {
 
             resdata.data = dados;
 
-        } catch (error :any ) {
+        } catch (error: any) {
 
             applyControllerError(resdata, error, 'Controller Tipos Medicamentos');
 
@@ -173,8 +173,8 @@ export default class Controller_TiposMedicamentos {
 
     static async Salvar(req: Request, res: Response) {
 
-        const db : iDatabase = new Database();
-        const resdata : iresdata = {
+        const db: iDatabase = new Database();
+        const resdata: iresdata = {
             err: 0,
             msg: '',
             status: 200,
@@ -186,10 +186,10 @@ export default class Controller_TiposMedicamentos {
             void await db.Connect();
             void await db.Begin();
 
-            const tipo_id : number = Number(req.body.tipo_id || 0);
-            const tipo_codigo : string = String(req.body.tipo_codigo || '').toLocaleUpperCase().trim();
-            const tipo_descr : string = String(req.body.tipo_descr || '').toLocaleUpperCase().trim();
-            const tipo_ativo : 0 | 1 = Number(req.body.tipo_ativo || 0) === 1 ? 1 : 0;
+            const tipo_id: number = Number(req.body.tipo_id || 0);
+            const tipo_codigo: string = String(req.body.tipo_codigo || '').toLocaleUpperCase().trim();
+            const tipo_descr: string = String(req.body.tipo_descr || '').toLocaleUpperCase().trim();
+            const tipo_ativo: 0 | 1 = Number(req.body.tipo_ativo || 0) === 1 ? 1 : 0;
 
             if (!tipo_codigo) {
                 const error = new Error('Código do tipo de medicamento não informado');
@@ -220,10 +220,10 @@ export default class Controller_TiposMedicamentos {
             }
 
             void await tiposMedicamentos.BuscarPorId(tipo_id);
-            
+
             tiposMedicamentos.tipo_id = tipo_id;
-            tiposMedicamentos.tipo_codigo = tipo_codigo;
-            tiposMedicamentos.tipo_descr = tipo_descr;
+            tiposMedicamentos.tipo_codigo = tipo_codigo.trim().toUpperCase();
+            tiposMedicamentos.tipo_descr = tipo_descr.trim().toUpperCase();
             tiposMedicamentos.tipo_ativo = tipo_ativo;
 
             await tiposMedicamentos.Salvar();
@@ -232,7 +232,7 @@ export default class Controller_TiposMedicamentos {
 
             resdata.msg = 'Tipo de medicamento salvo com sucesso';
 
-        } catch (error :any) {
+        } catch (error: any) {
 
             void await db.Rollback();
 
@@ -248,8 +248,8 @@ export default class Controller_TiposMedicamentos {
 
     static async Excluir(req: Request, res: Response) {
 
-        const db : iDatabase = new Database();
-        const resdata : iresdata = {
+        const db: iDatabase = new Database();
+        const resdata: iresdata = {
             err: 0,
             msg: '',
             status: 200,
@@ -261,7 +261,7 @@ export default class Controller_TiposMedicamentos {
             void await db.Connect();
             void await db.Begin();
 
-            const tipo_id : number = Number(req.params.tipo_id || 0);
+            const tipo_id: number = Number(req.params.tipo_id || 0);
 
             if (tipo_id === 0) {
                 const error = new Error('ID do tipo de medicamento não informado');
@@ -285,7 +285,7 @@ export default class Controller_TiposMedicamentos {
 
             resdata.msg = 'Tipo de medicamento excluído com sucesso';
 
-        } catch (error : any) {
+        } catch (error: any) {
 
             void await db.Rollback();
 

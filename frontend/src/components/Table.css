@@ -14,7 +14,7 @@
   border-collapse: separate;
   border-spacing: 0;
   color: #132341;
-  font-size: 0.92rem;
+  font-size: 0.8rem;
 }
 
 .app-table thead,
@@ -65,12 +65,14 @@
   min-height: 48px;
   padding-block: 0.55rem;
   color: #132341;
+  font-size: 0.85rem;
   font-weight: 800;
 }
 
 .app-table td {
   min-height: 42px;
   background: #fff;
+  font-size: 0.75rem;
 }
 
 .app-table--word-wrap th,

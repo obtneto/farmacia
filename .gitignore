@@ -9,6 +9,9 @@ memories/
 node_modules/
 dist/
 
+# Notificações
+utils/notificacoes.json
+
 # Ambientes locais
 .env
 .env.*

@@ -723,8 +723,8 @@ export default class Controller_Solicitacoes {
                         const med_id = Number(item.iso_med_id || 0);
                         const qtde_digitada = Number(item.qtde_digitada || 0);
                         const qtde_solicitada = Number(item.iso_med_qtde || 0);
-                        const lote = String(item.iso_med_lote || '');
-                        const validade = String(item.iso_med_validade || '');
+                        const lote = String(item.iso_med_lote || '').trim().toUpperCase();
+                        const validade = String(item.iso_med_validade || '').trim();
 
                         // Valida os dados do item da solicitação
                         if (dep_ori_id === 0) {
@@ -935,8 +935,8 @@ export default class Controller_Solicitacoes {
                         const iso_id = Number(item.iso_id || 0);
                         const iso_med_id = Number(item.iso_med_id || 0);
                         const iso_med_qtde = Number(item.iso_med_qtde || 0);
-                        const iso_med_lote = String(item.iso_med_lote || '');
-                        const iso_med_validade = String(item.iso_med_validade || '');
+                        const iso_med_lote = String(item.iso_med_lote || '').trim().toUpperCase();
+                        const iso_med_validade = String(item.iso_med_validade || '').trim();
 
                         if (iso_med_id === 0) {
                               const error = new Error("ID do medicamento não informado para um dos itens.");
