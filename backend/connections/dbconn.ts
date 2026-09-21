@@ -12,7 +12,7 @@ export interface iDatabase {
 export default class Database implements iDatabase {
 
     private conn: Connection | null = null;
-    private dbname: string = 'fsph_ambulatorio';
+    private dbname: string = 'fsph_farmacia';
     private transactionActive = false;
 
     constructor(dbname: string = '') {

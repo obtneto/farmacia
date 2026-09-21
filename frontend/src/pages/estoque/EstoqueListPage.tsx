@@ -9,7 +9,11 @@ import { Cell, Column, HeaderCell, Table } from '../../components/Table'
 import { AppModal, DataState, PageSection, StatusBadge } from '../../components/ui'
 import { useMessage } from '../../hooks/useMessage'
 import { getApiBaseUrl } from '../../lib/api-base-url'
+import { userHasGroup } from '../../lib/auth-permissions'
 import '../boname/BonameCrudPage.css'
+
+/** Grupo Estagiarios SisStock — sem permissao para bloquear/desbloquear saldo. */
+const ESTAGIARIOS_SISSTOCK_GROUP_ID = 19
 
 interface ApiResponse<T> {
   data: T
@@ -293,6 +297,7 @@ export function EstoqueListPage({
   const [saldoAction, setSaldoAction] = useState<AjustarSaldoAction>('bloquear')
   const [blockQuantity, setBlockQuantity] = useState<number | null>(null)
   const [blockQuantityError, setBlockQuantityError] = useState<string | undefined>()
+  const canAjustarSaldo = !userHasGroup(ESTAGIARIOS_SISSTOCK_GROUP_ID)
 
   const depositosQuery = useQuery({
     queryKey: ['estoque-depositos', apiBaseUrl, resolvedAuthToken],
@@ -401,6 +406,10 @@ export function EstoqueListPage({
   }
 
   const handleOpenBlockModal = (record: EstoqueRecord, action: AjustarSaldoAction) => {
+    if (!canAjustarSaldo) {
+      return
+    }
+
     setSelectedBlockItem(record)
     setSaldoAction(action)
     setBlockQuantity(null)
@@ -433,7 +442,7 @@ export function EstoqueListPage({
   }
 
   const handleSubmitBlock = async () => {
-    if (!selectedBlockItem) {
+    if (!canAjustarSaldo || !selectedBlockItem) {
       return
     }
 
@@ -649,7 +658,8 @@ export function EstoqueListPage({
                           appearance="subtle"
                           size="xs"
                           startIcon={<LockIcon />}
-                          disabled={Number(rowData.saldo_disponivel || 0) <= 0}
+                          disabled={!canAjustarSaldo || Number(rowData.saldo_disponivel || 0) <= 0}
+                          title={!canAjustarSaldo ? 'Indisponivel para o grupo Estagiarios SisStock' : undefined}
                           onClick={() => handleOpenBlockModal(rowData, 'bloquear')}
                         >
                           Bloquear Saldo
@@ -658,7 +668,8 @@ export function EstoqueListPage({
                           appearance="subtle"
                           size="xs"
                           startIcon={<UnlockIcon />}
-                          disabled={Number(rowData.saldo_bloqueado || 0) <= 0}
+                          disabled={!canAjustarSaldo || Number(rowData.saldo_bloqueado || 0) <= 0}
+                          title={!canAjustarSaldo ? 'Indisponivel para o grupo Estagiarios SisStock' : undefined}
                           onClick={() => handleOpenBlockModal(rowData, 'desbloquear')}
                         >
                           Desbloquear Saldo
@@ -753,7 +764,8 @@ export function EstoqueListPage({
                                 className="boname-page__action-icon boname-page__action-icon--edit"
                                 icon={<LockIcon />}
                                 aria-label="Bloquear saldo"
-                                disabled={Number(rowData.saldo_disponivel || 0) <= 0}
+                                disabled={!canAjustarSaldo || Number(rowData.saldo_disponivel || 0) <= 0}
+                                title={!canAjustarSaldo ? 'Indisponivel para o grupo Estagiarios SisStock' : undefined}
                                 onClick={() => handleOpenBlockModal(rowData, 'bloquear')}
                               />
                             </Whisper>
@@ -770,7 +782,8 @@ export function EstoqueListPage({
                                 className="boname-page__action-icon boname-page__action-icon--view"
                                 icon={<UnlockIcon />}
                                 aria-label="Desbloquear saldo"
-                                disabled={Number(rowData.saldo_bloqueado || 0) <= 0}
+                                disabled={!canAjustarSaldo || Number(rowData.saldo_bloqueado || 0) <= 0}
+                                title={!canAjustarSaldo ? 'Indisponivel para o grupo Estagiarios SisStock' : undefined}
                                 onClick={() => handleOpenBlockModal(rowData, 'desbloquear')}
                               />
                             </Whisper>
