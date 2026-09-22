@@ -499,6 +499,7 @@ export function NovoInventarioPage({
               className={formErrors.dataInventario ? 'boname-page__control inventario-page__date-control boname-page__control--error' : 'boname-page__control inventario-page__date-control'}
               format="dd/MM/yyyy"
               oneTap
+              readOnly
               value={formValues.dataInventario}
               onChange={(value) => {
                 setLastCreatedInventario(null)
