@@ -768,7 +768,7 @@ export function AprovacaoRequisicaoPage({
                       <Cell>{() => null}</Cell>
                     </Column>
 
-                    <Column width={104} align="center">
+                    <Column width={136} align="center">
                       <HeaderCell>Req</HeaderCell>
                       <Cell>{(rowData: RequisicaoNaoAprovadaRecord) => mask.requisitionNumber(rowData.req_num) || rowData.requisicao}</Cell>
                     </Column>

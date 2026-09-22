@@ -191,6 +191,11 @@ function formatDateForDisplay(value: string) {
   return parsedDate.toLocaleDateString('pt-BR')
 }
 
+function formatDateForApi(value: string): string {
+  const dateOnly = String(value || '').slice(0, 10)
+  return dateOnly ? `${dateOnly}T00:00:00` : ''
+}
+
 function formatDateTimeForDisplay(value: Date | string | null | undefined): string {
   if (!value) {
     return '-'
@@ -421,14 +426,14 @@ async function salvarEntrada(
       method: 'POST',
       body: JSON.stringify({
         ent_id: headerValues.ent_id,
-        ent_date: headerValues.ent_date,
+        ent_date: formatDateForApi(headerValues.ent_date),
         ent_doc: normalizeText(headerValues.ent_doc, MAX_DOC_LENGTH).trim().toLocaleUpperCase('pt-BR'),
         ent_fornecido_por: normalizeText(headerValues.ent_fornecido_por, MAX_FORNECEDOR_LENGTH).trim().toLocaleUpperCase('pt-BR'),
         ent_dep_id: headerValues.ent_dep_id,
         itens: items.map((item) => ({
           ent_med_id: item.ent_med_id,
           ent_lote: normalizeText(item.ent_lote, MAX_LOTE_LENGTH).trim().toLocaleUpperCase('pt-BR'),
-          ent_lote_validade: item.ent_lote_validade,
+          ent_lote_validade: formatDateForApi(item.ent_lote_validade),
           ent_qtde: item.ent_qtde,
         })),
       }),

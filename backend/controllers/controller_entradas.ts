@@ -14,6 +14,30 @@ import GeraNumeroReq from "../utils/GeraNumero.js";
 
 export default class Controller_Entradas {
 
+    private static normalizeDateOnly(value: unknown): string {
+        const rawValue = String(value || '').trim();
+        const match = rawValue.match(/^(\d{4})-(\d{2})-(\d{2})/);
+
+        if (!match) {
+            return '';
+        }
+
+        const year = Number(match[1]);
+        const month = Number(match[2]);
+        const day = Number(match[3]);
+        const parsedDate = new Date(year, month - 1, day);
+
+        if (
+            parsedDate.getFullYear() !== year ||
+            parsedDate.getMonth() !== month - 1 ||
+            parsedDate.getDate() !== day
+        ) {
+            return '';
+        }
+
+        return `${match[1]}-${match[2]}-${match[3]}`;
+    }
+
     static async ListarTodos(req: Request, res: Response) {
 
         const db: iDatabase = new Database();
@@ -30,16 +54,16 @@ export default class Controller_Entradas {
             await db.Connect();
 
             const pesq = String(req.params.pesq || '*');
-            const data_inicio = String(req.params.data_inicio);
-            const data_fim = String(req.params.data_fim);
+            const data_inicio = Controller_Entradas.normalizeDateOnly(req.params.data_inicio);
+            const data_fim = Controller_Entradas.normalizeDateOnly(req.params.data_fim);
 
-            if (Number.isNaN(new Date(data_inicio).getTime())) {
+            if (!data_inicio) {
                 const error = new Error('Data de início inválida') as any;
                 error.statusCode = 400;
                 throw error;
             }
 
-            if (Number.isNaN(new Date(data_fim).getTime())) {
+            if (!data_fim) {
                 const error = new Error('Data de fim inválida') as any;
                 error.statusCode = 400;
                 throw error
@@ -136,7 +160,7 @@ export default class Controller_Entradas {
 
             //recebe os dados do body
             const ent_id = Number(req.body.ent_id || 0);
-            const ent_date = new Date(req.body.ent_date);
+            const ent_date = String(req.body.ent_date || '');
             let ent_doc = String(req.body.ent_doc || '');
             const ent_doc_informado = ent_doc.trim().length > 0;
             const ent_for_id = Number(req.body.ent_for_id || 0);
@@ -145,7 +169,7 @@ export default class Controller_Entradas {
             const itens = Array.isArray(req.body.itens) ? req.body.itens : null
 
             //validação dos dados recebidos
-            if (Number.isNaN(ent_date.getTime())) {
+            if (!ent_date || ent_date === '') {
                 const error = new Error('Data da entrada é obrigatória.');
                 error.statusCode = 400;
                 throw error;
@@ -207,7 +231,7 @@ export default class Controller_Entradas {
                 //recebe os dados do item
                 const itemMedId = Number(item.ent_med_id || 0);
                 const itemLote = String(item.ent_lote || '').trim().toUpperCase();
-                const itemLoteValidade = item.ent_lote_validade;
+                const itemLoteValidade = Controller_Entradas.normalizeDateOnly(item.ent_lote_validade);
                 const itemQtde = Number(item.ent_qtde || 0);
 
                 // busca o medicamento
@@ -216,6 +240,12 @@ export default class Controller_Entradas {
                 if (!medicamentos.found) {
                     const error = new Error(`Medicamento ${itemMedId} não encontrado.`);
                     error.statusCode = 404;
+                    throw error;
+                }
+
+                if (!itemLoteValidade) {
+                    const error = new Error(`Validade do item ${itemMedId} é obrigatória.`);
+                    error.statusCode = 400;
                     throw error;
                 }
 
@@ -311,7 +341,7 @@ export default class Controller_Entradas {
             //recebe os dados do body
             const ite_id = Number(req.params.ite_id || 0);
             const ent_lote = String(req.body.ent_lote || '').trim().toLocaleUpperCase('pt-BR');
-            const ent_lote_validade = new Date(req.body.ent_lote_validade);
+            const ent_lote_validade = Controller_Entradas.normalizeDateOnly(req.body.ent_lote_validade);
             const ent_qtde = Number(req.body.ent_qtde || 0);
 
             //validação dos dados recebidos
@@ -327,7 +357,7 @@ export default class Controller_Entradas {
                 throw error;
             }
 
-            if (Number.isNaN(ent_lote_validade.getTime())) {
+            if (!ent_lote_validade) {
                 const error = new Error('Validade do item é obrigatória.');
                 error.statusCode = 400;
                 throw error;
@@ -684,4 +714,3 @@ export default class Controller_Entradas {
         return res.status(resdata.status).json(resdata);
     }
 }
-
