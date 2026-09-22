@@ -7,6 +7,7 @@ import ReloadIcon from '@rsuite/icons/Reload'
 import SearchIcon from '@rsuite/icons/Search'
 import TrashIcon from '@rsuite/icons/Trash'
 import VisibleIcon from '@rsuite/icons/Visible'
+import PrintIcon from '@rsuite/icons/legacy/Print'
 import { Button, DatePicker, HStack, IconButton, Input, InputGroup, InputNumber, Pagination, Panel, SelectPicker, Tooltip, Whisper, useMediaQuery } from 'rsuite'
 import { Cell, Column, HeaderCell, Table } from '../../components/Table'
 import { AppModal, DataState, PageSection, StatusBadge } from '../../components/ui'
@@ -346,6 +347,66 @@ async function requestInventarios<T>(
   return payload.data
 }
 
+async function requestInventariosBlob(
+  baseUrl: string,
+  path: string,
+  authToken?: string | null,
+): Promise<Blob> {
+  const headers = new Headers()
+
+  if (authToken) {
+    headers.set('Authorization', `Bearer ${authToken}`)
+  }
+
+  const response = await fetch(buildUrl(baseUrl, path), {
+    method: 'GET',
+    headers,
+  })
+
+  if (!response.ok) {
+    let message = `Falha ao processar requisicao (${response.status}).`
+
+    try {
+      const payload: ApiResponse<unknown> = await response.json()
+      if (payload?.msg) {
+        message = payload.msg
+      }
+    } catch {
+      // O backend de impressao responde com PDF em caso de sucesso.
+    }
+
+    throw new Error(message)
+  }
+
+  return await response.blob()
+}
+
+async function imprimirFichaInventario(
+  baseUrl: string,
+  invNum: string,
+  authToken?: string | null,
+): Promise<void> {
+  const pdfBlob = await requestInventariosBlob(
+    baseUrl,
+    `/inventarios/imprimir/${encodeURIComponent(invNum)}`,
+    authToken,
+  )
+
+  const pdfUrl = window.URL.createObjectURL(pdfBlob)
+  const openedWindow = window.open(pdfUrl, '_blank', 'noopener,noreferrer')
+
+  if (!openedWindow) {
+    const anchor = document.createElement('a')
+    anchor.href = pdfUrl
+    anchor.download = `ficha-inventario-${invNum}.pdf`
+    anchor.click()
+  }
+
+  window.setTimeout(() => {
+    window.URL.revokeObjectURL(pdfUrl)
+  }, 60_000)
+}
+
 async function listarInventarios(
   baseUrl: string,
   filters: FilterValues,
@@ -650,6 +711,26 @@ export function ListarInventariosPage({
     },
   })
 
+  const printInventarioMutation = useMutation({
+    mutationFn: async (inventario: InventarioRecord) => {
+      const invNum = inventario.inv_num?.trim()
+
+      if (!invNum) {
+        throw new Error('Numero do inventario nao informado.')
+      }
+
+      await imprimirFichaInventario(apiBaseUrl, invNum, resolvedAuthToken)
+
+      return inventario
+    },
+    onSuccess: async (inventario) => {
+      await message.success('Impressao gerada', `Ficha do inventario ${maskInventarioNumero(inventario.inv_num)} aberta em uma nova guia.`)
+    },
+    onError: async (error) => {
+      await message.error('Erro ao imprimir inventario', getErrorMessage(error))
+    },
+  })
+
   const depositoOptions: Array<SelectOption<number>> = (depositosQuery.data ?? [])
     .map((item) => ({
       label: item.dep_descr,
@@ -829,8 +910,10 @@ export function ListarInventariosPage({
 
   const renderRowActions = (rowData: InventarioRecord, compact = false) => {
     const isClosingCurrentRow = closeInventarioMutation.isPending && closeInventarioMutation.variables?.inv_id === rowData.inv_id
+    const isPrintingCurrentRow = printInventarioMutation.isPending && printInventarioMutation.variables?.inv_id === rowData.inv_id
     const isOpen = isInventarioAberto(rowData.inv_status)
     const closeLabel = isOpen ? 'Fechar inventario' : 'Inventario ja fechado'
+    const printDisabled = !isOpen || printInventarioMutation.isPending || isClosingCurrentRow
 
     return (
       <HStack
@@ -863,6 +946,38 @@ export function ListarInventariosPage({
               icon={<VisibleIcon />}
               disabled={isClosingCurrentRow}
               onClick={() => handleOpenDigitacao(rowData)}
+            />
+          </Whisper>
+        )}
+
+        {compact ? (
+          <Button
+            appearance="subtle"
+            size="xs"
+            startIcon={<PrintIcon />}
+            loading={isPrintingCurrentRow}
+            disabled={printDisabled}
+            onClick={() => { void printInventarioMutation.mutateAsync(rowData) }}
+          >
+            Imprimir
+          </Button>
+        ) : (
+          <Whisper
+            placement="top"
+            trigger={['hover', 'focus']}
+            controlId={`inventario-print-${rowData.inv_id}`}
+            speaker={<Tooltip>Imprimir formulario</Tooltip>}
+          >
+            <IconButton
+              aria-label="Imprimir formulario de inventario"
+              appearance="subtle"
+              size="xs"
+              circle
+              className="boname-page__action-icon"
+              icon={<PrintIcon />}
+              loading={isPrintingCurrentRow}
+              disabled={printDisabled}
+              onClick={() => { void printInventarioMutation.mutateAsync(rowData) }}
             />
           </Whisper>
         )}
@@ -1149,8 +1264,8 @@ export function ListarInventariosPage({
                       <Cell>{(rowData: InventarioRecord) => rowData.inv_tipo || '-'}</Cell>
                     </Column>
 
-                    <Column width={128} align="center" fixed="right">
-                      <HeaderCell>Acao</HeaderCell>
+                    <Column width={156} align="center" fixed="right">
+                      <HeaderCell>Acoes</HeaderCell>
                       <Cell style={{ padding: 0 }}>
                         {(rowData: InventarioRecord) => renderRowActions(rowData)}
                       </Cell>

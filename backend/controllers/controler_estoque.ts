@@ -553,7 +553,7 @@ export default class Controller_Estoque {
 
                 const notId = new Date().getFullYear().toString().padStart(4, '0') + new Date().getDate().toString().padStart(2, '0')
 
-                if (rows_inv[0].qtde > 0 && rows_inv[0].qtde < 3) {
+                if (rows_inv[0].qtde < 3) {
 
                     await notificationService.publish({
                         id: `NOT-${notId}`,
@@ -562,7 +562,7 @@ export default class Controller_Estoque {
                         tone: 'info',
                         actionLabel: 'Abrir pagina de Novos Inventários',
                         actionSectionKey: 'operacao/inventarios/novo',
-                        critical: true
+                        critical: false
                     });
 
                 }

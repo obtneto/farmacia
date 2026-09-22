@@ -135,11 +135,18 @@ function formatDateForDisplay(value: string | null | undefined) {
   if (!value) {
     return '-'
   }
-  const parsed = new Date(`${String(value).slice(0, 10)}T00:00:00`)
-  if (Number.isNaN(parsed.getTime())) {
+
+  const normalized = String(value).trim()
+  const isoMatch = /^(\d{4})-(\d{2})-(\d{2})/.exec(normalized)
+  const brMatch = /^(\d{2})\/(\d{2})\/(\d{4})/.exec(normalized)
+  const [, year, month, day] = isoMatch ?? []
+  const [, brDay, brMonth, brYear] = brMatch ?? []
+
+  if (!isoMatch && !brMatch) {
     return '-'
   }
-  return parsed.toLocaleDateString('pt-BR')
+
+  return `${brDay ?? day}/${brMonth ?? month}/${brYear ?? year}`
 }
 
 function createDraftItemRecord(

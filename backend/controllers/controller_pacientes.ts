@@ -56,7 +56,7 @@ export default class Controller_Pacientes {
                   let query: string = `SELECT p.num_paciente, p.nom_paciente,p.nom_social,p.dt_nascimento,p.cpf,p.email,
                                        p.nom_pai,p.nom_mae,p.telefone,p.endereco,p.bairro,c.nome as cidade,p.uf
                                        FROM fsph_ambulatorio.tb_pacientes p
-                                       LEFT JOIN tb_cidades c ON c.id = p.cod_cidade
+                                       LEFT JOIN fsph_ambulatorio.tb_cidades c ON c.id = p.cod_cidade
                                        WHERE p.num_paciente = :num_paciente`;
 
                   const [result] = await db.connection.query(query, { num_paciente }) as RowDataPacket[];

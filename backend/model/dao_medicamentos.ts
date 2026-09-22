@@ -88,8 +88,12 @@ export default class Medicamentos extends BaseModel implements iMedicamentosFiel
         let query: string = `SELECT * FROM tb_medicamentos`;
 
         if (pesq !== '*') {
-            query += ` WHERE MATCH(med_descr,med_descr_coml) AGAINST(:pesq IN BOOLEAN MODE) OR med_bona_codigo LIKE CONCAT('%',:pesq,'%')`;
+            query += ` WHERE (med_descr LIKE CONCAT('%',:pesq,'%'))
+                        OR (med_descr_coml LIKE CONCAT('%',:pesq,'%'))
+                        OR med_bona_codigo LIKE CONCAT('%',:pesq,'%')`;
         }
+
+        console.log(query)
 
         const [rows] = await this.ExecuteQuery(query, { pesq }) as RowDataPacket[];
 
@@ -101,7 +105,7 @@ export default class Medicamentos extends BaseModel implements iMedicamentosFiel
         let query: string = `SELECT * FROM tb_medicamentos WHERE med_ativo = 1 AND med_tipo_codigo = :med_tipo_codigo`;
 
         if (pesq !== '*') {
-            query += ` AND (MATCH(med_descr,med_descr_coml) AGAINST(:pesq IN BOOLEAN MODE) OR med_bona_codigo LIKE CONCAT('%',:pesq,'%'))`;
+            query += ` AND (MATCH(med_descr,med_descr_coml) AGAINST(:pesq IN BOOLEAN MODE)) OR med_bona_codigo LIKE CONCAT('%',:pesq,'%')`;
         }
 
         const [rows] = await this.ExecuteQuery(query, { pesq, med_tipo_codigo }) as RowDataPacket[];
