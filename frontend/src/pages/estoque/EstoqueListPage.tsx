@@ -477,7 +477,7 @@ export function EstoqueListPage({
               id="estoque-pesquisa"
               size="sm"
               className="boname-page__control"
-              placeholder="Descricao ou descricao comercial"
+              placeholder="Medicamento, Descricao Comercial ou Lote"
               value={filterValues.pesquisa}
               onChange={(value) => {
                 setFilterValues((current) => ({
