@@ -9,7 +9,7 @@ export default class Controller_Itens_Demandas {
 
       static async BuscarPorId(req: Request, res: Response) {
 
-            const db: iDatabase = new Database('fsph_ambulatorio');
+            const db: iDatabase = new Database();
 
             const resdata: iresdata = { err: 0, msg: '', status: 200, data: [] }
 
@@ -60,7 +60,7 @@ export default class Controller_Itens_Demandas {
 
       static async ListarAtivos(req: Request, res: Response) {
 
-            const db: iDatabase = new Database('fsph_ambulatorio');
+            const db: iDatabase = new Database();
 
             const resdata: iresdata = { err: 0, msg: '', status: 200, data: [] };
 
@@ -92,7 +92,7 @@ export default class Controller_Itens_Demandas {
 
       static async Salvar(req: Request, res: Response) {
 
-            const db: iDatabase = new Database('fsph_ambulatorio');
+            const db: iDatabase = new Database();
 
             const resdata: iresdata = { err: 0, msg: '', status: 200, data: [] };
 
@@ -160,7 +160,7 @@ export default class Controller_Itens_Demandas {
 
       static async Excluir(req: Request, res: Response) {
 
-            const db: iDatabase = new Database('fsph_ambulatorio');
+            const db: iDatabase = new Database();
 
             const resdata: iresdata = { err: 0, msg: '', status: 200, data: [] };
 
@@ -201,7 +201,7 @@ export default class Controller_Itens_Demandas {
 
       static async AtivarDesativar(req: Request, res: Response) {
 
-            const db: iDatabase = new Database('fsph_ambulatorio');
+            const db: iDatabase = new Database();
 
             const resdata: iresdata = { err: 0, msg: '', status: 200, data: [] };
 

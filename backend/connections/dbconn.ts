@@ -15,9 +15,7 @@ export default class Database implements iDatabase {
     private dbname: string = 'fsph_ambulatorio';
     private transactionActive = false;
 
-    constructor(dbname: string = '') {
-        const db = dbname;
-    }
+    constructor() { }
 
     // Abre a conexao somente quando ela ainda nao existe no ciclo atual.
     public async Connect(): Promise<void> {
@@ -31,7 +29,7 @@ export default class Database implements iDatabase {
             port: Number(process.env.DB_PORT),
             user: process.env.DB_USER,
             password: process.env.DB_PASS,
-            database: 'fsph_farmacia',
+            database: this.dbname,
             namedPlaceholders: true,
             decimalNumbers: true,
             dateStrings: true,

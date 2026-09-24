@@ -22,7 +22,7 @@ export default class Controller_Pacientes {
                                        FROM fsph_ambulatorio.tb_pacientes`;
 
                   if (pesq !== '*') {
-                        query += `  WHERE cpf LIKE CONCAT('%', :pesq, '%') OR MATCH(nom_paciente,nom_social) AGAINST(:pesq IN BOOLEAN MODE)`;
+                        query += `  WHERE MATCH(nom_paciente,nom_social,cpf) AGAINST(CONCAT("*",:pesq,"*") IN BOOLEAN MODE)`;
                   } else {
                         query += ` LIMIT 10`;
                   }

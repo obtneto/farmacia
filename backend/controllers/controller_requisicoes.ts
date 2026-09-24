@@ -231,7 +231,8 @@ export default class Controller_Requisicoes {
 
     static async ListarRequisicoesNaoAprovadas(req: Request, res: Response) {
 
-        const db: iDatabase = new Database('fsph_ambulatorio');
+        const db: iDatabase = new Database();
+
         const resdata: iresdata = { err: 0, msg: '', status: 200, data: {} };
 
         try {
@@ -258,7 +259,8 @@ export default class Controller_Requisicoes {
 
     static async Salvar(req: Request, res: Response) {
 
-        const db: iDatabase = new Database('fsph_ambulatorio');
+        const db: iDatabase = new Database();
+
         const resdata: iresdata = { err: 0, msg: '', status: 200, data: {} };
 
         try {
@@ -506,7 +508,8 @@ export default class Controller_Requisicoes {
 
     static async SalvarDevolucao(req: Request, res: Response) {
 
-        const db: iDatabase = new Database('fsph_ambulatorio');
+        const db: iDatabase = new Database();
+
         const resdata: iresdata = { err: 0, msg: '', status: 200, data: {} };
 
         try {
@@ -703,7 +706,7 @@ export default class Controller_Requisicoes {
 
     static async AprovarRequisicao(req: Request, res: Response) {
 
-        const db: iDatabase = new Database('fsph_ambulatorio');
+        const db: iDatabase = new Database();
 
         const resdata: iresdata = { err: 0, msg: '', status: 200, data: null };
 
@@ -905,10 +908,12 @@ export default class Controller_Requisicoes {
 
     static async AtualizarItem(req: Request, res: Response) {
 
-        const db: iDatabase = new Database('fsph_ambulatorio');
+        const db: iDatabase = new Database();
+
         const resdata: iresdata = { err: 0, msg: '', status: 200, data: {} };
 
         try {
+
             await db.Connect();
             await db.Begin();
 
@@ -973,10 +978,12 @@ export default class Controller_Requisicoes {
 
     static async ExcluirItem(req: Request, res: Response) {
 
-        const db: iDatabase = new Database('fsph_ambulatorio');
+        const db: iDatabase = new Database();
+
         const resdata: iresdata = { err: 0, msg: '', status: 200, data: {} };
 
         try {
+
             await db.Connect();
             await db.Begin();
 
@@ -1042,7 +1049,7 @@ export default class Controller_Requisicoes {
 
     static async Imprimir(req: Request, res: Response) {
 
-        const db: iDatabase = new Database('fsph_ambulatorio');
+        const db: iDatabase = new Database();
 
         try {
 
@@ -1378,7 +1385,7 @@ export default class Controller_Requisicoes {
 
     static async ReprovarRequisicao(req: Request, res: Response) {
 
-        const db: iDatabase = new Database('fsph_ambulatorio');
+        const db: iDatabase = new Database();
 
         const resdata: iresdata = { err: 0, msg: '', status: 200, data: [] };
 
@@ -1440,7 +1447,7 @@ export default class Controller_Requisicoes {
 
     static async BuscarRequisicaoParaDevolucao(req: Request, res: Response) {
 
-        const db: iDatabase = new Database('fsph_ambulatorio');
+        const db: iDatabase = new Database();
 
         const resdata: iresdata = { err: 0, msg: '', status: 200, data: [] };
 
@@ -1514,7 +1521,8 @@ export default class Controller_Requisicoes {
 
     static async ListarItensRequisicao(req: Request, res: Response) {
 
-        const db: iDatabase = new Database('fsph_ambulatorio');
+        const db: iDatabase = new Database();
+
         const resdata: iresdata = { err: 0, msg: '', status: 200, data: {} };
 
         try {
@@ -1604,7 +1612,7 @@ export default class Controller_Requisicoes {
 
     static async ListarItensPorLote(req: Request, res: Response) {
 
-        const db: iDatabase = new Database('fsph_ambulatorio');
+        const db: iDatabase = new Database();
 
         const resdata: iresdata = {
             err: 0,

@@ -286,7 +286,7 @@ export default class Controller_Entradas {
 
     static async ListarItens(req: Request, res: Response) {
 
-        const db: iDatabase = new Database('fsph_ambulatorio');
+        const db: iDatabase = new Database();
 
         const resdata: iresdata = {
             err: 0,
@@ -430,7 +430,7 @@ export default class Controller_Entradas {
 
     static async ListarEntradasNaoAprovados(req: Request, res: Response) {
 
-        const db: iDatabase = new Database('fsph_ambulatorio');
+        const db: iDatabase = new Database();
 
         const resdata: iresdata = {
             err: 0,
@@ -489,7 +489,7 @@ export default class Controller_Entradas {
 
     static async AprovarEntradas(req: Request, res: Response) {
 
-        const db: iDatabase = new Database('fsph_ambulatorio');
+        const db: iDatabase = new Database();
 
         const resdata: iresdata = {
             err: 0,
@@ -618,7 +618,8 @@ export default class Controller_Entradas {
 
     static async ExcluirEntradas(req: Request, res: Response) {
 
-        const db: iDatabase = new Database('fsph_ambulatorio');
+        const db: iDatabase = new Database();
+
         const resdata: iresdata = { err: 0, msg: '', status: 200, data: [] };
 
         try {
@@ -680,7 +681,7 @@ export default class Controller_Entradas {
 
     static async ListarItensPorLote(req: Request, res: Response) {
 
-        const db: iDatabase = new Database('fsph_ambulatorio');
+        const db: iDatabase = new Database();
 
         const resdata: iresdata = {
             err: 0,

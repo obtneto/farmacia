@@ -46,7 +46,7 @@ export default class Depositos extends BaseModel implements iDepositosFields, iB
         let query: string = "SELECT * FROM tb_depositos";
 
         if (pesq !== '*') {
-            query += " WHERE MATCH(dep_descr) AGAINST(:pesq IN BOOLEAN MODE)";
+            query += ` WHERE MATCH(dep_descr) AGAINST(CONCAT("*",:pesq,"*") IN BOOLEAN MODE)`;
         }
 
         const [rows] = await this.ExecuteQuery(query, { pesq }) as RowDataPacket[];

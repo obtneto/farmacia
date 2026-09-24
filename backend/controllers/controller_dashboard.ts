@@ -7,7 +7,6 @@ import settings from "../utils/settings.js";
 // Controla o CRUD de Dashboard mantendo o contrato padrao das respostas HTTP.
 export default class Controller_Dashboard {
 
-
     static async Listar(req: Request, res: Response) {
 
         // Inicializa infraestrutura da requisicao e o envelope padrao da resposta.

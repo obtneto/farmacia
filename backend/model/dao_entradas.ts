@@ -106,7 +106,7 @@ export default class Entradas extends BaseModel implements iEntradaFields, iBase
 
             query += ` AND (
                 e.ent_doc LIKE CONCAT('%', :pesq, '%') OR
-                MATCH(f.for_razao_social,f.for_nome_fantasia) AGAINST(:pesq IN BOOLEAN MODE)
+                MATCH(f.for_razao_social,f.for_nome_fantasia) AGAINST(CONCAT('%', :pesq, '%') IN BOOLEAN MODE)
             )`;
         }
 

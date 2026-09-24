@@ -58,10 +58,10 @@ export default class Boname extends BaseModel implements iBonameFields, iBaseMod
         let query: string = `SELECT * FROM tb_boname`;
 
         if (pesq !== '*') {
-            query += " WHERE bona_descr LIKE :pesq OR bona_codigo LIKE :pesq";
+            query += ` WHERE MATCH(bona_descr,bona_codigo) AGAINST(CONCAT("*",:pesq,"*") IN BOOLEAN MODE)`;
         }
 
-        const [rows] = await this.ExecuteQuery(query, { pesq: `%${pesq}%` }) as RowDataPacket[];
+        const [rows] = await this.ExecuteQuery(query, { pesq }) as RowDataPacket[];
 
         return rows as iBonameFields[];
     }
@@ -71,10 +71,10 @@ export default class Boname extends BaseModel implements iBonameFields, iBaseMod
         let query: string = `SELECT * FROM tb_boname WHERE bona_ativo = 1`;
 
         if (pesq !== '*') {
-            query += " AND (bona_descr LIKE :pesq OR bona_codigo LIKE :pesq)";
+            query += ` AND MATCH(bona_descr,bona_codigo) AGAINST(CONCAT("*",:pesq,"*") IN BOOLEAN MODE)`;
         }
 
-        const [rows] = await this.ExecuteQuery(query, { pesq: `%${pesq}%` }) as RowDataPacket[];
+        const [rows] = await this.ExecuteQuery(query, { pesq }) as RowDataPacket[];
 
         return rows as iBonameFields[];
     }

@@ -6,7 +6,6 @@ import { applyControllerError } from "../utils/controllerError.js";
 
 export default class Controller_Setores {
 
-
     static async Listar(req: Request, res: Response) {
 
         const db: iDatabase = new Database();

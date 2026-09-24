@@ -38,7 +38,7 @@ export default class Diagnosticos extends BaseModel implements iDiagnosticosFiel
         let query: string = "SELECT * FROM tb_diagnosticos";
 
         if (pesq !== '*') {
-            query += " WHERE MATCH(diag_descr) AGAINST(:pesq IN BOOLEAN MODE)";
+            query += ` WHERE MATCH(diag_descr) AGAINST(CONCAT("*",:pesq,"*") IN BOOLEAN MODE)`;
         }
 
         const [rows] = await this.ExecuteQuery(query, { pesq }) as RowDataPacket[];
@@ -52,7 +52,7 @@ export default class Diagnosticos extends BaseModel implements iDiagnosticosFiel
         let query: string = "SELECT * FROM tb_diagnosticos WHERE diag_ativo = 1";
 
         if (pesq !== '*') {
-            query += " AND MATCH(diag_descr) AGAINST(:pesq IN BOOLEAN MODE)";
+            query += ` AND MATCH(diag_descr) AGAINST(CONCAT("*",:pesq,"*") IN BOOLEAN MODE)`;
         }
 
         const [rows] = await this.ExecuteQuery(query, { pesq }) as RowDataPacket[];

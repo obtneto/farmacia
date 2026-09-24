@@ -36,6 +36,7 @@ export default class Controller_Boname {
 
         // Inicializa infraestrutura da requisicao e o envelope padrao da resposta.
         const db: iDatabase = new Database();
+
         const resdata: iresdata = {
             err: 0,
             msg: '',
@@ -74,6 +75,7 @@ export default class Controller_Boname {
 
         // Inicializa infraestrutura da requisicao e o envelope padrao da resposta.
         const db: iDatabase = new Database();
+
         const resdata: iresdata = {
             err: 0,
             msg: '',
@@ -107,7 +109,6 @@ export default class Controller_Boname {
         res.status(resdata.status).json(resdata);
 
     }
-
 
     static async Buscar(req: Request, res: Response) {
 
