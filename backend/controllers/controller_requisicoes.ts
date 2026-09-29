@@ -78,6 +78,20 @@ export default class Controller_Requisicoes {
         return text ? text : fallback;
     }
 
+    private static formatRequisitionNumber(value: unknown): string {
+        const normalized = String(value ?? '').replace(/[^a-zA-Z0-9]/g, '').toLocaleUpperCase('pt-BR').slice(0, 11);
+
+        if (!normalized) {
+            return '';
+        }
+
+        const first = normalized.slice(0, 3);
+        const second = normalized.slice(3, 7);
+        const third = normalized.slice(7, 11);
+
+        return [first, second, third].filter(Boolean).join('-');
+    }
+
     private static formatQuantity(value: unknown, fallback = '-'): string {
 
         if (value === null || value === undefined || value === '') {
@@ -1076,6 +1090,7 @@ export default class Controller_Requisicoes {
 
             const itens = await itensRequisicao.ListarItensParaImpressao(req_id);
             const numeroDocumento = Controller_Requisicoes.formatText(requisicao.req_num, String(req_id));
+            const numeroDocumentoMascarado = Controller_Requisicoes.formatRequisitionNumber(numeroDocumento) || numeroDocumento;
             const paciente = Controller_Requisicoes.formatText(requisicao.nom_paciente);
             const nomeUsual = Controller_Requisicoes.formatText(requisicao.nom_social, '');
             const observacao = Controller_Requisicoes.formatText(requisicao.req_observacao, '');
@@ -1126,16 +1141,26 @@ export default class Controller_Requisicoes {
                             {
                                 stack: [
                                     {
+                                        columnGap: 8,
                                         columns: [
-                                            { text: 'Data:', style: 'signatureLabel' },
-                                            { text: '____/____/________', style: 'signatureLine', alignment: 'right' },
+                                            { text: 'Data:', style: 'signatureLabel', width: 'auto' },
+                                            { text: '______/______/____________', style: 'signatureLine', width: '*', alignment: 'right' },
                                         ],
                                     },
                                     {
-                                        margin: [0, 22, 0, 0],
+                                        margin: [0, 14, 0, 0],
+                                        columnGap: 8,
                                         columns: [
-                                            { text: 'Assinatura:', style: 'signatureLabel' },
-                                            { text: '________________________________', style: 'signatureLine', alignment: 'right' },
+                                            { text: 'CPF:', style: 'signatureLabel', width: 'auto' },
+                                            { text: '______ . ______ . ______ - ____', style: 'signatureLine', width: '*', alignment: 'right' },
+                                        ],
+                                    },
+                                    {
+                                        margin: [0, 14, 0, 0],
+                                        columnGap: 8,
+                                        columns: [
+                                            { text: 'Assinatura:', style: 'signatureLabel', width: 'auto' },
+                                            { text: '________________________________________', style: 'signatureLine', width: '*', alignment: 'right' },
                                         ],
                                     },
                                 ],
@@ -1143,16 +1168,18 @@ export default class Controller_Requisicoes {
                             {
                                 stack: [
                                     {
+                                        columnGap: 8,
                                         columns: [
-                                            { text: 'Data:', style: 'signatureLabel' },
-                                            { text: '____/____/________', style: 'signatureLine', alignment: 'right' },
+                                            { text: 'Data:', style: 'signatureLabel', width: 'auto' },
+                                            { text: '______/______/____________', style: 'signatureLine', width: '*', alignment: 'right' },
                                         ],
                                     },
                                     {
                                         margin: [0, 22, 0, 0],
+                                        columnGap: 8,
                                         columns: [
-                                            { text: 'Assinatura:', style: 'signatureLabel' },
-                                            { text: '________________________________', style: 'signatureLine', alignment: 'right' },
+                                            { text: 'Assinatura:', style: 'signatureLabel', width: 'auto' },
+                                            { text: '________________________________________', style: 'signatureLine', width: '*', alignment: 'right' },
                                         ],
                                     },
                                 ],
@@ -1248,24 +1275,24 @@ export default class Controller_Requisicoes {
                     {
                         margin: [0, 0, 0, 12],
                         table: {
-                            widths: ['*', '*', '*'],
+                            widths: [263, 104, 104],
                             body: [[
                                 {
                                     stack: [
-                                        { text: 'Solicitado por', style: 'sectionLabel' },
-                                        { text: Controller_Requisicoes.formatText(requisicao.req_solicitado_por), style: 'metaValue', margin: [0, 5, 0, 0] },
+                                        { text: 'Nome do paciente', style: 'sectionLabel' },
+                                        { text: paciente, style: 'metaValue', margin: [0, 5, 0, 0] },
                                     ],
                                 },
                                 {
                                     stack: [
-                                        { text: 'Solicitado em', style: 'sectionLabel' },
-                                        { text: Controller_Requisicoes.formatDateTime(requisicao.req_dt_solicitacao), style: 'metaValue', margin: [0, 5, 0, 0] },
+                                        { text: 'Data da requisicao', style: 'sectionLabel' },
+                                        { text: Controller_Requisicoes.formatDate(requisicao.req_date), style: 'metaValue', margin: [0, 5, 0, 0] },
                                     ],
                                 },
                                 {
                                     stack: [
-                                        { text: 'Status', style: 'sectionLabel' },
-                                        { text: Number(requisicao.req_status) === 1 ? 'Aprovada' : 'Pendente', style: 'metaValue', margin: [0, 5, 0, 0] },
+                                        { text: 'Numero da requisicao', style: 'sectionLabel' },
+                                        { text: numeroDocumentoMascarado, style: 'metaValueSmall', margin: [0, 5, 0, 0] },
                                     ],
                                 },
                             ]],
@@ -1278,8 +1305,8 @@ export default class Controller_Requisicoes {
                             vLineColor: () => '#dce7ef',
                             paddingLeft: () => 12,
                             paddingRight: () => 12,
-                            paddingTop: () => 14,
-                            paddingBottom: () => 28,
+                            paddingTop: () => 8,
+                            paddingBottom: () => 10,
                         },
                     },
                     {
@@ -1348,6 +1375,7 @@ export default class Controller_Requisicoes {
                     sectionLabel: { fontSize: 8, bold: true, color: '#0f766e' },
                     bodyText: { fontSize: 9, color: '#1f2937', lineHeight: 1.25 },
                     metaValue: { fontSize: 10, bold: true, color: '#0f172a' },
+                    metaValueSmall: { fontSize: 8.5, bold: true, color: '#0f172a' },
                     tableHeader: { fontSize: 8, bold: true, color: '#ffffff', alignment: 'center', margin: [0, 1, 0, 0] },
                     tableCell: { fontSize: 8.5, color: '#1f2937' },
                     tableCellCenter: { fontSize: 8.5, color: '#334155', alignment: 'center' },
