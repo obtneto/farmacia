@@ -6,13 +6,22 @@ import {
   Chart as ChartJS,
   Legend,
   LinearScale,
+  LineElement,
+  PointElement,
   Tooltip,
   type ChartData,
   type ChartOptions,
 } from 'chart.js'
 import { Bar } from 'react-chartjs-2'
-import { Button, DatePicker, HStack, Panel, SelectPicker } from 'rsuite'
-import { RiBarChartGroupedLine, RiCapsuleLine, RiFileList3Line, RiRefreshLine } from 'react-icons/ri'
+import { Line } from 'react-chartjs-2'
+import { Button, DatePicker, HStack, Input, InputGroup, Panel, SelectPicker } from 'rsuite'
+import {
+  RiBarChartGroupedLine,
+  RiCapsuleLine,
+  RiFileList3Line,
+  RiRefreshLine,
+  RiSearchLine,
+} from 'react-icons/ri'
 import type { SectionKey } from '../config/navigation'
 import { DataState, PageSection, SummaryCard } from '../components/ui'
 import { Table, type TableColumn } from '../components/Table'
@@ -90,10 +99,17 @@ const MONTH_OPTIONS = [
   { label: 'Novembro', value: 11 },
   { label: 'Dezembro', value: 12 },
 ]
+const BONAME_FILTER_OPTIONS = [
+  { label: 'Todos os itens', value: 'all' },
+  { label: 'Com entrada', value: 'entrada' },
+  { label: 'Com saida', value: 'saida' },
+  { label: 'Com estoque', value: 'estoque' },
+]
 
 const VALUE_PRIORITY = ['qtde', 'quantidade', 'total', 'atendimento', 'atendimentos', 'frascos', 'entrada', 'saida', 'estoque']
 const PERIOD_KEYS = new Set(['ano', 'mes'])
-ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend)
+type BonameFilter = 'all' | 'entrada' | 'estoque' | 'saida'
+ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, Tooltip, Legend)
 
 const BAR_CHART_OPTIONS: ChartOptions<'bar'> = {
   responsive: true,
@@ -120,6 +136,7 @@ const BAR_CHART_OPTIONS: ChartOptions<'bar'> = {
       ticks: {
         color: '#334155',
         font: {
+          size: 10,
           weight: 600,
         },
       },
@@ -134,13 +151,16 @@ const BAR_CHART_OPTIONS: ChartOptions<'bar'> = {
       },
       ticks: {
         color: '#64748b',
+        font: {
+          size: 10,
+        },
         precision: 0,
       },
     },
   },
 }
 
-const GAUCHER_CHART_OPTIONS: ChartOptions<'bar'> = {
+const LINE_CHART_OPTIONS: ChartOptions<'line'> = {
   responsive: true,
   maintainAspectRatio: false,
   interaction: {
@@ -149,19 +169,11 @@ const GAUCHER_CHART_OPTIONS: ChartOptions<'bar'> = {
   },
   plugins: {
     legend: {
-      display: true,
-      labels: {
-        boxHeight: 10,
-        boxWidth: 10,
-        color: '#334155',
-        font: {
-          weight: 600,
-        },
-      },
+      display: false,
     },
     tooltip: {
       callbacks: {
-        label: (context) => `${context.dataset.label}: ${formatNumber(context.parsed.y ?? 0)}`,
+        label: (context) => formatNumber(context.parsed.y ?? 0),
       },
     },
   },
@@ -176,6 +188,7 @@ const GAUCHER_CHART_OPTIONS: ChartOptions<'bar'> = {
       ticks: {
         color: '#334155',
         font: {
+          size: 10,
           weight: 600,
         },
       },
@@ -190,7 +203,38 @@ const GAUCHER_CHART_OPTIONS: ChartOptions<'bar'> = {
       },
       ticks: {
         color: '#64748b',
+        font: {
+          size: 10,
+        },
         precision: 0,
+      },
+    },
+  },
+}
+
+const BONAME_CHART_OPTIONS: ChartOptions<'bar'> = {
+  ...BAR_CHART_OPTIONS,
+  plugins: {
+    legend: {
+      display: true,
+      labels: {
+        boxHeight: 8,
+        boxWidth: 8,
+        color: '#334155',
+        font: {
+          size: 10,
+          weight: 600,
+        },
+      },
+    },
+    tooltip: BAR_CHART_OPTIONS.plugins?.tooltip,
+  },
+  scales: {
+    ...BAR_CHART_OPTIONS.scales,
+    x: {
+      ...BAR_CHART_OPTIONS.scales?.x,
+      ticks: {
+        display: false,
       },
     },
   },
@@ -296,16 +340,6 @@ function getLabelKey(rows: DashboardRecord[]) {
   })
 }
 
-function buildTableColumns(rows: DashboardRecord[]): TableColumn<DashboardRecord>[] {
-  return getRowKeys(rows).map((key) => ({
-    header: formatHeader(key),
-    key,
-    minWidth: key.includes('descr') || key.includes('nome') ? 220 : 120,
-    render: (row) => formatValue(row[key]),
-    size: key.includes('descr') || key.includes('nome') ? 'fluid' : 'md',
-  }))
-}
-
 function buildChartPoints(rows: DashboardRecord[]): ChartPoint[] {
   const numericKeys = getNumericKeys(rows)
 
@@ -332,7 +366,87 @@ function buildChartPoints(rows: DashboardRecord[]): ChartPoint[] {
   }))
 }
 
-function buildGaucherChartData(rows: DashboardRecord[]): ChartData<'bar'> | undefined {
+function buildLineChartData(points: ChartPoint[], color: string): ChartData<'line'> {
+  return {
+    labels: points.map((point) => point.label),
+    datasets: [
+      {
+        backgroundColor: color,
+        borderColor: color,
+        borderWidth: 2,
+        data: points.map((point) => point.value),
+        label: 'Quantidade',
+        pointBackgroundColor: '#ffffff',
+        pointBorderColor: color,
+        pointBorderWidth: 2,
+        pointRadius: 3,
+        tension: 0.36,
+      },
+    ],
+  }
+}
+
+function buildBarChartData(points: ChartPoint[], color: string): ChartData<'bar'> {
+  return {
+    labels: points.map((point) => point.label),
+    datasets: [
+      {
+        backgroundColor: color,
+        barPercentage: 0.62,
+        borderColor: color,
+        borderRadius: 4,
+        borderWidth: 1,
+        data: points.map((point) => point.value),
+        label: 'Quantidade',
+        maxBarThickness: 32,
+      },
+    ],
+  }
+}
+
+function formatChartLabel(label: string) {
+  return label.length > 22 ? `${label.slice(0, 19)}...` : label
+}
+
+function buildBonameChartData(rows: DashboardRecord[]): ChartData<'bar'> | undefined {
+  if (rows.length === 0) {
+    return undefined
+  }
+
+  const visibleRows = rows.slice(0, 5)
+
+  return {
+    labels: visibleRows.map((row, index) => formatChartLabel(getBonameDescription(row, index))),
+    datasets: [
+      {
+        backgroundColor: '#2563eb',
+        borderColor: '#1d4ed8',
+        borderRadius: 4,
+        data: visibleRows.map((row) => toFiniteNumber(row.entrada) ?? 0),
+        label: 'Entrada',
+        maxBarThickness: 18,
+      },
+      {
+        backgroundColor: '#16a34a',
+        borderColor: '#15803d',
+        borderRadius: 4,
+        data: visibleRows.map((row) => toFiniteNumber(row.saida) ?? 0),
+        label: 'Saida',
+        maxBarThickness: 18,
+      },
+      {
+        backgroundColor: '#64748b',
+        borderColor: '#475569',
+        borderRadius: 4,
+        data: visibleRows.map((row) => toFiniteNumber(row.estoque) ?? 0),
+        label: 'Estoque',
+        maxBarThickness: 18,
+      },
+    ],
+  }
+}
+
+function buildGaucherChartData(rows: DashboardRecord[]): ChartData<'line'> | undefined {
   const medDescrKey = getRowKeys(rows).find((key) => key.toLocaleLowerCase('pt-BR') === 'med_descr')
   const atendimentosKey = getRowKeys(rows).find((key) => key.toLocaleLowerCase('pt-BR') === 'atendimentos')
 
@@ -364,12 +478,15 @@ function buildGaucherChartData(rows: DashboardRecord[]): ChartData<'bar'> | unde
     datasets: [
       {
         backgroundColor: '#0f766e',
-        borderColor: '#115e59',
-        borderRadius: 4,
-        borderWidth: 1,
+        borderColor: '#0f766e',
+        borderWidth: 2,
         data: visibleRows.map(([, atendimentos]) => atendimentos),
         label: 'Atendimentos',
-        maxBarThickness: 30,
+        pointBackgroundColor: '#ffffff',
+        pointBorderColor: '#0f766e',
+        pointBorderWidth: 2,
+        pointRadius: 3,
+        tension: 0.36,
       },
     ],
   }
@@ -389,34 +506,64 @@ function sumBoname(rows: DashboardRecord[], key: string) {
   return rows.reduce((total, row) => total + (toFiniteNumber(row[key]) ?? 0), 0)
 }
 
+function countRows(groups: DashboardRecord[][]) {
+  return groups.reduce((total, rows) => total + rows.length, 0)
+}
+
 function getMonthLabel(month: number) {
   return MONTH_OPTIONS.find((option) => option.value === month)?.label ?? String(month)
 }
 
-function DashboardChart({ points, title }: { points: ChartPoint[], title: string }) {
+function getRecordText(row: DashboardRecord) {
+  return Object.values(row).map((value) => formatValue(value)).join(' ').toLocaleLowerCase('pt-BR')
+}
+
+function filterBonameRows(rows: DashboardRecord[], search: string, filter: BonameFilter) {
+  const normalizedSearch = search.trim().toLocaleLowerCase('pt-BR')
+
+  return rows.filter((row) => {
+    const matchesSearch = normalizedSearch ? getRecordText(row).includes(normalizedSearch) : true
+
+    if (!matchesSearch) {
+      return false
+    }
+
+    if (filter === 'all') {
+      return true
+    }
+
+    return (toFiniteNumber(row[filter]) ?? 0) > 0
+  })
+}
+
+function getBonameDescription(row: DashboardRecord, index: number) {
+  return String(row.bona_descr ?? row.med_descr ?? row.descricao ?? `Item Boname ${index + 1}`)
+}
+
+function getBonameCode(row: DashboardRecord, index: number) {
+  return String(row.bona_codigo ?? row.bona_cod ?? row.codigo ?? row.med_codigo ?? `BNM-${String(index + 1).padStart(3, '0')}`)
+}
+
+function LineDashboardChart({ color, points, title }: { color: string, points: ChartPoint[], title: string }) {
   if (points.length === 0) {
     return <DataState state="empty" title="Grafico indisponivel" description={`Sem dados numericos para ${title.toLowerCase()}.`} />
   }
 
-  const data: ChartData<'bar'> = {
-    labels: points.map((point) => point.label),
-    datasets: [
-      {
-        backgroundColor: '#2563eb',
-        barPercentage: 0.72,
-        borderColor: '#1d4ed8',
-        borderRadius: 4,
-        borderWidth: 1,
-        data: points.map((point) => point.value),
-        label: 'Quantidade',
-        maxBarThickness: 28,
-      },
-    ],
+  return (
+    <div className="dashboard-chart">
+      <Line aria-label={`Grafico de linha - ${title}`} data={buildLineChartData(points, color)} options={LINE_CHART_OPTIONS} role="img" />
+    </div>
+  )
+}
+
+function BarDashboardChart({ color, points, title }: { color: string, points: ChartPoint[], title: string }) {
+  if (points.length === 0) {
+    return <DataState state="empty" title="Grafico indisponivel" description={`Sem dados numericos para ${title.toLowerCase()}.`} />
   }
 
   return (
     <div className="dashboard-chart">
-      <Bar aria-label={`Grafico de barras - ${title}`} data={data} options={BAR_CHART_OPTIONS} role="img" />
+      <Bar aria-label={`Grafico de barras - ${title}`} data={buildBarChartData(points, color)} options={BAR_CHART_OPTIONS} role="img" />
     </div>
   )
 }
@@ -429,38 +576,162 @@ function GaucherDashboardChart({ rows }: { rows: DashboardRecord[] }) {
   }
 
   return (
-    <div className="dashboard-chart dashboard-chart--gaucher">
-      <Bar aria-label="Grafico de atendimentos Gaucher" data={data} options={GAUCHER_CHART_OPTIONS} role="img" />
+    <div className="dashboard-chart">
+      <Line aria-label="Grafico de atendimentos Gaucher" data={data} options={LINE_CHART_OPTIONS} role="img" />
     </div>
   )
 }
 
-function DashboardDatasetSection({ dataset, rows }: { dataset: DashboardDataset, rows: DashboardRecord[] }) {
-  const columns = buildTableColumns(rows)
-  const points = dataset.tableOnly ? [] : buildChartPoints(rows)
+function BonameDashboardChart({ rows }: { rows: DashboardRecord[] }) {
+  const data = buildBonameChartData(rows)
+
+  if (!data) {
+    return <DataState state="empty" title="Grafico indisponivel" description="Sem dados para movimentacao Boname." />
+  }
 
   return (
-    <Panel bordered className={`dashboard-page__dataset-card${dataset.tableOnly ? ' dashboard-page__dataset-card--boname' : ''}`}>
-      <div className="dashboard-page__dataset-card-header">
-        <span>{dataset.tableOnly ? 'Tabela' : 'Grafico e tabela'}</span>
-        <strong>{dataset.title}</strong>
-        <p>{dataset.description}</p>
-      </div>
-      {!dataset.tableOnly ? (
-        <div className="dashboard-page__chart-area">
-          {dataset.chartKind === 'gaucher' ? <GaucherDashboardChart rows={rows} /> : <DashboardChart points={points} title={dataset.title} />}
+    <div className="dashboard-chart">
+      <Bar aria-label="Grafico de movimentacao Boname" data={data} options={BONAME_CHART_OPTIONS} role="img" />
+    </div>
+  )
+}
+
+function DashboardChartPanel({ dataset, rows, subtitle }: { dataset: DashboardDataset, rows: DashboardRecord[], subtitle: string }) {
+  const points = buildChartPoints(rows)
+  const chart = dataset.chartKind === 'gaucher'
+    ? <GaucherDashboardChart rows={rows} />
+    : dataset.key === 'dispensa_fatores_frascos'
+      ? <BarDashboardChart color="#2563eb" points={points} title={dataset.title} />
+      : dataset.key === 'relatorio_boname'
+        ? <BonameDashboardChart rows={rows} />
+        : <LineDashboardChart color="#2563eb" points={points} title={dataset.title} />
+
+  return (
+    <Panel bordered className="dashboard-page__chart-card">
+      <div className="dashboard-page__chart-card-header">
+        <div>
+          <strong>{dataset.title}</strong>
+          <span>{subtitle}</span>
         </div>
-      ) : null}
+        <small>{rows.length} registros</small>
+      </div>
+      {chart}
+    </Panel>
+  )
+}
+
+function DashboardDatasetSection({
+  filter,
+  rows,
+  search,
+  setFilter,
+  setSearch,
+}: {
+  filter: BonameFilter
+  rows: DashboardRecord[]
+  search: string
+  setFilter: (filter: BonameFilter) => void
+  setSearch: (search: string) => void
+}) {
+  const columns: TableColumn<DashboardRecord>[] = [
+    {
+      header: 'Codigo',
+      key: 'codigo',
+      minWidth: 110,
+      render: (row, rowIndex) => getBonameCode(row, rowIndex),
+      size: 'sm',
+    },
+    {
+      header: 'Descricao',
+      key: 'descricao',
+      minWidth: 280,
+      render: (row, rowIndex) => getBonameDescription(row, rowIndex),
+      size: 'fluid',
+    },
+    {
+      align: 'right',
+      header: 'Entrada',
+      key: 'entrada',
+      minWidth: 110,
+      render: (row) => formatNumber(toFiniteNumber(row.entrada) ?? 0),
+      size: 'sm',
+    },
+    {
+      align: 'right',
+      header: 'Saida',
+      key: 'saida',
+      minWidth: 110,
+      render: (row) => formatNumber(toFiniteNumber(row.saida) ?? 0),
+      size: 'sm',
+    },
+    {
+      align: 'right',
+      cellClassName: 'dashboard-page__saldo-cell',
+      header: 'Estoque / Saldo',
+      key: 'estoque',
+      minWidth: 120,
+      render: (row) => formatNumber(toFiniteNumber(row.estoque) ?? 0),
+      size: 'sm',
+    },
+  ]
+  const totalEntrada = sumBoname(rows, 'entrada')
+  const totalSaida = sumBoname(rows, 'saida')
+  const totalEstoque = sumBoname(rows, 'estoque')
+
+  return (
+    <Panel bordered className="dashboard-page__dataset-card dashboard-page__dataset-card--boname">
+      <div className="dashboard-page__dataset-card-top">
+        <div className="dashboard-page__dataset-card-header">
+          <strong>Relatorio de Movimentacao Boname</strong>
+          <p>Entradas e saidas do mes · saldo atual por item</p>
+        </div>
+        <HStack className="dashboard-page__table-tools" spacing={12} wrap>
+          <InputGroup inside className="dashboard-page__search">
+            <InputGroup.Addon>
+              <RiSearchLine aria-hidden="true" />
+            </InputGroup.Addon>
+            <Input
+              aria-label="Buscar codigo ou descricao"
+              placeholder="Buscar codigo ou descricao"
+              value={search}
+              onChange={setSearch}
+            />
+          </InputGroup>
+          <SelectPicker
+            cleanable={false}
+            data={BONAME_FILTER_OPTIONS}
+            searchable={false}
+            value={filter}
+            onChange={(value) => {
+              if (value === 'all' || value === 'entrada' || value === 'saida' || value === 'estoque') {
+                setFilter(value)
+              }
+            }}
+          />
+        </HStack>
+      </div>
       <div className="dashboard-page__table-frame">
         {rows.length > 0 ? (
-          <Table<DashboardRecord>
-            columns={columns}
-            data={rows}
-            rowKey={(_row, rowIndex) => `${dataset.key}-${rowIndex}`}
-            wordWrap
-          />
+          <>
+            <Table<DashboardRecord>
+              columns={columns}
+              data={rows}
+              rowKey={(_row, rowIndex) => `boname-${rowIndex}`}
+              wordWrap
+            />
+            <div className="dashboard-page__table-total" aria-label="Totais do periodo Boname">
+              <strong>Total do periodo</strong>
+              <span>{formatNumber(totalEntrada)}</span>
+              <span>{formatNumber(totalSaida)}</span>
+              <span>{formatNumber(totalEstoque)}</span>
+            </div>
+            <div className="dashboard-page__table-footer">
+              <span>{formatNumber(rows.length)} itens filtrados · {formatNumber(totalEstoque)} em estoque</span>
+              <span>SisStock · Farmacia / HEMOSE</span>
+            </div>
+          </>
         ) : (
-          <DataState state="empty" title="Nenhum dado encontrado" description="A API retornou a lista vazia para este bloco." />
+          <DataState state="empty" title="Nenhum dado encontrado" description="Ajuste a busca ou filtro da tabela." />
         )}
       </div>
     </Panel>
@@ -471,6 +742,8 @@ export function HomeDashboardPage({ onOpenSection }: HomeDashboardPageProps) {
   void onOpenSection
 
   const [selectedDate, setSelectedDate] = useState(() => new Date())
+  const [bonameSearch, setBonameSearch] = useState('')
+  const [bonameFilter, setBonameFilter] = useState<BonameFilter>('all')
   const ano = selectedDate.getFullYear()
   const mes = selectedDate.getMonth() + 1
 
@@ -484,18 +757,29 @@ export function HomeDashboardPage({ onOpenSection }: HomeDashboardPageProps) {
   const hemofilicosRows = getDatasetRows(response, 'atendimentos_hemofilicos')
   const gaucherRows = getDatasetRows(response, 'atendimentos_gaucer')
   const fatoresRows = getDatasetRows(response, 'dispensa_fatores_frascos')
-  const hemoderivadosRows = getDatasetRows(response, 'atendimentos_hemoderivados')
   const bonameRows = getDatasetRows(response, 'relatorio_boname')
+  const filteredBonameRows = filterBonameRows(bonameRows, bonameSearch, bonameFilter)
   const datasetRows = DATASETS.map((dataset) => ({
     dataset,
     rows: getDatasetRows(response, dataset.key),
   }))
+  const loadedDatasets = datasetRows.filter(({ rows }) => rows.length > 0).length
+  const totalRecords = countRows(datasetRows.map(({ rows }) => rows))
+  const periodLabel = `${getMonthLabel(mes)} de ${ano}`
+  const dashboardStatus = dashboardQuery.isFetching
+    ? 'Atualizando'
+    : dashboardQuery.isError
+      ? 'Falha na carga'
+      : dashboardQuery.isSuccess
+        ? 'Dados carregados'
+        : 'Aguardando consulta'
 
   return (
     <section className="dashboard-page">
       <PageSection
-        title="Dashboard corporativo"
-        description={`Indicadores de ${getMonthLabel(mes)} de ${ano}.`}
+        className="dashboard-page__hero"
+        title="Dashboard"
+        description="Visao dos atendimentos, distribuicao e estoque."
         actions={
           <HStack className="dashboard-page__filters" spacing={8} wrap>
             <SelectPicker
@@ -528,34 +812,43 @@ export function HomeDashboardPage({ onOpenSection }: HomeDashboardPageProps) {
           </HStack>
         }
       >
+        <div className="dashboard-page__period-row">
+          <span>{periodLabel}</span>
+          <strong>{dashboardQuery.isSuccess ? 'DADOS DA API' : 'CONSULTA DO PERIODO'}</strong>
+        </div>
         <div className="summary-grid dashboard-page__summary-grid">
           <SummaryCard
-            label="Hemofilicos"
+            label="Atendimentos hemofilicos"
             value={formatNumber(sumRows(hemofilicosRows))}
-            hint={`${hemofilicosRows.length} registro(s) retornado(s).`}
+            hint={`${hemofilicosRows.length} registros no mes.`}
             icon={<RiBarChartGroupedLine size={18} />}
           />
           <SummaryCard
             accent="teal"
-            label="Gaucher"
+            label="Atendimentos Gaucher"
             value={formatNumber(sumRows(gaucherRows))}
-            hint={`${gaucherRows.length} registro(s) retornado(s).`}
+            hint={`${gaucherRows.length} registros no mes.`}
             icon={<RiBarChartGroupedLine size={18} />}
           />
           <SummaryCard
             accent="amber"
-            label="Frascos"
+            label="Frascos distribuidos"
             value={formatNumber(sumRows(fatoresRows))}
-            hint={`${fatoresRows.length} registro(s) retornado(s).`}
+            hint={`${fatoresRows.length} registros no mes.`}
             icon={<RiCapsuleLine size={18} />}
           />
           <SummaryCard
             accent="slate"
             label="Boname"
-            value={formatNumber(bonameRows.length)}
-            hint={`Entrada ${formatNumber(sumBoname(bonameRows, 'entrada'))} | Saida ${formatNumber(sumBoname(bonameRows, 'saida'))} | Estoque ${formatNumber(sumBoname(bonameRows, 'estoque'))}.`}
+            value={formatNumber(sumBoname(bonameRows, 'estoque'))}
+            hint={`Entrada ${formatNumber(sumBoname(bonameRows, 'entrada'))} · Saida ${formatNumber(sumBoname(bonameRows, 'saida'))}.`}
             icon={<RiFileList3Line size={18} />}
           />
+        </div>
+        <div className="dashboard-page__status-line" aria-label="Resumo operacional do dashboard">
+          <span>{loadedDatasets}/{DATASETS.length} blocos com dados</span>
+          <span>{formatNumber(totalRecords)} registros analisados</span>
+          <strong>{dashboardStatus}</strong>
         </div>
       </PageSection>
 
@@ -573,13 +866,21 @@ export function HomeDashboardPage({ onOpenSection }: HomeDashboardPageProps) {
       ) : null}
 
       {dashboardQuery.isSuccess ? (
-        <div className="dashboard-page__sections">
-          <DashboardDatasetSection dataset={DATASETS[0]} rows={hemofilicosRows} />
-          <DashboardDatasetSection dataset={DATASETS[1]} rows={gaucherRows} />
-          <DashboardDatasetSection dataset={DATASETS[2]} rows={fatoresRows} />
-          <DashboardDatasetSection dataset={DATASETS[3]} rows={hemoderivadosRows} />
-          <DashboardDatasetSection dataset={DATASETS[4]} rows={datasetRows[4].rows} />
-        </div>
+        <>
+          <div className="dashboard-page__charts">
+            <DashboardChartPanel dataset={DATASETS[0]} rows={hemofilicosRows} subtitle="Atendimentos no mes · evolucao do periodo" />
+            <DashboardChartPanel dataset={DATASETS[1]} rows={gaucherRows} subtitle="Atendimentos no mes · evolucao do periodo" />
+            <DashboardChartPanel dataset={DATASETS[2]} rows={fatoresRows} subtitle="Quantidade por periodo" />
+            <DashboardChartPanel dataset={DATASETS[4]} rows={bonameRows} subtitle="Entrada, saida e estoque no periodo" />
+          </div>
+          <DashboardDatasetSection
+            filter={bonameFilter}
+            rows={filteredBonameRows}
+            search={bonameSearch}
+            setFilter={setBonameFilter}
+            setSearch={setBonameSearch}
+          />
+        </>
       ) : null}
     </section>
   )
