@@ -326,18 +326,20 @@ function showDialog(icon: SweetAlertIcon, title: string, text?: ReactNode): Prom
   return Swal.fire(options)
 }
 
+const messageApi = {
+  confirmAction,
+  confirmDestructive,
+  error: (title: string, text?: ReactNode) => getToast('error', title, text),
+  info: (title: string, text?: ReactNode) => getToast('info', title, text),
+  message: ({ icon = 'info', text, title }: MessageOptions) => showDialog(icon, title, text),
+  notify: ({ icon = 'info', persistent = false, text, title }: NotifyOptions) =>
+    getToast(icon, title, text, persistent),
+  success: (title: string, text?: ReactNode) => getToast('success', title, text),
+  warning: (title: string, text?: ReactNode) => getToast('warning', title, text),
+}
+
 export function useMessage() {
-  return {
-    confirmAction,
-    confirmDestructive,
-    error: (title: string, text?: ReactNode) => getToast('error', title, text),
-    info: (title: string, text?: ReactNode) => getToast('info', title, text),
-    message: ({ icon = 'info', text, title }: MessageOptions) => showDialog(icon, title, text),
-    notify: ({ icon = 'info', persistent = false, text, title }: NotifyOptions) =>
-      getToast(icon, title, text, persistent),
-    success: (title: string, text?: ReactNode) => getToast('success', title, text),
-    warning: (title: string, text?: ReactNode) => getToast('warning', title, text),
-  }
+  return messageApi
 }
 
 export default useMessage

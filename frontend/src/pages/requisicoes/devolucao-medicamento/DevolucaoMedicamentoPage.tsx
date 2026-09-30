@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import CheckIcon from '@rsuite/icons/Check'
 import SearchIcon from '@rsuite/icons/Search'
@@ -171,6 +171,17 @@ export function DevolucaoMedicamentoPage() {
   const requisicaoDestino = requisicao ? getRequisicaoDestino(requisicao) : null
   const saveDisabled = !requisicao || !hasItems || lastSavedDevolucao !== null
 
+  useEffect(() => {
+    if (!hasSearch || !requisicaoQuery.isError) {
+      return
+    }
+
+    void message.error(
+      'Nao foi possivel buscar a requisicao',
+      getErrorMessage(requisicaoQuery.error, 'Erro ao buscar requisicao para devolucao.'),
+    )
+  }, [hasSearch, message, requisicaoQuery.error, requisicaoQuery.errorUpdatedAt, requisicaoQuery.isError])
+
   const handleSearch = async () => {
     const normalizedReqNum = mask.alphanumeric(reqNumInput)
 
@@ -300,19 +311,6 @@ export function DevolucaoMedicamentoPage() {
             state="loading"
             title="Buscando requisicao..."
             description="Consultando os dados para devolucao."
-          />
-        ) : null}
-
-        {hasSearch && requisicaoQuery.isError ? (
-          <DataState
-            state="error"
-            title="Nao foi possivel buscar a requisicao"
-            description={getErrorMessage(requisicaoQuery.error, 'Erro ao buscar requisicao para devolucao.')}
-            action={
-              <Button appearance="primary" onClick={() => void requisicaoQuery.refetch()}>
-                Tentar novamente
-              </Button>
-            }
           />
         ) : null}
 

@@ -586,8 +586,14 @@ export default class Controller_Requisicoes {
                 throw error;
             }
 
-            if (requisicao_dispensacao.req_num_devolucao) {
+            if (requisicao_dispensacao.req_status === eStatus.Aprovada && requisicao_dispensacao.req_num_devolucao) {
                 const error = new Error('Requisição de dispensação já possui devolução cadastrada') as any;
+                error.statusCode = 409;
+                throw error;
+            }
+
+            if (requisicao_dispensacao.req_tip_id != 1) {
+                const error = new Error('Para Devolver uma requisição, a mesma deve ser do tipo Dispensação') as any;
                 error.statusCode = 409;
                 throw error;
             }
@@ -1506,6 +1512,18 @@ export default class Controller_Requisicoes {
             if (requisicoes.req_status !== eStatus.Aprovada) {
                 const error = new Error('Requisição não pode ser devolvida, somente requisições aprovadas podem ser devolvidas.') as any;
                 error.statusCode = 400;
+                throw error;
+            }
+
+            if (requisicoes.req_status === eStatus.Aprovada && requisicoes.req_num_devolucao) {
+                const error = new Error('Requisição de dispensação já possui devolução cadastrada') as any;
+                error.statusCode = 409;
+                throw error;
+            }
+
+            if (requisicoes.req_tip_id !== 1) {
+                const error = new Error('Para Devolver uma requisição, a mesma deve ser do tipo Dispensação') as any;
+                error.statusCode = 409;
                 throw error;
             }
 
