@@ -880,20 +880,6 @@
   line-height: 1.4;
 }
 
-.dashboard-page__period-row {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  color: #64748b;
-  font-size: 0.78rem;
-}
-
-.dashboard-page__period-row strong {
-  font-size: 0.68rem;
-  font-weight: 600;
-  letter-spacing: 0;
-}
-
 .dashboard-page__status-line {
   display: flex;
   flex-wrap: wrap;
@@ -940,6 +926,10 @@
   font-weight: 700;
 }
 
+.dashboard-page__year-input {
+  width: 9rem;
+}
+
 .dashboard-page__charts {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -959,6 +949,10 @@
   border-radius: 10px;
   background: #ffffff;
   box-shadow: none;
+}
+
+.dashboard-page__chart-card--wide {
+  grid-column: 1 / -1;
 }
 
 .dashboard-page__chart-card .rs-panel-body {

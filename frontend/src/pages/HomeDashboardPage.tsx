@@ -14,7 +14,7 @@ import {
 } from 'chart.js'
 import { Bar } from 'react-chartjs-2'
 import { Line } from 'react-chartjs-2'
-import { Button, DatePicker, HStack, Input, InputGroup, Panel, SelectPicker } from 'rsuite'
+import { Button, HStack, Input, InputGroup, InputNumber, Panel, SelectPicker } from 'rsuite'
 import {
   RiBarChartGroupedLine,
   RiCapsuleLine,
@@ -510,10 +510,6 @@ function countRows(groups: DashboardRecord[][]) {
   return groups.reduce((total, rows) => total + rows.length, 0)
 }
 
-function getMonthLabel(month: number) {
-  return MONTH_OPTIONS.find((option) => option.value === month)?.label ?? String(month)
-}
-
 function getRecordText(row: DashboardRecord) {
   return Object.values(row).map((value) => formatValue(value)).join(' ').toLocaleLowerCase('pt-BR')
 }
@@ -598,6 +594,9 @@ function BonameDashboardChart({ rows }: { rows: DashboardRecord[] }) {
 
 function DashboardChartPanel({ dataset, rows, subtitle }: { dataset: DashboardDataset, rows: DashboardRecord[], subtitle: string }) {
   const points = buildChartPoints(rows)
+  const panelClassName = dataset.key === 'relatorio_boname'
+    ? 'dashboard-page__chart-card dashboard-page__chart-card--wide'
+    : 'dashboard-page__chart-card'
   const chart = dataset.chartKind === 'gaucher'
     ? <GaucherDashboardChart rows={rows} />
     : dataset.key === 'dispensa_fatores_frascos'
@@ -607,7 +606,7 @@ function DashboardChartPanel({ dataset, rows, subtitle }: { dataset: DashboardDa
         : <LineDashboardChart color="#2563eb" points={points} title={dataset.title} />
 
   return (
-    <Panel bordered className="dashboard-page__chart-card">
+    <Panel bordered className={panelClassName}>
       <div className="dashboard-page__chart-card-header">
         <div>
           <strong>{dataset.title}</strong>
@@ -757,6 +756,7 @@ export function HomeDashboardPage({ onOpenSection }: HomeDashboardPageProps) {
   const hemofilicosRows = getDatasetRows(response, 'atendimentos_hemofilicos')
   const gaucherRows = getDatasetRows(response, 'atendimentos_gaucer')
   const fatoresRows = getDatasetRows(response, 'dispensa_fatores_frascos')
+  const hemoderivadosRows = getDatasetRows(response, 'atendimentos_hemoderivados')
   const bonameRows = getDatasetRows(response, 'relatorio_boname')
   const filteredBonameRows = filterBonameRows(bonameRows, bonameSearch, bonameFilter)
   const datasetRows = DATASETS.map((dataset) => ({
@@ -765,7 +765,6 @@ export function HomeDashboardPage({ onOpenSection }: HomeDashboardPageProps) {
   }))
   const loadedDatasets = datasetRows.filter(({ rows }) => rows.length > 0).length
   const totalRecords = countRows(datasetRows.map(({ rows }) => rows))
-  const periodLabel = `${getMonthLabel(mes)} de ${ano}`
   const dashboardStatus = dashboardQuery.isFetching
     ? 'Atualizando'
     : dashboardQuery.isError
@@ -795,14 +794,18 @@ export function HomeDashboardPage({ onOpenSection }: HomeDashboardPageProps) {
                 }
               }}
             />
-            <DatePicker
-              cleanable={false}
-              format="yyyy"
-              oneTap
-              value={selectedDate}
+            <InputNumber
+              aria-label="Ano"
+              className="dashboard-page__year-input"
+              controls={false}
+              max={2100}
+              min={2000}
+              step={1}
+              value={ano}
               onChange={(value) => {
-                if (value) {
-                  setSelectedDate(new Date(value.getFullYear(), mes - 1, 1))
+                const nextYear = Number(value)
+                if (Number.isInteger(nextYear) && nextYear >= 2000 && nextYear <= 2100) {
+                  setSelectedDate(new Date(nextYear, mes - 1, 1))
                 }
               }}
             />
@@ -812,10 +815,6 @@ export function HomeDashboardPage({ onOpenSection }: HomeDashboardPageProps) {
           </HStack>
         }
       >
-        <div className="dashboard-page__period-row">
-          <span>{periodLabel}</span>
-          <strong>{dashboardQuery.isSuccess ? 'DADOS DA API' : 'CONSULTA DO PERIODO'}</strong>
-        </div>
         <div className="summary-grid dashboard-page__summary-grid">
           <SummaryCard
             label="Atendimentos hemofilicos"
@@ -836,6 +835,12 @@ export function HomeDashboardPage({ onOpenSection }: HomeDashboardPageProps) {
             value={formatNumber(sumRows(fatoresRows))}
             hint={`${fatoresRows.length} registros no mes.`}
             icon={<RiCapsuleLine size={18} />}
+          />
+          <SummaryCard
+            label="Atendimentos hemoderivados"
+            value={formatNumber(sumRows(hemoderivadosRows))}
+            hint={`${hemoderivadosRows.length} registros no mes.`}
+            icon={<RiBarChartGroupedLine size={18} />}
           />
           <SummaryCard
             accent="slate"
@@ -871,6 +876,7 @@ export function HomeDashboardPage({ onOpenSection }: HomeDashboardPageProps) {
             <DashboardChartPanel dataset={DATASETS[0]} rows={hemofilicosRows} subtitle="Atendimentos no mes · evolucao do periodo" />
             <DashboardChartPanel dataset={DATASETS[1]} rows={gaucherRows} subtitle="Atendimentos no mes · evolucao do periodo" />
             <DashboardChartPanel dataset={DATASETS[2]} rows={fatoresRows} subtitle="Quantidade por periodo" />
+            <DashboardChartPanel dataset={DATASETS[3]} rows={hemoderivadosRows} subtitle="Atendimentos no mes · evolucao do periodo" />
             <DashboardChartPanel dataset={DATASETS[4]} rows={bonameRows} subtitle="Entrada, saida e estoque no periodo" />
           </div>
           <DashboardDatasetSection
