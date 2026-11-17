@@ -462,7 +462,11 @@ export default class Controller_Requisicoes {
                     throw error;
                 }
 
-                if (pac_id > 0 && demandas.found && medicamentos.med_tipo_codigo == settings.demandas.value) {
+                if (
+                    pac_id > 0 &&
+                    demandas.found &&
+                    settings.demandas.some((demanda) => demanda.value === medicamentos.med_tipo_codigo)
+                ) {
 
                     const item_demanda = await itens_demandas.BuscaItemDemanda(Number(demandas.dem_id), Number(item.med_id))
 
