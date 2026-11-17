@@ -41,8 +41,8 @@ export default class Database implements iDatabase {
                 namedPlaceholders: true,
                 decimalNumbers: true,
                 dateStrings: true,
-                timezone: '-00:00',
-                charset: 'utf8mb4',3
+                timezone: '-03:00',
+                charset: 'utf8mb4',
                 waitForConnections: true,
                 connectionLimit: 10,
                 queueLimit: 0,
