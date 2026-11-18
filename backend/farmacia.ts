@@ -13,7 +13,6 @@ import routes_diagnosticos from './routes/routes_diagnosticos.js';
 import routes_medicamentos from './routes/routes_medicamentos.js';
 import routes_requisicoes from './routes/routes_requisicoes.js';
 import routes_fornecedores from './routes/routes_fornecedores.js';
-import routes_auth from './routes/routes_auth.js';
 import { globalErrorHandler } from './utils/ErrorMiddleware.js';
 import routes_entradas from './routes/routes_entradas.js';
 import routes_demandas_especificas from './routes/routes_demandas_especificas.js';
@@ -28,10 +27,11 @@ import router_inventarios from './routes/routes_inventarios.js';
 import router_dashboard from './routes/routes_dashboard.js'
 import router_settings from './routes/routes_settings.js';
 import router_notificacoes from './routes/routes_notificacoes.js';
+import router_autentica from './routes/routes_auth.js'
+
 import morgan from 'morgan';
 import helmet from 'helmet';
 
-import authMiddleware from './middleware/auth.js';
 import { config } from 'dotenv';
 
 declare global {
@@ -156,13 +156,10 @@ app.use((_req, res, next) => {
     next();
 });
 
-app.use('/auth', routes_auth);
-
-app.use(authMiddleware);
-
 /*****************************************************
 * Rotas dos parametros do aplicativo
 ******************************************************/
+app.use('/auth', router_autentica);
 app.use('/parametros/locais', routes_locais);
 app.use('/parametros/boname', routes_boname);
 app.use('/parametros/depositos', routes_depositos);

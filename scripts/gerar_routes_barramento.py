@@ -40,7 +40,6 @@ already = [
 ]
 
 missing = [
-    ("POST", "simular_sessao_SisStock", "/auth/simular", "Simular sessao autenticada (dev)"),
     ("POST", "publicar_notificacao_SisStock", "/notificacoes/publicar", "Publicar notificacao"),
     ("PATCH", "marcar_notificacao_lida_SisStock", "/notificacoes/read/[^/]+", "Marcar notificacao como lida"),
     ("DELETE", "limpar_notificacoes_SisStock", "/notificacoes/limpar", "Limpar notificacoes"),

@@ -2,7 +2,7 @@ import { Connection, Pool, PoolConnection, createPool } from 'mysql2/promise';
 
 export interface iDatabase {
     connection: Connection,
-    Connect(): Promise<void>,
+    Connect(dbname?: string): Promise<void>,
     Disconnect(): Promise<void>,
     Begin(): Promise<void>,
     Commit(): Promise<void>,
@@ -18,17 +18,19 @@ export default class Database implements iDatabase {
     constructor() { }
 
     // Abre a conexao somente quando ela ainda nao existe no ciclo atual.
-    public async Connect(): Promise<void> {
+    public async Connect(dbname?: string): Promise<void> {
 
         if (this.conn) {
             return;
         }
 
-        this.conn = await this.getPool().getConnection();
+        const database = dbname || 'fsph_ambulatorio'
+
+        this.conn = await this.getPool(database).getConnection();
 
     }
     // instancia o pool de conexoes
-    private getPool(): Pool {
+    private getPool(dbname: string): Pool {
 
         if (!this.pool) {
 
@@ -37,7 +39,7 @@ export default class Database implements iDatabase {
                 port: Number(process.env.DB_PORT),
                 user: process.env.DB_USER,
                 password: process.env.DB_PASS,
-                database: 'fsph_ambulatorio',
+                database: dbname,
                 namedPlaceholders: true,
                 decimalNumbers: true,
                 dateStrings: true,

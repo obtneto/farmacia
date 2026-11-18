@@ -1,10 +1,7 @@
 import { Router } from 'express';
-import Controller_Auth from '../controllers/controller_auth.js';
-import authMiddleware from '../middleware/auth.js';
-
+import Controller_Auth from '../controllers/controllers_auth.js';
 const router = Router();
-router.use(authMiddleware);
 
-router.post('/simular', Controller_Auth.SimularSessao);
+router.get('/autentica/', Controller_Auth.Autenticar);
 
 export default router;

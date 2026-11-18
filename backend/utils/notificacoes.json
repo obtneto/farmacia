@@ -1,5 +1,38 @@
 [
   {
+    "id": "NOT-1808",
+    "title": "Alerta de Validade",
+    "description": "49 lotes com validade dentro do prazo de alerta ou vencidos.",
+    "tone": "warning",
+    "read": false,
+    "createdAt": "2026-11-18T11:00:20.480Z",
+    "actionLabel": "Abrir Alerta de Validade",
+    "actionSectionKey": "estoque/alerta_validade",
+    "critical": true
+  },
+  {
+    "id": "NOT-202618",
+    "title": "Alerta de Inventário Mensal",
+    "description": "Ocorreram apenas 0 dos 3 inventários previstos para o mês.",
+    "tone": "info",
+    "read": false,
+    "createdAt": "2026-11-18T10:12:33.380Z",
+    "actionLabel": "Abrir pagina de Novos Inventários",
+    "actionSectionKey": "operacao/inventarios/novo",
+    "critical": false
+  },
+  {
+    "id": "NOT-1807",
+    "title": "Alerta de Validade",
+    "description": "49 lotes com validade dentro do prazo de alerta ou vencidos.",
+    "tone": "warning",
+    "read": false,
+    "createdAt": "2026-11-18T10:12:33.373Z",
+    "actionLabel": "Abrir Alerta de Validade",
+    "actionSectionKey": "estoque/alerta_validade",
+    "critical": true
+  },
+  {
     "id": "NOT-1711",
     "title": "Alerta de Validade",
     "description": "49 lotes com validade dentro do prazo de alerta ou vencidos.",

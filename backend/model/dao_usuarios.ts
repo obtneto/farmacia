@@ -6,9 +6,7 @@ export interface iUsuariosFields {
     usu_usuario: string | null,
     usu_nome_completo: string | null,
     usu_nome_usual: string | null,
-    usu_cpf: string | null,
-    usu_senha: string | null,
-    usu_ativo: 0 | 1 | null
+    usu_perfil_id: number | null
 }
 
 export default class Usuarios extends BaseModel implements iUsuariosFields, iBaseModel {
@@ -26,9 +24,7 @@ export default class Usuarios extends BaseModel implements iUsuariosFields, iBas
             usu_usuario: null,
             usu_nome_completo: null,
             usu_nome_usual: null,
-            usu_cpf: null,
-            usu_ativo: 0,
-            usu_senha: null
+            usu_perfil_id: null
         };
 
         super(connection, 'tb_usuarios', initFields, 'usu_id');
@@ -51,14 +47,8 @@ export default class Usuarios extends BaseModel implements iUsuariosFields, iBas
     set usu_nome_usual(nome_usual: string) { this._fields.usu_nome_usual = nome_usual }
     get usu_nome_usual(): string { return this._fields.usu_nome_usual }
 
-    set usu_cpf(cpf: string) { this._fields.usu_cpf = cpf }
-    get usu_cpf(): string { return this._fields.usu_cpf }
-
-    set usu_senha(senha: string) { this._fields.usu_senha = senha }
-    get usu_senha(): string { return this._fields.usu_senha }
-
-    set usu_ativo(ativo: 0 | 1) { this._fields.ativo = ativo }
-    get usu_ativo(): 0 | 1 { return this._fields.ativo }
+    set usu_perfil_id(perfil_id: number) { this._fields.usu_perfil_id = perfil_id }
+    get usu_perfil_id(): number { return this._fields.usu_perfil_id }
 
     public async Listar_Todos(pesq: string): Promise<iUsuariosFields[]> {
 

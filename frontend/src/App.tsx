@@ -1,10 +1,8 @@
-import { lazy, Suspense, useEffect, useState } from 'react'
+import { lazy, Suspense, useState } from 'react'
 import MainLayout from './components/MainLayout'
 import PageLoader from './components/ui/PageLoader'
 import { APP_SECTIONS, type SectionKey } from './config/navigation'
 import './App.css'
-import { isSectionAllowed } from './lib/auth-permissions'
-import { bootstrapAuthSession } from './lib/auth-session'
 
 const DEFAULT_SECTION_KEY: SectionKey = 'inicio'
 const AprovacaoEntradaPage = lazy(() => import('./pages/AprovacaoEntradaPage'))
@@ -49,7 +47,6 @@ function App() {
     const searchParam = new URLSearchParams(window.location.search).get('section') as SectionKey
     return searchParam && APP_SECTIONS[searchParam] ? searchParam : DEFAULT_SECTION_KEY
   })
-  const [authReady, setAuthReady] = useState(false)
 
   const section = APP_SECTIONS[activeSectionKey]
   const isCadastroSection =
@@ -85,44 +82,8 @@ function App() {
     || activeSectionKey === 'parametros/settings'
     || activeSectionKey === 'parametros/diagnosticos'
 
-  useEffect(() => {
-    let mounted = true
-
-    void bootstrapAuthSession()
-      .then(() => {
-        if (!mounted) {
-          return
-        }
-
-        setActiveSectionKey((current) => (isSectionAllowed(current) ? current : DEFAULT_SECTION_KEY))
-        setAuthReady(true)
-      })
-      .catch(() => {
-        // redirect para o SA e tratado em bootstrapAuthSession / forceLoginRedirect
-      })
-
-    return () => {
-      mounted = false
-    }
-  }, [])
-
   const handleSidebarSelect = (eventKey: SectionKey) => {
-    if (!isSectionAllowed(eventKey)) {
-      setActiveSectionKey(DEFAULT_SECTION_KEY)
-      return
-    }
-
     setActiveSectionKey(eventKey)
-  }
-
-  if (!authReady) {
-    return (
-      <PageLoader
-        description="Sincronizando a sessao autenticada do barramento."
-        title="Autenticando"
-        variant="page"
-      />
-    )
   }
 
   return (

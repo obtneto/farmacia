@@ -174,12 +174,6 @@ const REQUEST_BODY_SCHEMAS = {
       user: { type: 'string', example: 'OVIDIO', description: 'Usuario responsavel pela aprovacao.' },
     },
   },
-  'POST /auth/simular': {
-    componentName: 'AuthSimularPayload',
-    description: 'Payload para simular a criação de uma sessão autenticada. Não requer parâmetros adicionais.',
-    required: [],
-    properties: {},
-  },
   'POST /controle-ddu/atualizar-item': {
     componentName: 'ControleDDUAtualizarItemPayload',
     description: 'Payload para atualizar a quantidade de retorno de itens de uma requisição DDU.',

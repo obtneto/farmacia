@@ -1,8 +1,6 @@
 import { Router } from 'express'
 import Controller_Requisicoes from '../controllers/controller_requisicoes.js';
-import authMiddleware from '../middleware/auth.js';
 const router = Router();
-router.use(authMiddleware);
 
 router.get('/listar/:dat_ini/:dat_fim/:dep_id/:pesq', Controller_Requisicoes.Listar);
 router.get('/buscar/:req_id', Controller_Requisicoes.Buscar);

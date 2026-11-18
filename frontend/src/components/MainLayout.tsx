@@ -37,7 +37,7 @@ import {
 } from 'react-icons/ri'
 import { NAVIGATION_GROUPS, type NavigationGroup, type NavigationItem, type SectionKey } from '../config/navigation'
 import { getApiBaseUrl } from '../lib/api-base-url'
-import { getAuthToken, getUserDisplayName, getUserProfile, logoutRedirect } from '../lib/auth-helpers'
+import { getUserDisplayName, getUserProfile, logoutRedirect } from '../lib/auth-helpers'
 import { getAllowedRoutePaths, isSectionAllowed } from '../lib/auth-permissions'
 import './MainLayout.css'
 
@@ -453,16 +453,9 @@ export function MainLayout({
 
   useEffect(() => {
     let isActive = true
-    const authToken = getAuthToken()
     const streamUrl = new URL(`${API_BASE_URL}/notificacoes/stream`)
 
-    if (authToken) {
-      streamUrl.searchParams.set('token', authToken)
-    }
-
-    void fetch(`${API_BASE_URL}/notificacoes/listar`, {
-      headers: authToken ? { Authorization: `Bearer ${authToken}` } : undefined,
-    })
+    void fetch(`${API_BASE_URL}/notificacoes/listar`)
       .then((response) => response.json())
       .then((payload: { data?: NotificationsPayload }) => {
         if (isActive) {
@@ -544,12 +537,8 @@ export function MainLayout({
   const markNotificationAsRead = (notification: HeaderNotification) => {
     setNotifications((current) => markNotificationRead(current, notification.id))
 
-    const authToken = getAuthToken()
-
-    void fetch(`${API_BASE_URL}/notificacoes/read/${encodeURIComponent(notification.id)}`, {
-      method: 'PATCH',
-      headers: authToken ? { Authorization: `Bearer ${authToken}` } : undefined,
-    }).catch(() => undefined)
+    void fetch(`${API_BASE_URL}/notificacoes/read/${encodeURIComponent(notification.id)}`, { method: 'PATCH' })
+      .catch(() => undefined)
   }
 
   const handleOpenNotification = (notification: HeaderNotification) => {
@@ -563,11 +552,7 @@ export function MainLayout({
   const handleMarkAllNotificationsRead = () => {
     setNotifications((current) => current.map((notification) => ({ ...notification, read: true })))
 
-    const authToken = getAuthToken()
-    void fetch(`${API_BASE_URL}/notificacoes/mark-all-read`, {
-      method: 'PATCH',
-      headers: authToken ? { Authorization: `Bearer ${authToken}` } : undefined,
-    }).catch(() => undefined)
+    void fetch(`${API_BASE_URL}/notificacoes/mark-all-read`, { method: 'PATCH' }).catch(() => undefined)
   }
 
   const handleRemoveNotification = (e: React.MouseEvent, notificationId: string) => {
@@ -576,11 +561,8 @@ export function MainLayout({
 
     setNotifications((current) => current.filter((notification) => notification.id !== notificationId))
 
-    const authToken = getAuthToken()
-    void fetch(`${API_BASE_URL}/notificacoes/${encodeURIComponent(notificationId)}`, {
-      method: 'DELETE',
-      headers: authToken ? { Authorization: `Bearer ${authToken}` } : undefined,
-    }).catch(() => undefined)
+    void fetch(`${API_BASE_URL}/notificacoes/${encodeURIComponent(notificationId)}`, { method: 'DELETE' })
+      .catch(() => undefined)
   }
 
   const handleMenuOpenChange = (nextOpenKeys: string[]) => {
