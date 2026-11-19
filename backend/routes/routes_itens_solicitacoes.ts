@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import Controller_ItensSolicitacoes from '../controllers/constroller_itens_solicitacoes.js';
+import Controller_ItensSolicitacoes from '../controllers/controller_itens_solicitacoes.js';
 const router = Router();
 
 router.get('/buscar/:iso_id', Controller_ItensSolicitacoes.BuscarPorId);

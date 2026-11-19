@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import Controller_Estoque from '../controllers/controler_estoque.js';
+import Controller_Estoque from '../controllers/controller_estoque.js';
 const router = Router();
 
 router.get('/listar/:pesq/:dep_id/:med_tipo_codigo', Controller_Estoque.Listar);

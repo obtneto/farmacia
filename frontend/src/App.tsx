@@ -41,6 +41,7 @@ const SetoresPage = lazy(() => import('./pages/SetoresPage'))
 const SettingsPage = lazy(() => import('./pages/SettingsPage'))
 const TiposMedicamentosPage = lazy(() => import('./pages/TiposMedicamentosPage'))
 const TiposRequisicoesPage = lazy(() => import('./pages/TiposRequisicoesPage'))
+const UsuariosPage = lazy(() => import('./pages/UsuariosPage'))
 
 function App() {
   const [activeSectionKey, setActiveSectionKey] = useState<SectionKey>(() => {
@@ -81,6 +82,7 @@ function App() {
     || activeSectionKey === 'parametros/tipos_requisicoes'
     || activeSectionKey === 'parametros/settings'
     || activeSectionKey === 'parametros/diagnosticos'
+    || activeSectionKey === 'parametros/usuarios'
 
   const handleSidebarSelect = (eventKey: SectionKey) => {
     setActiveSectionKey(eventKey)
@@ -163,6 +165,8 @@ function App() {
             <SettingsPage />
           ) : activeSectionKey === 'parametros/diagnosticos' ? (
             <DiagnosticosPage />
+          ) : activeSectionKey === 'parametros/usuarios' ? (
+            <UsuariosPage />
           ) : (
             <ModulePlaceholderPage
               moduleKey={activeSectionKey}

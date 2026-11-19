@@ -50,9 +50,11 @@ export default class Usuarios extends BaseModel implements iUsuariosFields, iBas
     set usu_perfil_id(perfil_id: number) { this._fields.usu_perfil_id = perfil_id }
     get usu_perfil_id(): number { return this._fields.usu_perfil_id }
 
-    public async Listar_Todos(pesq: string): Promise<iUsuariosFields[]> {
+    public async Listar_Todos(pesq: string): Promise<RowDataPacket[]> {
 
-        let query: string = "SELECT * FROM tb_usuarios";
+        let query: string = `SELECT usu_id,usu_usuario,usu_nome_completo, usu_nome_usual, per_descricao
+                             FROM tb_usuarios 
+                             LEFT JOIN tb_perfis ON per_id = usu_perfil_id`;
 
         if (pesq !== '*') {
             query += ` WHERE MATCH(usu_usuario,usu_nome_completo,usu_nome_usual) AGAINST(:pesq IN BOOLEAN MODE)`;
@@ -62,17 +64,7 @@ export default class Usuarios extends BaseModel implements iUsuariosFields, iBas
 
         const [rows] = await this.ExecuteQuery(query, { pesq: termoFormatado }) as RowDataPacket[];
 
-        return rows as iUsuariosFields[]
-
-    }
-
-    public async Listar_Ativos(): Promise<iUsuariosFields[]> {
-
-        const query: string = "SELECT * FROM tb_usuarios WHERE usu_ativo = 1";
-
-        const [rows] = await this.ExecuteQuery(query) as RowDataPacket[];
-
-        return rows as iUsuariosFields[]
+        return rows as RowDataPacket[]
 
     }
 

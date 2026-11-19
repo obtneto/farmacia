@@ -71,6 +71,7 @@ export type SectionKey =
   | 'parametros/setores'
   | 'parametros/tipos_requisicoes'
   | 'parametros/settings'
+  | 'parametros/usuarios'
 
 export type SectionMeta = {
   breadcrumbItems: string[]
@@ -300,6 +301,12 @@ export const APP_SECTIONS: Record<SectionKey, SectionMeta> = {
     status: 'Cadastro mestre',
     title: 'Cadastro de Settings',
   },
+  'parametros/usuarios': {
+    breadcrumbItems: ['Inicio', 'Cadastros', 'Usuario'],
+    description: '',
+    status: 'Cadastro mestre',
+    title: 'Cadastro de Usuarios',
+  },
 }
 
 export const NAVIGATION_GROUPS: NavigationGroup[] = [
@@ -520,6 +527,11 @@ export const NAVIGATION_GROUPS: NavigationGroup[] = [
         icon: <RiSettings3Line size={18} />,
         label: 'Settings',
       },
+      {
+        eventKey: 'parametros/usuarios',
+        icon: <RiUserLine size={18} />,
+        label: 'Usuario',
+      },
     ],
   },
 ]
@@ -542,6 +554,7 @@ export const QUICK_ACTIONS: Array<{ eventKey: SectionKey; label: string }> = [
   { eventKey: 'parametros/tipos_requisicoes', label: 'Abrir tipos de requisicoes' },
   { eventKey: 'parametros/diagnosticos', label: 'Abrir cadastro de Diagnosticos' },
   { eventKey: 'parametros/settings', label: 'Abrir cadastro de Settings' },
+  { eventKey: 'parametros/usuarios', label: 'Abrir cadastro de Usuarios' },
   { eventKey: 'pacientes/ambulatorio', label: 'Consultar pacientes do ambulatorio' },
   { eventKey: 'pacientes/demandas_especificas', label: 'Consultar demandas especificas' },
   { eventKey: 'requisicoes/por_paciente', label: 'Consultar requisicoes por paciente' },

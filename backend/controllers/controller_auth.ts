@@ -49,6 +49,9 @@ export default class Controller_Auth {
                 throw error;
             }
 
+            /***************************************************************************************
+            * Seleciona o dominio para autenticação
+            ***************************************************************************************/ 
             const query: string = 'SELECT * FROM tb_domains WHERE id_dom = :id'
             const [domain] = await db.connection.query(query, { id }) as RowDataPacket[];
 
@@ -58,6 +61,9 @@ export default class Controller_Auth {
                 throw error;
             }
 
+            /***************************************************************************************
+            * Instancia o LDAP para autenticação
+            ***************************************************************************************/ 
             const ad = new ActiveDirectory(domain[0].user_dom + '@' + domain[0].domain, domain[0].pass_dom, domain[0].host_ldap_dom, domain[0].basedn_dom, domain[0].port_host_ldap)
 
             const auth_ok = await ad.Autenticate(usuario + '@' + domain[0].domain, senha);
@@ -68,6 +74,7 @@ export default class Controller_Auth {
                 throw error;
             }
 
+            //Obtem dados do usuario no LDAP
             const user_data = await ad.FindUser(usuario);
 
             if (!user_data) {
@@ -76,6 +83,9 @@ export default class Controller_Auth {
                 throw error;
             }
 
+            /***************************************************************************************
+            * Check se existe o usuario na base local da aplicação
+            ***************************************************************************************/ 
             const usuarios = new Usuarios(db.connection);
 
             if (!await usuarios.BuscarUsuario(usuario)) {
@@ -89,6 +99,9 @@ export default class Controller_Auth {
 
             }
 
+            /***************************************************************************************
+            * Cria Token da autenticação
+            ****************************************************************************************/
             const payload: iPayload = {
                 user: user_data.user,
                 nome_completo: user_data.fullname,

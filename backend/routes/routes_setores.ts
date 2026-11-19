@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import Controller_Setores from '../controllers/controllers_setores.js';
+import Controller_Setores from '../controllers/controller_setores.js';
 const router = Router();
 
 router.get('/listar/:pesq', Controller_Setores.Listar);

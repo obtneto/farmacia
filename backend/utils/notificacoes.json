@@ -1,5 +1,16 @@
 [
   {
+    "id": "NOT-1811",
+    "title": "Alerta de Validade",
+    "description": "49 lotes com validade dentro do prazo de alerta ou vencidos.",
+    "tone": "warning",
+    "read": false,
+    "createdAt": "2026-11-18T14:54:10.332Z",
+    "actionLabel": "Abrir Alerta de Validade",
+    "actionSectionKey": "estoque/alerta_validade",
+    "critical": true
+  },
+  {
     "id": "NOT-1808",
     "title": "Alerta de Validade",
     "description": "49 lotes com validade dentro do prazo de alerta ou vencidos.",

@@ -28,6 +28,7 @@ import router_dashboard from './routes/routes_dashboard.js'
 import router_settings from './routes/routes_settings.js';
 import router_notificacoes from './routes/routes_notificacoes.js';
 import router_autentica from './routes/routes_auth.js'
+import router_usuarios from './routes/routes_usuarios.js'
 
 import morgan from 'morgan';
 import helmet from 'helmet';
@@ -160,6 +161,7 @@ app.use((_req, res, next) => {
 * Rotas dos parametros do aplicativo
 ******************************************************/
 app.use('/auth', router_autentica);
+app.use('/parametros/usuarios', router_usuarios)
 app.use('/parametros/locais', routes_locais);
 app.use('/parametros/boname', routes_boname);
 app.use('/parametros/depositos', routes_depositos);
