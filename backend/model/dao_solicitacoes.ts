@@ -99,4 +99,15 @@ export default class Solicitacoes extends BaseModel implements iBaseModel, iSoli
 
   }
 
+  public async CheckSolicitacoesAbertas(dep_id: number): Promise<Boolean> {
+
+    const query: string = `SELECT sol_dep_ori_id, sol_dep_des_id FROM tb_solicitacoes 
+                           WHERE sol_dep_ori_id = :dep_id OR sol_dep_des_id = :dep_id`;
+
+    const [rows] = await this.ExecuteQuery(query, { dep_id }) as RowDataPacket[];
+
+    return rows.length > 0 ? true : false
+
+  }
+
 }

@@ -8,7 +8,7 @@ import { Button, Checkbox, HStack, IconButton, InputNumber, Pagination, Panel, T
 import { Cell, Column, HeaderCell, Table } from '../../components/Table'
 import { AppModal, DataState, PageSection, StatusBadge } from '../../components/ui'
 import { getErrorMessage, useMessage } from '../../hooks/useMessage'
-import { apiRequest } from '../../lib/api'
+import { apiFetch, apiRequest } from '../../lib/api'
 import { getApiBaseUrl } from '../../lib/api-base-url'
 import { getSessionUsername } from '../../lib/auth-helpers'
 import { formatDateForDisplay as formatCalendarDateForDisplay } from '../../lib/date'
@@ -39,7 +39,6 @@ export interface SolicitacoesAbertasPageProps {
 }
 
 const DEFAULT_PAGE_SIZE = 13
-const AUTH_STORAGE_KEYS = ['authToken', 'token', 'accessToken', 'jwt']
 const EMPTY_SOLICITACAO_ABERTA_ITEMS: SolicitacaoAbertaItemRecord[] = []
 const EMPTY_SOLICITACAO_ABERTA_RECORDS: SolicitacaoAbertaRecord[] = []
 
@@ -50,22 +49,6 @@ function formatDateForDisplay(value?: string | null): string {
 function formatText(value?: string | number | null): string {
   const text = String(value ?? '').trim()
   return text || '-'
-}
-
-function getStoredAuthToken(): string {
-  if (typeof window === 'undefined') {
-    return ''
-  }
-
-  for (const key of AUTH_STORAGE_KEYS) {
-    const value = window.localStorage.getItem(key)
-
-    if (value) {
-      return value
-    }
-  }
-
-  return ''
 }
 
 async function listarSolicitacoesAbertas(): Promise<SolicitacaoAbertaRecord[]> {
@@ -85,17 +68,8 @@ async function excluirItemSolicitacao(isoId: number): Promise<void> {
 }
 
 async function imprimirSolicitacao(solId: number): Promise<Blob> {
-  const headers = new Headers()
-  const token = getStoredAuthToken()
-
-  if (token) {
-    headers.set('Authorization', `Bearer ${token}`)
-  }
-
-  const response = await fetch(`${getApiBaseUrl()}/solicitacoes/imprimir/${solId}`, {
+  const response = await apiFetch(`${getApiBaseUrl()}/solicitacoes/imprimir/${solId}`, {
     method: 'GET',
-    credentials: 'include',
-    headers,
   })
 
   if (!response.ok) {

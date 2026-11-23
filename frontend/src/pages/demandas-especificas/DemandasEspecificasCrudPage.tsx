@@ -13,11 +13,9 @@ import { AppModal, DataState, PageSection, StatusBadge, SummaryCard } from '../.
 import { getErrorMessage, useMessage } from '../../hooks/useMessage'
 import { getApiBaseUrl } from '../../lib/api-base-url'
 import { apiRequest } from '../../lib/api'
-import { userHasGroup } from '../../lib/auth-permissions'
+import { hasPermission } from '../../lib/auth-permissions'
 import '../boname/BonameCrudPage.css'
 
-/** Grupo Operadora SisStock — sem permissao para adicionar novo paciente. */
-const OPERADORA_SISSTOCK_GROUP_ID = 18
 
 type ApiListPayload<T> = T[] | [T[]]
 
@@ -638,13 +636,9 @@ export default function DemandasEspecificasCrudPage({
     setPatientLookupModalOpen(false)
   }
 
-  const canAddPaciente = !userHasGroup(OPERADORA_SISSTOCK_GROUP_ID)
+  const canEditDemanda = hasPermission('demandas_especificas.editar')
 
   const handleAddPaciente = () => {
-    if (!canAddPaciente) {
-      return
-    }
-
     setPacienteModalMode('create')
     setDemandaFormValues(DEFAULT_DEMANDA_FORM_VALUES)
     setDemandaFormErrors({})
@@ -674,9 +668,11 @@ export default function DemandasEspecificasCrudPage({
     if (compact) {
       return (
         <HStack spacing={8} className="boname-page__row-actions boname-page__row-actions--compact">
-          <Button appearance="subtle" size="xs" aria-label="Editar registro" startIcon={<EditIcon />} onClick={() => handleEditPaciente(record)}>
-            Editar
-          </Button>
+          {canEditDemanda ? (
+            <Button appearance="subtle" size="xs" aria-label="Editar registro" startIcon={<EditIcon />} onClick={() => handleEditPaciente(record)}>
+              Editar
+            </Button>
+          ) : null}
           <Button appearance="subtle" size="xs" startIcon={<VisibleIcon />} onClick={() => handleOpenDetails(record)}>
             Itens
           </Button>
@@ -686,15 +682,17 @@ export default function DemandasEspecificasCrudPage({
 
     return (
       <HStack spacing={8} justifyContent="center" className="boname-page__row-actions boname-page__row-actions--table">
-        <IconButton
-          appearance="subtle"
-          aria-label="Editar registro"
-          circle
-          className="boname-page__action-icon boname-page__action-icon--edit"
-          icon={<EditIcon />}
-          size="xs"
-          onClick={() => handleEditPaciente(record)}
-        />
+        {canEditDemanda ? (
+          <IconButton
+            appearance="subtle"
+            aria-label="Editar registro"
+            circle
+            className="boname-page__action-icon boname-page__action-icon--edit"
+            icon={<EditIcon />}
+            size="xs"
+            onClick={() => handleEditPaciente(record)}
+          />
+        ) : null}
         <IconButton
           appearance="subtle"
           aria-label={`Visualizar itens da demanda ${record.dem_id}`}
@@ -863,9 +861,7 @@ export default function DemandasEspecificasCrudPage({
           <HStack spacing={8} wrap className="boname-page__toolbar-actions">
             <Button
               appearance="primary"
-              disabled={!canAddPaciente}
               startIcon={<PlusIcon />}
-              title={!canAddPaciente ? 'Indisponivel para o grupo Operadora SisStock' : undefined}
               onClick={handleAddPaciente}
             >
               Adicionar Paciente

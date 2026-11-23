@@ -1,4 +1,5 @@
 const SALT_KEY = 'security_salt'
+const LEGACY_AUTH_TOKEN_KEY = '_auth_token'
 const SESSION_KEYS = ['_upf', '_uln', '_nav_m', '_u_apps'] as const
 
 function getSessionSalt(): string {
@@ -13,6 +14,7 @@ function getSessionSalt(): string {
 }
 
 export function saveSession(key: string, value: unknown): void {
+  if (key === LEGACY_AUTH_TOKEN_KEY) return
   try {
     if (value === null || value === undefined) {
       return
@@ -23,7 +25,10 @@ export function saveSession(key: string, value: unknown): void {
       _s: getSessionSalt(),
     }
 
-    sessionStorage.setItem(key, btoa(JSON.stringify(payload)))
+    const json = JSON.stringify(payload).replace(/[\u0100-\uffff]/g, (character) =>
+      `\\u${character.charCodeAt(0).toString(16).padStart(4, '0')}`,
+    )
+    sessionStorage.setItem(key, btoa(json))
   } catch (error) {
     console.error('Erro ao salvar sessao', error)
   }
@@ -60,5 +65,19 @@ export function removeSession(key: string): void {
 export function clearSessionCache(): void {
   for (const key of SESSION_KEYS) {
     sessionStorage.removeItem(key)
+  }
+  sessionStorage.removeItem(LEGACY_AUTH_TOKEN_KEY)
+}
+
+export function clearLegacyAuthTokens(): void {
+  const legacyKeys = ['authToken', 'access_token', 'token', 'jwtToken', 'accessToken', 'jwt']
+  try {
+    for (const key of legacyKeys) {
+      localStorage.removeItem(key)
+      sessionStorage.removeItem(key)
+    }
+    sessionStorage.removeItem(LEGACY_AUTH_TOKEN_KEY)
+  } catch {
+    // Storage may be disabled by the browser; the server cookie remains authoritative.
   }
 }

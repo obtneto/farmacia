@@ -24,6 +24,7 @@ import VisibleIcon from '@rsuite/icons/Visible'
 import { AppModal, DataState, PageSection } from '../../components/ui'
 import { getErrorMessage, useMessage } from '../../hooks/useMessage'
 import { useMask } from '../../hooks/useMask'
+import { apiFetch } from '../../lib/api'
 import { getApiBaseUrl } from '../../lib/api-base-url'
 import { formatDateTimeForDisplay as formatCalendarDateTimeForDisplay, formatDateForDisplay as formatCalendarDateForDisplay } from '../../lib/date'
 import '../boname/BonameCrudPage.css'
@@ -124,7 +125,6 @@ export interface EntradasCrudPageProps {
 }
 
 const PAGE_SIZE = 13
-const LOCAL_STORAGE_TOKEN_KEYS = ['authToken', 'access_token', 'token', 'jwtToken']
 const MAX_DOC_LENGTH = 90
 const MAX_FORNECEDOR_LENGTH = 255
 const MAX_LOTE_LENGTH = 60
@@ -144,21 +144,6 @@ const DEFAULT_ITEM_VALUES: EntradaItemFormValues = {
   ent_qtde: 0,
 }
 
-function getStoredToken(): string | null {
-  if (typeof window === 'undefined') {
-    return null
-  }
-
-  for (const key of LOCAL_STORAGE_TOKEN_KEYS) {
-    const value = window.localStorage.getItem(key)?.trim()
-
-    if (value) {
-      return value
-    }
-  }
-
-  return null
-}
 
 function buildUrl(baseUrl: string, path: string): string {
   const normalizedBase = baseUrl.replace(/\/$/, '')
@@ -265,17 +250,14 @@ async function requestEntradas<T>(
   init: RequestInit,
   authToken?: string | null,
 ): Promise<T> {
+  void authToken
   const headers = new Headers(init.headers)
 
   if (!headers.has('Content-Type') && init.method && init.method !== 'GET') {
     headers.set('Content-Type', 'application/json')
   }
 
-  if (authToken) {
-    headers.set('Authorization', `Bearer ${authToken}`)
-  }
-
-  const response = await fetch(buildUrl(baseUrl, path), {
+  const response = await apiFetch(buildUrl(baseUrl, path), {
     ...init,
     headers,
   })
@@ -362,13 +344,10 @@ async function requestEntradasBlob(
   path: string,
   authToken?: string | null,
 ): Promise<Blob> {
+  void authToken
   const headers = new Headers()
 
-  if (authToken) {
-    headers.set('Authorization', `Bearer ${authToken}`)
-  }
-
-  const response = await fetch(buildUrl(baseUrl, path), {
+  const response = await apiFetch(buildUrl(baseUrl, path), {
     method: 'GET',
     headers,
   })
@@ -458,7 +437,7 @@ export function EntradasCrudPage({
   historyOnly = false,
 }: EntradasCrudPageProps) {
   const [isCompactLayout] = useMediaQuery('(max-width: 768px)')
-  const resolvedAuthToken = authToken ?? getStoredToken()
+  const resolvedAuthToken = authToken ?? undefined
   const message = useMessage()
   const mask = useMask()
   const queryClient = useQueryClient()

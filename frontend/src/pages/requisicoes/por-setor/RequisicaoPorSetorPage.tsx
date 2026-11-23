@@ -10,6 +10,7 @@ import { Cell, Column, HeaderCell, Table } from '../../../components/Table'
 import { AppModal, DataState, PageSection, ReferenceNotification, StatusBadge } from '../../../components/ui'
 import { getErrorMessage, useMessage } from '../../../hooks/useMessage'
 import { maskDate, useMask } from '../../../hooks/useMask'
+import { apiFetch } from '../../../lib/api'
 import { getApiBaseUrl } from '../../../lib/api-base-url'
 import { getSessionUsername } from '../../../lib/auth-helpers'
 import { formatDateForApi as formatCalendarDateForApi, parseCalendarDate } from '../../../lib/date'
@@ -95,24 +96,8 @@ type SalvarRequisicaoResponse = {
 
 const API_BASE_URL = getApiBaseUrl()
 const MAX_OBSERVACAO_LENGTH = 500
-const LOCAL_STORAGE_TOKEN_KEYS = ['authToken', 'access_token', 'token', 'jwtToken']
 const TIPO_REQUISICAO_OPTIONS: SelectOption<number>[] = [{ label: 'Dispensacao', value: 1 }]
 
-function getStoredToken(): string | null {
-  if (typeof window === 'undefined') {
-    return null
-  }
-
-  for (const key of LOCAL_STORAGE_TOKEN_KEYS) {
-    const value = window.localStorage.getItem(key)?.trim()
-
-    if (value) {
-      return value
-    }
-  }
-
-  return null
-}
 
 function buildUrl(path: string): string {
   const normalizedBase = API_BASE_URL.replace(/\/$/, '')
@@ -175,17 +160,14 @@ function renderValidityBadge(value: Date | string | null, alertDays: number | nu
 }
 
 async function requestRequisicao<T>(path: string, init: RequestInit, authToken?: string | null): Promise<T> {
+  void authToken
   const headers = new Headers(init.headers)
 
   if (!headers.has('Content-Type') && init.method && init.method !== 'GET') {
     headers.set('Content-Type', 'application/json')
   }
 
-  if (authToken) {
-    headers.set('Authorization', `Bearer ${authToken}`)
-  }
-
-  const response = await fetch(buildUrl(path), {
+  const response = await apiFetch(buildUrl(path), {
     ...init,
     headers,
   })
@@ -210,13 +192,10 @@ async function requestRequisicao<T>(path: string, init: RequestInit, authToken?:
 }
 
 async function requestRequisicaoBlob(path: string, authToken?: string | null): Promise<Blob> {
+  void authToken
   const headers = new Headers()
 
-  if (authToken) {
-    headers.set('Authorization', `Bearer ${authToken}`)
-  }
-
-  const response = await fetch(buildUrl(path), {
+  const response = await apiFetch(buildUrl(path), {
     headers,
     method: 'GET',
   })
@@ -352,7 +331,7 @@ export function RequisicaoPorSetorPage() {
   const [isCompactLayout] = useMediaQuery('(max-width: 960px)')
   const message = useMessage()
   const mask = useMask()
-  const resolvedAuthToken = getStoredToken()
+  const resolvedAuthToken = undefined
   const [headerForm, setHeaderForm] = useState<HeaderForm>(() => ({
     data: formatDateForInput(new Date()),
     depositoId: null,

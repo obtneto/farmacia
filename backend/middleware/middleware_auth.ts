@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt, { type JwtPayload } from 'jsonwebtoken';
+import AuthSessions from '../model/dao_auth_sessions.js';
+import { clearSessionCookie, getSessionCookie, setSessionCookie } from '../utils/auth-cookie.js';
 
 declare global {
     namespace Express {
@@ -9,34 +11,46 @@ declare global {
     }
 }
 
-function verificarJWT(req: Request, res: Response, next: NextFunction) {
-
-    const authHeader = req.headers['authorization'];
-
-    // O formato esperado no header é: "Bearer <token>"
-    const [scheme, token] = authHeader?.split(' ') ?? [];
-
-    if (scheme !== 'Bearer' || !token) {
-        return res.status(401).json({ mensagem: 'Token não fornecido' });
+async function verificarJWT(req: Request, res: Response, next: NextFunction) {
+    const token = getSessionCookie(req);
+    if (!token) {
+        return res.status(401).json({ code: 'AUTH_TOKEN_REQUIRED', mensagem: 'Sessão não fornecida' });
     }
 
-    const key: string = process.env.KEY_TOKEN || '';
+    const key = process.env.KEY_TOKEN || '';
+    if (!key) return next(new Error('A chave secreta não encontrada.'));
 
-    if (key === '') {
-        const error = new Error('A chave secreta não encontrada.');
-        error.statusCode = 404;
-        throw error;
+    let decoded: JwtPayload | string;
+    try {
+        decoded = jwt.verify(token, key);
+    } catch {
+        return res.status(401).json({ code: 'AUTH_TOKEN_INVALID', mensagem: 'Sessão inválida ou expirada' });
+    }
+    if (typeof decoded === 'string' || typeof decoded.sid !== 'string') {
+        return res.status(401).json({ code: 'AUTH_TOKEN_INVALID', mensagem: 'Sessão inválida ou expirada' });
     }
 
     try {
-        const decoded = jwt.verify(token, key);
+        if (!await AuthSessions.Touch(decoded.sid)) {
+            await AuthSessions.Revoke(decoded.sid);
+            clearSessionCookie(res, req.secure);
+            return res.status(401).json({ code: 'AUTH_SESSION_EXPIRED', mensagem: 'Sessão expirada por inatividade' });
+        }
 
-        // Salva os dados do usuário na requisição para uso posterior
-        req.usuarioLogado = decoded;
+        const { iat: _iat, exp: _exp, nbf: _nbf, ...sessionPayload } = decoded;
+        const renewedToken = jwt.sign(sessionPayload, key, { expiresIn: '1h' });
+        setSessionCookie(res, renewedToken, req.secure);
+        req.usuarioLogado = sessionPayload as JwtPayload;
         return next();
-    } catch {
-        return res.status(403).json({ mensagem: 'Token inválido ou expirado' });
+    } catch (error) {
+        return next(error);
     }
 }
 
+function verificarSessaoOpcional(req: Request, res: Response, next: NextFunction) {
+    if (!getSessionCookie(req)) return next();
+    return verificarJWT(req, res, next);
+}
+
 export default verificarJWT;
+export { verificarSessaoOpcional };

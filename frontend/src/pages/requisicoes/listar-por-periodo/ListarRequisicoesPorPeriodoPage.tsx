@@ -8,6 +8,7 @@ import { Cell, Column, HeaderCell, Table } from '../../../components/Table'
 import { AppModal, DataState, PageSection, StatusBadge } from '../../../components/ui'
 import { getErrorMessage, useMessage } from '../../../hooks/useMessage'
 import { useMask } from '../../../hooks/useMask'
+import { apiFetch } from '../../../lib/api'
 import { getApiBaseUrl } from '../../../lib/api-base-url'
 import '../../boname/BonameCrudPage.css'
 import '../../estoque/ConsultaMovimentacoesPage.css'
@@ -79,24 +80,8 @@ export interface ListarRequisicoesPorPeriodoPageProps {
   authToken?: string | null
 }
 
-const LOCAL_STORAGE_TOKEN_KEYS = ['authToken', 'access_token', 'token', 'jwtToken']
 const PAGE_SIZE = 13
 
-function getStoredToken(): string | null {
-  if (typeof window === 'undefined') {
-    return null
-  }
-
-  for (const key of LOCAL_STORAGE_TOKEN_KEYS) {
-    const value = window.localStorage.getItem(key)?.trim()
-
-    if (value) {
-      return value
-    }
-  }
-
-  return null
-}
 
 function buildUrl(baseUrl: string, path: string): string {
   const normalizedBase = baseUrl.replace(/\/$/, '')
@@ -177,17 +162,14 @@ async function requestRequisicoes<T>(
   init: RequestInit,
   authToken?: string | null,
 ): Promise<T> {
+  void authToken
   const headers = new Headers(init.headers)
 
   if (!headers.has('Content-Type') && init.method && init.method !== 'GET') {
     headers.set('Content-Type', 'application/json')
   }
 
-  if (authToken) {
-    headers.set('Authorization', `Bearer ${authToken}`)
-  }
-
-  const response = await fetch(buildUrl(baseUrl, path), {
+  const response = await apiFetch(buildUrl(baseUrl, path), {
     ...init,
     headers,
   })
@@ -318,7 +300,7 @@ export function ListarRequisicoesPorPeriodoPage({
   const [isCompactLayout] = useMediaQuery('(max-width: 768px)')
   const mask = useMask()
   const message = useMessage()
-  const resolvedAuthToken = authToken ?? getStoredToken()
+  const resolvedAuthToken = authToken ?? undefined
   const [filterValues, setFilterValues] = useState<FilterValues>(getDefaultFilters)
   const [filterErrors, setFilterErrors] = useState<FilterErrors>({})
   const [submittedFilters, setSubmittedFilters] = useState<FilterValues | null>(null)

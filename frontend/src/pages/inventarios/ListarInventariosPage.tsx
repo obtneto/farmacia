@@ -12,8 +12,10 @@ import { Button, DatePicker, HStack, IconButton, Input, InputGroup, InputNumber,
 import { Cell, Column, HeaderCell, Table } from '../../components/Table'
 import { AppModal, DataState, PageSection, StatusBadge } from '../../components/ui'
 import { getErrorMessage, useMessage } from '../../hooks/useMessage'
+import { apiFetch } from '../../lib/api'
 import { getApiBaseUrl } from '../../lib/api-base-url'
 import { formatDateForDisplay as formatCalendarDateForDisplay } from '../../lib/date'
+import { hasPermission } from '../../lib/auth-permissions'
 import '../boname/BonameCrudPage.css'
 import '../estoque/ConsultaMovimentacoesPage.css'
 import './ListarInventariosPage.css'
@@ -107,7 +109,6 @@ export interface ListarInventariosPageProps {
   authToken?: string | null
 }
 
-const LOCAL_STORAGE_TOKEN_KEYS = ['authToken', 'access_token', 'token', 'jwtToken']
 const PAGE_SIZE = 13
 function getEmptyNovoItemFormValues(): NovoItemFormValues {
   return {
@@ -121,21 +122,6 @@ function getEmptyNovoItemFormValues(): NovoItemFormValues {
   }
 }
 
-function getStoredToken(): string | null {
-  if (typeof window === 'undefined') {
-    return null
-  }
-
-  for (const key of LOCAL_STORAGE_TOKEN_KEYS) {
-    const value = window.localStorage.getItem(key)?.trim()
-
-    if (value) {
-      return value
-    }
-  }
-
-  return null
-}
 
 function buildUrl(baseUrl: string, path: string): string {
   const normalizedBase = baseUrl.replace(/\/$/, '')
@@ -293,17 +279,14 @@ async function requestInventarios<T>(
   init: RequestInit,
   authToken?: string | null,
 ): Promise<T> {
+  void authToken
   const headers = new Headers(init.headers)
 
   if (!headers.has('Content-Type') && init.method && init.method !== 'GET') {
     headers.set('Content-Type', 'application/json')
   }
 
-  if (authToken) {
-    headers.set('Authorization', `Bearer ${authToken}`)
-  }
-
-  const response = await fetch(buildUrl(baseUrl, path), {
+  const response = await apiFetch(buildUrl(baseUrl, path), {
     ...init,
     headers,
   })
@@ -332,13 +315,10 @@ async function requestInventariosBlob(
   path: string,
   authToken?: string | null,
 ): Promise<Blob> {
+  void authToken
   const headers = new Headers()
 
-  if (authToken) {
-    headers.set('Authorization', `Bearer ${authToken}`)
-  }
-
-  const response = await fetch(buildUrl(baseUrl, path), {
+  const response = await apiFetch(buildUrl(baseUrl, path), {
     method: 'GET',
     headers,
   })
@@ -523,7 +503,7 @@ export function ListarInventariosPage({
 }: ListarInventariosPageProps) {
   const [isCompactLayout] = useMediaQuery('(max-width: 768px)')
   const message = useMessage()
-  const resolvedAuthToken = authToken ?? getStoredToken()
+  const resolvedAuthToken = authToken ?? undefined
   const [filterValues, setFilterValues] = useState<FilterValues>(getDefaultFilters)
   const [filterErrors, setFilterErrors] = useState<FilterErrors>({})
   const [submittedFilters, setSubmittedFilters] = useState<FilterValues | null>(null)
@@ -719,6 +699,7 @@ export function ListarInventariosPage({
     .sort((first, second) => first.label.localeCompare(second.label, 'pt-BR'))
 
   const records = listQuery.data ?? []
+  const canFecharInventario = hasPermission('inventarios.fechar')
   const hasDependencyError = depositosQuery.isError
   const hasSubmittedFilters = submittedFilters !== null
   const hasRecords = records.length > 0
@@ -901,7 +882,7 @@ export function ListarInventariosPage({
         wrap={compact}
         className={`boname-page__row-actions ${compact ? 'boname-page__row-actions--compact' : 'boname-page__row-actions--table'}`.trim()}
       >
-        {compact ? (
+        {canFecharInventario && (compact ? (
           <Button
             appearance="primary"
             startIcon={<VisibleIcon />}
@@ -928,7 +909,7 @@ export function ListarInventariosPage({
               onClick={() => handleOpenDigitacao(rowData)}
             />
           </Whisper>
-        )}
+        ))}
 
         {compact ? (
           <Button

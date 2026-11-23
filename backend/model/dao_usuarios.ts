@@ -82,7 +82,7 @@ export default class Usuarios extends BaseModel implements iUsuariosFields, iBas
             this.populateFromInitial(this._initialFields)
         }
 
-        return this._fields as iUsuariosFields
+        return  this._found ? this._fields as iUsuariosFields : this._found
     }
 
 

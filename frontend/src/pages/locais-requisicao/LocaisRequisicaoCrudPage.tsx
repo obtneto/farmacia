@@ -10,6 +10,7 @@ import TrashIcon from '@rsuite/icons/Trash'
 import VisibleIcon from '@rsuite/icons/Visible'
 import { AppModal, DataState, PageSection, StatusBadge } from '../../components/ui'
 import { getErrorMessage, useMessage } from '../../hooks/useMessage'
+import { apiFetch } from '../../lib/api'
 import { getApiBaseUrl } from '../../lib/api-base-url'
 import '../boname/BonameCrudPage.css'
 
@@ -56,7 +57,6 @@ const DEFAULT_FORM_VALUES: LocalRequisicaoRecord = {
   local_ativo: 1,
 }
 
-const LOCAL_STORAGE_TOKEN_KEYS = ['authToken', 'access_token', 'token', 'jwtToken']
 const PAGE_SIZE = 13
 const LOCAL_DESCR_MAX_LENGTH = 150
 const LOCAL_TIPO_OPTIONS: SelectOption<LocalTipo>[] = [
@@ -65,21 +65,6 @@ const LOCAL_TIPO_OPTIONS: SelectOption<LocalTipo>[] = [
   { label: 'TRANSFERENCIA ENTRE LOCAIS', value: 'TRA' },
 ]
 
-function getStoredToken(): string | null {
-  if (typeof window === 'undefined') {
-    return null
-  }
-
-  for (const key of LOCAL_STORAGE_TOKEN_KEYS) {
-    const value = window.localStorage.getItem(key)?.trim()
-
-    if (value) {
-      return value
-    }
-  }
-
-  return null
-}
 
 function buildUrl(baseUrl: string, path: string): string {
   const normalizedBase = baseUrl.replace(/\/$/, '')
@@ -139,17 +124,14 @@ async function requestLocais<T>(
   init: RequestInit,
   authToken?: string | null,
 ): Promise<T> {
+  void authToken
   const headers = new Headers(init.headers)
 
   if (!headers.has('Content-Type') && init.method && init.method !== 'GET') {
     headers.set('Content-Type', 'application/json')
   }
 
-  if (authToken) {
-    headers.set('Authorization', `Bearer ${authToken}`)
-  }
-
-  const response = await fetch(buildUrl(baseUrl, path), {
+  const response = await apiFetch(buildUrl(baseUrl, path), {
     ...init,
     headers,
   })
@@ -233,7 +215,7 @@ export function LocaisRequisicaoCrudPage({
   authToken,
 }: LocaisRequisicaoCrudPageProps) {
   const [isCompactLayout] = useMediaQuery('(max-width: 768px)')
-  const resolvedAuthToken = authToken ?? getStoredToken()
+  const resolvedAuthToken = authToken ?? undefined
   const message = useMessage()
   const queryClient = useQueryClient()
   const formRequestIdRef = useRef(0)

@@ -29,6 +29,8 @@ import router_settings from './routes/routes_settings.js';
 import router_notificacoes from './routes/routes_notificacoes.js';
 import router_autentica from './routes/routes_auth.js'
 import router_usuarios from './routes/routes_usuarios.js'
+import verificarJWT from './middleware/middleware_auth.js';
+import verificarPermissao from './middleware/middleware_permissions.js';
 
 import morgan from 'morgan';
 import helmet from 'helmet';
@@ -43,6 +45,7 @@ declare global {
 
 const projectEnvPath = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../.env');
 config({ path: projectEnvPath });
+process.env.TZ = 'America/Maceio';
 
 
 
@@ -63,13 +66,8 @@ const allowedOrigins = new Set([
     'http://172.23.84.102'
 ]);
 const corsAllowedHeaders = [
-    'Authorization',
     'Cache-Control',
     'Content-Type',
-    'Cookie',
-];
-const corsExposedHeaders = [
-    'x-new-token',
 ];
 
 function isLoopbackOrigin(origin: string): boolean {
@@ -144,7 +142,6 @@ app.use(cors({
     },
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     allowedHeaders: corsAllowedHeaders,
-    exposedHeaders: corsExposedHeaders,
     credentials: true,
     optionsSuccessStatus: 204,
 
@@ -161,6 +158,8 @@ app.use((_req, res, next) => {
 * Rotas dos parametros do aplicativo
 ******************************************************/
 app.use('/auth', router_autentica);
+app.use(verificarJWT);
+app.use(verificarPermissao);
 app.use('/parametros/usuarios', router_usuarios)
 app.use('/parametros/locais', routes_locais);
 app.use('/parametros/boname', routes_boname);

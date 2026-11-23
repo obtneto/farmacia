@@ -36,8 +36,10 @@ import {
   RiDeleteBin6Line,
 } from 'react-icons/ri'
 import { NAVIGATION_GROUPS, type NavigationGroup, type NavigationItem, type SectionKey } from '../config/navigation'
+import { apiFetch } from '../lib/api'
+import { readServerEvents } from '../lib/server-events'
 import { getApiBaseUrl } from '../lib/api-base-url'
-import { getUserDisplayName, getUserProfile, logoutRedirect } from '../lib/auth-helpers'
+import { getUserDisplayName, getUserProfile, LOGIN_URL, logoutRedirect } from '../lib/auth-helpers'
 import { getAllowedRoutePaths, isSectionAllowed } from '../lib/auth-permissions'
 import './MainLayout.css'
 
@@ -81,10 +83,6 @@ type HeaderNotification = {
   critical?: boolean
 }
 
-type NotificationsPayload = {
-  notifications?: HeaderNotification[]
-}
-
 type NotificationRemovePayload = {
   id?: string
 }
@@ -105,6 +103,7 @@ const SIDEBAR_SECTION_KEYS = new Set<SectionKey>(SIDEBAR_SECTION_KEY_LIST)
 
 interface LoggedInUserProfile {
   displayName: string
+  hasProfile: boolean
   initials: string
   roleLabel: string
 }
@@ -128,7 +127,18 @@ function getLoggedInUserProfile(): LoggedInUserProfile {
       return DEFAULT_LOGGED_IN_USER.roleLabel
     }
 
-    const sector = typeof profile.sector === 'string' ? profile.sector.trim() : ''
+    const profileId = Number(profile.perfil ?? profile.perfil_id ?? profile.usu_perfil_id)
+    const profileLabels: Record<number, string> = {
+      1: 'Administrador',
+      2: 'Operador aprovador',
+      3: 'Operador',
+    }
+    if (profileLabels[profileId]) {
+      return profileLabels[profileId]
+    }
+
+    const sectorValue = profile.setor ?? profile.sector
+    const sector = typeof sectorValue === 'string' ? sectorValue.trim() : ''
     if (sector) {
       return sector
     }
@@ -143,6 +153,7 @@ function getLoggedInUserProfile(): LoggedInUserProfile {
 
   return {
     displayName,
+    hasProfile: Boolean(profile),
     initials: buildInitials(displayName),
     roleLabel,
   }
@@ -177,18 +188,6 @@ function filterNavigationGroups(groups: NavigationGroup[], allowedPaths: string[
 
     return [{ ...group, items }]
   })
-}
-
-function parseServerEventData(event: Event): unknown {
-  if (!(event instanceof MessageEvent) || typeof event.data !== 'string') {
-    return null
-  }
-
-  try {
-    return JSON.parse(event.data)
-  } catch {
-    return null
-  }
 }
 
 function normalizeSectionKey(value: unknown): SectionKey | undefined {
@@ -452,67 +451,82 @@ export function MainLayout({
   }, [])
 
   useEffect(() => {
-    let isActive = true
-    const streamUrl = new URL(`${API_BASE_URL}/notificacoes/stream`)
+    const controller = new AbortController()
+    const { signal } = controller
+    let reconnectTimer: number | undefined
+    let receivedSnapshot = false
 
-    void fetch(`${API_BASE_URL}/notificacoes/listar`)
-      .then((response) => response.json())
-      .then((payload: { data?: NotificationsPayload }) => {
-        if (isActive) {
+    void apiFetch(`${API_BASE_URL}/notificacoes/listar`, { signal })
+      .then((response) => response.ok ? response.json() : null)
+      .then((payload) => {
+        if (!signal.aborted && !receivedSnapshot && payload) {
           setNotifications(normalizeNotificationsPayload(payload.data))
         }
       })
       .catch(() => undefined)
 
-    const eventSource = new EventSource(streamUrl.toString(), { withCredentials: true })
+    const handleEvent = (name: string, payload: unknown) => {
+      if (signal.aborted) return
 
-    eventSource.addEventListener('snapshot', (event) => {
-      setNotifications(normalizeNotificationsPayload(parseServerEventData(event)))
-    })
+      switch (name) {
+        case 'snapshot':
+          receivedSnapshot = true
+          setNotifications(normalizeNotificationsPayload(payload))
+          break
+        case 'notification': {
+          const notification = normalizeNotificationPayload(payload)
+          if (!notification) break
 
-    eventSource.addEventListener('notification', (event) => {
-      const notification = normalizeNotificationPayload(parseServerEventData(event))
-
-      if (!notification) {
-        return
+          setNotifications((current) => [notification, ...current.filter((item) => item.id !== notification.id)])
+          if (notification.critical) {
+            notificationsWhisperRef.current?.open()
+          }
+          break
+        }
+        case 'clear':
+          setNotifications([])
+          break
+        case 'remove': {
+          const { id } = normalizeNotificationRemovePayload(payload)
+          if (id) setNotifications((current) => current.filter((notification) => notification.id !== id))
+          break
+        }
+        case 'read': {
+          const notification = normalizeNotificationPayload(payload)
+          if (notification) {
+            setNotifications((current) => current.map((item) => (item.id === notification.id ? notification : item)))
+          }
+          break
+        }
       }
-
-      setNotifications((current) => [notification, ...current.filter((item) => item.id !== notification.id)])
-
-      if (notification.critical) {
-        notificationsWhisperRef.current?.open()
-      }
-    })
-
-    eventSource.addEventListener('clear', () => {
-      setNotifications([])
-    })
-
-    eventSource.addEventListener('remove', (event) => {
-      const payload = normalizeNotificationRemovePayload(parseServerEventData(event))
-
-      if (payload.id) {
-        setNotifications((current) => current.filter((notification) => notification.id !== payload.id))
-      }
-    })
-
-    eventSource.addEventListener('read', (event) => {
-      const notification = normalizeNotificationPayload(parseServerEventData(event))
-
-      if (!notification) {
-        return
-      }
-
-      setNotifications((current) => current.map((item) => (item.id === notification.id ? notification : item)))
-    })
-
-    eventSource.onerror = () => {
-      eventSource.close()
     }
 
+    const connect = async () => {
+      try {
+        const response = await apiFetch(`${API_BASE_URL}/notificacoes/stream`, {
+          signal,
+          credentials: 'include',
+          headers: { Accept: 'text/event-stream' },
+        })
+
+        if (response.status === 401 || response.status === 403) return
+        if (response.ok && response.body && response.headers.get('Content-Type')?.startsWith('text/event-stream')) {
+          await readServerEvents(response.body, handleEvent)
+        }
+      } catch {
+        // A próxima conexão recebe um snapshot atualizado das notificações.
+      }
+
+      if (!signal.aborted) {
+        reconnectTimer = window.setTimeout(() => void connect(), 5000)
+      }
+    }
+
+    void connect()
+
     return () => {
-      isActive = false
-      eventSource.close()
+      controller.abort()
+      window.clearTimeout(reconnectTimer)
     }
   }, [])
 
@@ -537,7 +551,7 @@ export function MainLayout({
   const markNotificationAsRead = (notification: HeaderNotification) => {
     setNotifications((current) => markNotificationRead(current, notification.id))
 
-    void fetch(`${API_BASE_URL}/notificacoes/read/${encodeURIComponent(notification.id)}`, { method: 'PATCH' })
+    void apiFetch(`${API_BASE_URL}/notificacoes/read/${encodeURIComponent(notification.id)}`, { method: 'PATCH' })
       .catch(() => undefined)
   }
 
@@ -552,7 +566,7 @@ export function MainLayout({
   const handleMarkAllNotificationsRead = () => {
     setNotifications((current) => current.map((notification) => ({ ...notification, read: true })))
 
-    void fetch(`${API_BASE_URL}/notificacoes/mark-all-read`, { method: 'PATCH' }).catch(() => undefined)
+    void apiFetch(`${API_BASE_URL}/notificacoes/mark-all-read`, { method: 'PATCH' }).catch(() => undefined)
   }
 
   const handleRemoveNotification = (e: React.MouseEvent, notificationId: string) => {
@@ -561,7 +575,7 @@ export function MainLayout({
 
     setNotifications((current) => current.filter((notification) => notification.id !== notificationId))
 
-    void fetch(`${API_BASE_URL}/notificacoes/${encodeURIComponent(notificationId)}`, { method: 'DELETE' })
+    void apiFetch(`${API_BASE_URL}/notificacoes/${encodeURIComponent(notificationId)}`, { method: 'DELETE' })
       .catch(() => undefined)
   }
 
@@ -867,38 +881,39 @@ export function MainLayout({
               </Badge>
             </Whisper>
 
-            <Button
-              appearance="subtle"
-              aria-expanded={isUserProfileExpanded}
-              aria-label={userProfileToggleLabel}
-              className={`main-layout__user-chip ${isUserProfileExpanded ? 'main-layout__user-chip--expanded' : 'main-layout__user-chip--collapsed'}`.trim()}
-              onClick={handleUserProfileToggle}
-              title={`${userProfileToggleLabel}: ${loggedInUser.displayName} • ${loggedInUser.roleLabel}`}
-            >
-              <Avatar circle size="sm" style={{ background: '#1d4ed8' }}>
-                {loggedInUser.initials}
-              </Avatar>
-              {isUserProfileExpanded ? (
-                <VStack
-                  spacing={2}
-                  alignItems="flex-start"
-                  className="main-layout__user-copy"
+            {loggedInUser.hasProfile ? (
+              <>
+                <Button
+                  appearance="subtle"
+                  aria-expanded={isUserProfileExpanded}
+                  aria-label={userProfileToggleLabel}
+                  className={`main-layout__user-chip ${isUserProfileExpanded ? 'main-layout__user-chip--expanded' : 'main-layout__user-chip--collapsed'}`.trim()}
+                  onClick={handleUserProfileToggle}
+                  title={`${userProfileToggleLabel}: ${loggedInUser.displayName} • ${loggedInUser.roleLabel}`}
                 >
-                  <strong>{loggedInUser.displayName}</strong>
-                  <span>{loggedInUser.roleLabel}</span>
-                </VStack>
-              ) : null}
-            </Button>
-
-            <IconButton
-              appearance="subtle"
-              circle
-              aria-label="Sair da sessao"
-              disabled={isLoggingOut}
-              icon={<RiLogoutBoxRLine size={18} />}
-              onClick={handleLogout}
-              title="Sair"
-            />
+                  <Avatar circle size="sm" style={{ background: '#1d4ed8' }}>
+                    {loggedInUser.initials}
+                  </Avatar>
+                  {isUserProfileExpanded ? (
+                    <VStack spacing={2} alignItems="flex-start" className="main-layout__user-copy">
+                      <strong>{loggedInUser.displayName}</strong>
+                      <span>{loggedInUser.roleLabel}</span>
+                    </VStack>
+                  ) : null}
+                </Button>
+                <IconButton
+                  appearance="subtle"
+                  circle
+                  aria-label="Sair da sessão"
+                  disabled={isLoggingOut}
+                  icon={<RiLogoutBoxRLine size={18} />}
+                  onClick={handleLogout}
+                  title="Sair"
+                />
+              </>
+            ) : (
+              <Button as="a" appearance="primary" size="sm" href={LOGIN_URL}>Entrar</Button>
+            )}
           </HStack>
         </HStack>
       </Header>

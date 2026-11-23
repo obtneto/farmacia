@@ -414,7 +414,7 @@ export default class Controller_Requisicoes {
                 hoje.setHours(0, 0, 0, 0);
                 validade.setHours(0, 0, 0, 0);
 
-                if (validade < hoje) {
+                if (validade < hoje && pac_id) {
                     const error = new Error('Item com validade expirada') as any;
                     error.statusCode = 400;
                     throw error;

@@ -42,7 +42,6 @@ interface DashboardDataset {
   chartKind?: 'gaucher'
   description: string
   key: keyof DashboardResponse
-  tableOnly?: boolean
   title: string
 }
 
@@ -78,9 +77,8 @@ const DATASETS: DashboardDataset[] = [
     title: 'Atendimentos hemoderivados',
   },
   {
-    description: 'Entradas, estoque e saidas por codigo Boname. Mantido somente em tabela.',
+    description: 'Entradas, estoque e saidas por codigo Boname.',
     key: 'relatorio_boname',
-    tableOnly: true,
     title: 'Relatorio Boname',
   },
 ]
@@ -227,7 +225,11 @@ const BONAME_CHART_OPTIONS: ChartOptions<'bar'> = {
         },
       },
     },
-    tooltip: BAR_CHART_OPTIONS.plugins?.tooltip,
+    tooltip: {
+      callbacks: {
+        label: (context) => `${context.dataset.label}: ${formatNumber(context.parsed.y ?? 0)}`,
+      },
+    },
   },
   scales: {
     ...BAR_CHART_OPTIONS.scales,
@@ -235,6 +237,37 @@ const BONAME_CHART_OPTIONS: ChartOptions<'bar'> = {
       ...BAR_CHART_OPTIONS.scales?.x,
       ticks: {
         display: false,
+      },
+    },
+    y: {
+      ...BAR_CHART_OPTIONS.scales?.y,
+      grace: '8%',
+      position: 'left',
+      title: {
+        color: '#334155',
+        display: true,
+        font: {
+          size: 10,
+          weight: 600,
+        },
+        text: 'Entrada / Saida',
+      },
+    },
+    y1: {
+      ...BAR_CHART_OPTIONS.scales?.y,
+      grid: {
+        drawOnChartArea: false,
+      },
+      grace: '8%',
+      position: 'right',
+      title: {
+        color: '#64748b',
+        display: true,
+        font: {
+          size: 10,
+          weight: 600,
+        },
+        text: 'Estoque',
       },
     },
   },
@@ -404,43 +437,40 @@ function buildBarChartData(points: ChartPoint[], color: string): ChartData<'bar'
   }
 }
 
-function formatChartLabel(label: string) {
-  return label.length > 22 ? `${label.slice(0, 19)}...` : label
-}
-
 function buildBonameChartData(rows: DashboardRecord[]): ChartData<'bar'> | undefined {
   if (rows.length === 0) {
     return undefined
   }
 
-  const visibleRows = rows.slice(0, 5)
-
   return {
-    labels: visibleRows.map((row, index) => formatChartLabel(getBonameDescription(row, index))),
+    labels: rows.map((row, index) => `${getBonameCode(row, index)} · ${getBonameDescription(row, index)}`),
     datasets: [
       {
         backgroundColor: '#2563eb',
         borderColor: '#1d4ed8',
         borderRadius: 4,
-        data: visibleRows.map((row) => toFiniteNumber(row.entrada) ?? 0),
+        data: rows.map((row) => toFiniteNumber(row.entrada) ?? 0),
         label: 'Entrada',
         maxBarThickness: 18,
+        yAxisID: 'y',
       },
       {
         backgroundColor: '#16a34a',
         borderColor: '#15803d',
         borderRadius: 4,
-        data: visibleRows.map((row) => toFiniteNumber(row.saida) ?? 0),
+        data: rows.map((row) => toFiniteNumber(row.saida) ?? 0),
         label: 'Saida',
         maxBarThickness: 18,
+        yAxisID: 'y',
       },
       {
         backgroundColor: '#64748b',
         borderColor: '#475569',
         borderRadius: 4,
-        data: visibleRows.map((row) => toFiniteNumber(row.estoque) ?? 0),
+        data: rows.map((row) => toFiniteNumber(row.estoque) ?? 0),
         label: 'Estoque',
         maxBarThickness: 18,
+        yAxisID: 'y1',
       },
     ],
   }
@@ -877,7 +907,7 @@ export function HomeDashboardPage({ onOpenSection }: HomeDashboardPageProps) {
             <DashboardChartPanel dataset={DATASETS[1]} rows={gaucherRows} subtitle="Atendimentos no mes · evolucao do periodo" />
             <DashboardChartPanel dataset={DATASETS[2]} rows={fatoresRows} subtitle="Quantidade por periodo" />
             <DashboardChartPanel dataset={DATASETS[3]} rows={hemoderivadosRows} subtitle="Atendimentos no mes · evolucao do periodo" />
-            <DashboardChartPanel dataset={DATASETS[4]} rows={bonameRows} subtitle="Entrada, saida e estoque no periodo" />
+            <DashboardChartPanel dataset={DATASETS[4]} rows={filteredBonameRows} subtitle="Entrada, saida e estoque dos itens filtrados" />
           </div>
           <DashboardDatasetSection
             filter={bonameFilter}

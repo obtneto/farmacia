@@ -153,4 +153,13 @@ export default class Entradas extends BaseModel implements iEntradaFields, iBase
 
     }
 
+    public async CheckEntradaNaoAprovadas(dep_id: number): Promise<Boolean> {
+
+        const query = `SELECT ent_id FROM tb_entradas WHERE ent_status = 0 AND ent_dep_id = :dep_id`;
+
+        const [rows] = await this.ExecuteQuery(query, { dep_id });
+
+        return rows.length > 0 ? true : false
+    }
+
 }

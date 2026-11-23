@@ -1,6 +1,9 @@
 import { clearSessionCache, getSession } from './storage-session'
+import { getApiBaseUrl } from './api-base-url'
 
 export type JsonRecord = Record<string, unknown>
+export const LOGIN_SECTION = 'login'
+export const LOGIN_URL = `?section=${LOGIN_SECTION}`
 
 function formatDisplayName(fullName: unknown): string {
   if (typeof fullName !== 'string' || !fullName.trim()) {
@@ -17,7 +20,7 @@ export function getUserProfile(): JsonRecord | null {
 
 export function getUserDisplayName(): string {
   const profile = getUserProfile()
-  return profile ? formatDisplayName(profile.fullname || profile.user || profile.name) : 'Usuario'
+  return profile ? formatDisplayName(profile.nome_completo || profile.fullname || profile.user || profile.name) : 'Usuario'
 }
 
 export function getSessionUsername(): string {
@@ -37,6 +40,12 @@ export function getSessionUsername(): string {
   ).trim()
 }
 
-export async function logoutRedirect(): Promise<void> {
+export async function logoutRedirect(reason?: 'idle'): Promise<void> {
+  void fetch(`${getApiBaseUrl()}/auth/logout`, {
+    method: 'POST',
+    credentials: 'include',
+    keepalive: true,
+  }).catch(() => undefined)
   clearSessionCache()
+  window.location.replace(reason ? `${LOGIN_URL}&reason=${reason}` : LOGIN_URL)
 }

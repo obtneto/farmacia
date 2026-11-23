@@ -1,0 +1,15 @@
+DB_HOST = 172.23.42.17
+DB_PORT = 3306
+DB_USER = apiuser
+DB_PASS = Abcd@1234!
+
+
+# Backend
+NODE_ENV=production
+PORT=3002
+KEY_TOKEN = Mt3ZPPcIXL55iOCcoTiGvw
+
+# Penpot MCP
+PENPOT_MCP_KEY=eyJhbGciOiJBMjU2S1ciLCJlbmMiOiJBMjU2R0NNIn0.QvWP6E6_owafs-gQavEXf8GlGcRpzMXqvoyY7ky0o94nPiwTI_UU4Q.JW_SxHduvvWB1kh_.zRhhg8iC5-Fawjs8xAgIy_-3Gp8NNY5UsQqu9qqNmgQ86zBT0NISDpgNnzafZA10XRJfR28WY1hoDRY6afVA0Tae1ebxS0ULtb5XxxS7IJETalc3VRIeU3_713_mMyhPyEVoeBvJX2ofaYUThSsU3Pqtu_1yEL1cFrr5P7zqHSjJeydE5et3eP5CwcgVd8AsvF6yIqsXDXHL0L0X1Ycv2bs.Mt3ZPPcIXL55iOCcoTiGvw
+PENPOT_BASE_URL=https://design.penpot.app
+PENPOT_MCP_URL=https://design.penpot.app/mcp/stream?userToken=SUA_KEY

@@ -73,7 +73,7 @@ export default class Estoque extends BaseModel implements iEstoqueFields, iBaseM
 
     if (pesq !== '*') {
       query += ` AND ( MATCH(m.med_descr, m.med_descr_coml) AGAINST(:pesq IN BOOLEAN MODE) ) OR 
-                      ( MATCH(e.est_lote) AGAINST(:pesq IN BOOLEAN MODE) )`
+                      ( e.est_lote = :pesq)`
     }
 
     const termoFormatado = pesq.trim().replace(/[+\-><()~*\"@]+/g, ' ').split(/\s+/).filter(palavra => palavra.length >= 3).map(palavra => `+${palavra}*`).join(' ');

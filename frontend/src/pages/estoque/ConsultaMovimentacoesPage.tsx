@@ -6,6 +6,7 @@ import { Button, HStack, Input, Pagination, Panel, SelectPicker, useMediaQuery }
 import { Cell, Column, HeaderCell, Table } from '../../components/Table'
 import { DataState, PageSection, StatusBadge } from '../../components/ui'
 import { getErrorMessage, useMessage } from '../../hooks/useMessage'
+import { apiFetch } from '../../lib/api'
 import { getApiBaseUrl } from '../../lib/api-base-url'
 import { formatDateTimeForDisplay as formatCalendarDateTimeForDisplay, parseCalendarDate } from '../../lib/date'
 import '../boname/BonameCrudPage.css'
@@ -60,7 +61,6 @@ export interface ConsultaMovimentacoesPageProps {
 }
 
 const DAY_IN_MS = 1000 * 60 * 60 * 24
-const LOCAL_STORAGE_TOKEN_KEYS = ['authToken', 'access_token', 'token', 'jwtToken']
 const MAX_RANGE_DAYS = 45
 const PAGE_SIZE = 13
 
@@ -70,20 +70,6 @@ function buildUrl(baseUrl: string, path: string): string {
   return `${normalizedBase}/${normalizedPath}`
 }
 
-function getStoredToken(): string | null {
-  if (typeof window === 'undefined') {
-    return null
-  }
-
-  for (const key of LOCAL_STORAGE_TOKEN_KEYS) {
-    const value = window.localStorage.getItem(key)?.trim()
-    if (value) {
-      return value
-    }
-  }
-
-  return null
-}
 
 function formatDateInputValue(date: Date): string {
   const year = date.getFullYear()
@@ -224,17 +210,14 @@ async function requestMovimentacoes<T>(
   init: RequestInit,
   authToken?: string | null,
 ): Promise<T> {
+  void authToken
   const headers = new Headers(init.headers)
 
   if (!headers.has('Content-Type') && init.method && init.method !== 'GET') {
     headers.set('Content-Type', 'application/json')
   }
 
-  if (authToken) {
-    headers.set('Authorization', `Bearer ${authToken}`)
-  }
-
-  const response = await fetch(buildUrl(baseUrl, path), {
+  const response = await apiFetch(buildUrl(baseUrl, path), {
     ...init,
     headers,
   })
@@ -291,7 +274,7 @@ export function ConsultaMovimentacoesPage({
 }: ConsultaMovimentacoesPageProps) {
   const [isCompactLayout] = useMediaQuery('(max-width: 768px)')
   const message = useMessage()
-  const resolvedAuthToken = authToken ?? getStoredToken()
+  const resolvedAuthToken = authToken ?? undefined
   const [filterValues, setFilterValues] = useState<FilterValues>(getDefaultFilterValues)
   const [filterErrors, setFilterErrors] = useState<FilterErrors>({})
   const [submittedFilters, setSubmittedFilters] = useState<FilterValues | null>(null)

@@ -16,6 +16,7 @@ import {
 } from 'rsuite'
 import EditIcon from '@rsuite/icons/Edit'
 import ReloadIcon from '@rsuite/icons/Reload'
+import { apiFetch } from '../../lib/api'
 import { formatDateForDisplay as formatCalendarDateForDisplay } from '../../lib/date'
 import SearchIcon from '@rsuite/icons/Search'
 import TrashIcon from '@rsuite/icons/Trash'
@@ -93,28 +94,12 @@ export interface AprovacaoEntradasCrudPageProps {
   authToken?: string | null
 }
 
-const LOCAL_STORAGE_TOKEN_KEYS = ['authToken', 'access_token', 'token', 'jwtToken']
 const MAX_PERIOD_DAYS = 45
 const PAGE_SIZE = 13
 const MODAL_PAGE_SIZE = 8
 const MAX_LOTE_LENGTH = 60
 const MS_PER_DAY = 24 * 60 * 60 * 1000
 
-function getStoredToken(): string | null {
-  if (typeof window === 'undefined') {
-    return null
-  }
-
-  for (const key of LOCAL_STORAGE_TOKEN_KEYS) {
-    const value = window.localStorage.getItem(key)?.trim()
-
-    if (value) {
-      return value
-    }
-  }
-
-  return null
-}
 
 function buildUrl(baseUrl: string, path: string): string {
   const normalizedBase = baseUrl.replace(/\/$/, '')
@@ -235,17 +220,14 @@ async function requestAprovacao<T>(
   init: RequestInit,
   authToken?: string | null,
 ): Promise<T> {
+  void authToken
   const headers = new Headers(init.headers)
 
   if (!headers.has('Content-Type') && init.method && init.method !== 'GET') {
     headers.set('Content-Type', 'application/json')
   }
 
-  if (authToken) {
-    headers.set('Authorization', `Bearer ${authToken}`)
-  }
-
-  const response = await fetch(buildUrl(baseUrl, path), {
+  const response = await apiFetch(buildUrl(baseUrl, path), {
     ...init,
     headers,
   })
@@ -363,7 +345,7 @@ export function AprovacaoEntradasCrudPage({
   const message = useMessage()
   const mask = useMask()
   const queryClient = useQueryClient()
-  const resolvedAuthToken = authToken ?? getStoredToken()
+  const resolvedAuthToken = authToken ?? undefined
   const [filterValues, setFilterValues] = useState<FilterValues>(() => createDefaultFilterValues())
   const [filterErrors, setFilterErrors] = useState<FilterErrors>({})
   const [submittedFilters, setSubmittedFilters] = useState<FilterValues | null>(null)

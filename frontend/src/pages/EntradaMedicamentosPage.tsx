@@ -8,6 +8,7 @@ import { Cell, Column, HeaderCell, Table } from '../components/Table'
 import { AppModal, DataState, PageSection, ReferenceNotification } from '../components/ui'
 import { getErrorMessage, useMessage } from '../hooks/useMessage'
 import { useMask } from '../hooks/useMask'
+import { apiFetch } from '../lib/api'
 import { getApiBaseUrl } from '../lib/api-base-url'
 import { getSessionUsername } from '../lib/auth-helpers'
 import { formatDateForDisplay } from '../lib/date'
@@ -77,7 +78,6 @@ type SaveEntradaResponse = {
 type HeaderFormErrors = Partial<Record<keyof HeaderForm, string>>
 type DraftItemFormErrors = Partial<Record<keyof DraftItemForm, string>>
 
-const LOCAL_STORAGE_TOKEN_KEYS = ['authToken', 'access_token', 'token', 'jwtToken']
 const MAX_DOC_LENGTH = 90
 const MAX_LOTE_LENGTH = 60
 const API_BASE_URL = getApiBaseUrl()
@@ -90,21 +90,6 @@ const emptyDraftItem = (): DraftItemForm => ({
   quantidade: 0,
 })
 
-function getStoredToken(): string | null {
-  if (typeof window === 'undefined') {
-    return null
-  }
-
-  for (const key of LOCAL_STORAGE_TOKEN_KEYS) {
-    const value = window.localStorage.getItem(key)?.trim()
-
-    if (value) {
-      return value
-    }
-  }
-
-  return null
-}
 
 function buildUrl(baseUrl: string, path: string): string {
   const normalizedBase = baseUrl.replace(/\/$/, '')
@@ -168,17 +153,14 @@ function validateItemForm(values: DraftItemForm): DraftItemFormErrors {
 }
 
 async function requestEntrada<T>(path: string, init: RequestInit, authToken?: string | null): Promise<T> {
+  void authToken
   const headers = new Headers(init.headers)
 
   if (!headers.has('Content-Type') && init.method && init.method !== 'GET') {
     headers.set('Content-Type', 'application/json')
   }
 
-  if (authToken) {
-    headers.set('Authorization', `Bearer ${authToken}`)
-  }
-
-  const response = await fetch(buildUrl(API_BASE_URL, path), {
+  const response = await apiFetch(buildUrl(API_BASE_URL, path), {
     ...init,
     headers,
   })
@@ -260,7 +242,7 @@ export default function EntradaMedicamentosPage() {
   const queryClient = useQueryClient()
   const message = useMessage()
   const mask = useMask()
-  const resolvedAuthToken = getStoredToken()
+  const resolvedAuthToken = undefined
   const defaultHeaderForm: HeaderForm = {
     dataEntrada: new Date(),
     documento: '',

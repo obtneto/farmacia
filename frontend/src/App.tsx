@@ -1,10 +1,16 @@
-import { lazy, Suspense, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import MainLayout from './components/MainLayout'
+import { SessionActivityMonitor } from './components/SessionActivityMonitor'
 import PageLoader from './components/ui/PageLoader'
 import { APP_SECTIONS, type SectionKey } from './config/navigation'
+import { LOGIN_SECTION } from './lib/auth-helpers'
+import { apiRequest } from './lib/api'
+import { clearLegacyAuthTokens, saveSession } from './lib/storage-session'
+import { getAllowedRoutePaths } from './lib/auth-permissions'
 import './App.css'
 
 const DEFAULT_SECTION_KEY: SectionKey = 'inicio'
+const AuthenticationPage = lazy(() => import('./pages/auth/AuthenticationPage'))
 const AprovacaoEntradaPage = lazy(() => import('./pages/AprovacaoEntradaPage'))
 const AlertaValidadePage = lazy(() => import('./pages/estoque').then((module) => ({ default: module.AlertaValidadePage })))
 const AlertaValidadeStartupNotifier = lazy(() => import('./pages/estoque').then((module) => ({ default: module.AlertaValidadeStartupNotifier })))
@@ -43,10 +49,11 @@ const TiposMedicamentosPage = lazy(() => import('./pages/TiposMedicamentosPage')
 const TiposRequisicoesPage = lazy(() => import('./pages/TiposRequisicoesPage'))
 const UsuariosPage = lazy(() => import('./pages/UsuariosPage'))
 
-function App() {
+function PharmacyApp() {
   const [activeSectionKey, setActiveSectionKey] = useState<SectionKey>(() => {
     const searchParam = new URLSearchParams(window.location.search).get('section') as SectionKey
-    return searchParam && APP_SECTIONS[searchParam] ? searchParam : DEFAULT_SECTION_KEY
+    const allowedPaths = getAllowedRoutePaths()
+    return searchParam && APP_SECTIONS[searchParam] && allowedPaths.includes(searchParam) ? searchParam : DEFAULT_SECTION_KEY
   })
 
   const section = APP_SECTIONS[activeSectionKey]
@@ -179,6 +186,44 @@ function App() {
       </Suspense>
     </MainLayout>
   )
+}
+
+function App() {
+  const section = new URLSearchParams(window.location.search).get('section')
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null)
+
+  useEffect(() => {
+    let active = true
+    clearLegacyAuthTokens()
+    void apiRequest<{ authenticated: boolean; user_data: Record<string, unknown> }>('/auth/sessao')
+      .then(({ authenticated, user_data }) => {
+        if (!active) return
+        if (!authenticated) {
+          setIsAuthenticated(false)
+          return
+        }
+        saveSession('_upf', user_data)
+        setIsAuthenticated(true)
+      })
+      .catch(() => {
+        if (active) setIsAuthenticated(false)
+      })
+    return () => { active = false }
+  }, [])
+
+  if (isAuthenticated === null) {
+    return <PageLoader title="Verificando sessão" variant="page" />
+  }
+
+  if (section === LOGIN_SECTION || !isAuthenticated) {
+    return (
+      <Suspense fallback={<PageLoader title="Carregando" variant="page" />}>
+        <AuthenticationPage />
+      </Suspense>
+    )
+  }
+
+  return <><SessionActivityMonitor /><PharmacyApp /></>
 }
 
 export default App

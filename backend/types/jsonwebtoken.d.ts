@@ -9,6 +9,7 @@ declare module 'jsonwebtoken' {
 
     export interface VerifyOptions {
         algorithms?: Algorithm[];
+        ignoreExpiration?: boolean;
     }
 
     export interface SignOptions {

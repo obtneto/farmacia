@@ -11,6 +11,16 @@ const openApiPath = path.resolve(__dirname, 'openapi.json');
 const markdownPath = path.resolve(projectRoot, 'swagger.md');
 const HTTP_METHODS = ['get', 'post', 'put', 'patch', 'delete'];
 const REQUEST_BODY_SCHEMAS = {
+  'POST /auth/autentica': {
+    componentName: 'AutenticacaoPayload',
+    description: 'Credenciais para autenticação por domínio.',
+    required: ['usuario', 'senha', 'id_dom'],
+    properties: {
+      usuario: { type: 'string', description: 'Usuário do Active Directory.' },
+      senha: { type: 'string', format: 'password', writeOnly: true, description: 'Senha do usuário.' },
+      id_dom: { type: 'integer', description: 'Identificador retornado por GET /auth/listar_dominios.' },
+    },
+  },
   'POST /parametros/boname/salvar': {
     componentName: 'BonameSalvarPayload',
     description: 'Payload para criar ou atualizar um Boname.',
@@ -484,6 +494,7 @@ function inferSummary(method, fullPath) {
 
 function buildOperation({ method, routePath, fullPath }) {
   const requestBodySchema = REQUEST_BODY_SCHEMAS[`${method.toUpperCase()} ${fullPath}`];
+  const isPublicRoute = ['/auth/autentica', '/auth/listar_dominios', '/auth/logout', '/auth/sessao'].includes(fullPath);
   const isPdfInlineRoute = method === 'get' && [
     '/demandas-especificas/imprimir-recibo/{ent_id}',
     '/inventarios/imprimir/{inv_num}',
@@ -493,16 +504,7 @@ function buildOperation({ method, routePath, fullPath }) {
   const operation = {
     tags: [toTitleCase(inferTag(fullPath))],
     summary: inferSummary(method, fullPath),
-    parameters: [
-      ...extractPathParams(routePath),
-      {
-        name: 'Authorization',
-        in: 'header',
-        required: false,
-        schema: { type: 'string' },
-        description: 'Bearer token. Necessario quando a autenticacao estiver habilitada no ambiente.',
-      },
-    ],
+    parameters: extractPathParams(routePath),
     responses: {
       '200': {
         description: 'Sucesso',
@@ -531,14 +533,6 @@ function buildOperation({ method, routePath, fullPath }) {
           },
         },
       },
-      '401': {
-        description: 'Nao autenticado',
-        content: {
-          'application/json': {
-            schema: { $ref: '#/components/schemas/ErrorResponse' },
-          },
-        },
-      },
       '404': {
         description: 'Recurso nao encontrado',
         content: {
@@ -558,6 +552,50 @@ function buildOperation({ method, routePath, fullPath }) {
     },
   };
 
+  if (isPublicRoute) {
+    operation.security = [];
+  } else {
+    operation.responses['401'] = {
+      description: 'Cookie de sessão ausente ou sessão expirada.',
+      content: {
+        'application/json': { schema: { $ref: '#/components/schemas/AuthenticationError' } },
+      },
+    };
+    operation.responses['403'] = {
+      description: 'Acesso negado por permissão.',
+      content: {
+        'application/json': {
+          schema: {
+            oneOf: [
+              { $ref: '#/components/schemas/AuthenticationError' },
+              { $ref: '#/components/schemas/ErrorResponse' },
+            ],
+          },
+        },
+      },
+    };
+  }
+
+  if (method === 'post' && fullPath === '/auth/autentica') {
+    operation.summary = 'Autentica no Active Directory, retorna o perfil e define o cookie HttpOnly da sessão.';
+    operation.responses['403'] = {
+      description: 'Campos obrigatórios ausentes ou credenciais inválidas',
+      content: {
+        'application/json': {
+          schema: { $ref: '#/components/schemas/ErrorResponse' },
+        },
+      },
+    };
+  }
+
+  if (method === 'post' && fullPath === '/auth/logout') {
+    operation.summary = 'Invalida a sessão no servidor e remove o cookie.';
+  }
+
+  if (method === 'get' && fullPath === '/auth/sessao') {
+    operation.summary = 'Retorna o estado da sessão e valida o cookie quando ele está presente.';
+  }
+
   if (fullPath === '/requisicoes/aprovar/{req_id}') {
     operation.responses['409'] = {
       description: 'Conflito de regra de negocio',
@@ -569,7 +607,7 @@ function buildOperation({ method, routePath, fullPath }) {
     };
   }
 
-  if (['post', 'put', 'patch'].includes(method)) {
+  if (['post', 'put', 'patch'].includes(method) && fullPath !== '/auth/logout') {
     operation.requestBody = {
       required: true,
       content: {
@@ -651,9 +689,21 @@ function buildOpenApiSpec() {
     servers: [
       { url: 'http://localhost:3002', description: 'Ambiente local' },
     ],
+    security: [{ sessionCookie: [] }],
     paths: {},
     components: {
+      securitySchemes: {
+        sessionCookie: { type: 'apiKey', in: 'cookie', name: 'farmacia_session' },
+      },
       schemas: {
+        AuthenticationError: {
+          type: 'object',
+          properties: {
+            code: { type: 'string', enum: ['AUTH_TOKEN_REQUIRED', 'AUTH_TOKEN_INVALID', 'AUTH_SESSION_EXPIRED'] },
+            mensagem: { type: 'string' },
+          },
+          required: ['code', 'mensagem'],
+        },
         ApiResponse: {
           type: 'object',
           properties: {
@@ -809,7 +859,8 @@ function renderMarkdown(spec) {
     `- Titulo: ${spec.info.title}`,
     `- Versao: ${spec.info.version}`,
     `- Base URL local: ${spec.servers[0]?.url || 'http://localhost:3002'}`,
-    '- Autenticacao: header `Authorization: Bearer <token>` quando a autenticacao estiver habilitada.',
+    '- Rotas protegidas usam o cookie HttpOnly `farmacia_session`; o navegador o envia automaticamente com credenciais.',
+    '- O cookie persistente dura 1 hora, é renovado em requisições autenticadas e a sessão é invalidada após 15 minutos sem atividade no servidor.',
     '',
     '## Endpoints',
     '',
@@ -836,6 +887,8 @@ function renderMarkdown(spec) {
       lines.push(`#### ${endpoint.method.toUpperCase()} ${endpoint.apiPath}`);
       lines.push('');
       lines.push(`- Resumo: ${endpoint.operation.summary}`);
+      const isCookieSession = endpoint.operation.security?.length !== 0;
+      lines.push(isCookieSession ? '- Cookie de sessão obrigatório.' : '- Acesso público.');
       lines.push(`- Request body: ${endpoint.operation.requestBody ? 'sim' : 'nao'}`);
       lines.push('');
       if (endpoint.operation.requestBody) {

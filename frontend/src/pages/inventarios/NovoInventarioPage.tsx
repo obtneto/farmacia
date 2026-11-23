@@ -6,6 +6,7 @@ import { Button, Checkbox, DatePicker, HStack, Input, InputGroup, Pagination, Pa
 import { Cell, Column, HeaderCell, Table } from '../../components/Table'
 import { DataState, PageSection } from '../../components/ui'
 import { getErrorMessage, useMessage } from '../../hooks/useMessage'
+import { apiFetch } from '../../lib/api'
 import { getApiBaseUrl } from '../../lib/api-base-url'
 import { formatDateForDisplay as formatCalendarDateForDisplay, parseCalendarDate } from '../../lib/date'
 import '../boname/BonameCrudPage.css'
@@ -64,28 +65,12 @@ interface SaveInventarioResponse {
 type FormErrors = Partial<Record<keyof FormValues | 'itens', string>>
 type InventarioTipo = 'Parcial' | 'Total'
 
-const LOCAL_STORAGE_TOKEN_KEYS = ['authToken', 'access_token', 'token', 'jwtToken']
 const PAGE_SIZE = 13
 const INVENTARIO_TIPO_OPTIONS: Array<SelectOption<InventarioTipo>> = [
   { label: 'Parcial', value: 'Parcial' },
   { label: 'Total', value: 'Total' },
 ]
 
-function getStoredToken(): string | null {
-  if (typeof window === 'undefined') {
-    return null
-  }
-
-  for (const key of LOCAL_STORAGE_TOKEN_KEYS) {
-    const value = window.localStorage.getItem(key)?.trim()
-
-    if (value) {
-      return value
-    }
-  }
-
-  return null
-}
 
 function buildUrl(baseUrl: string, path: string): string {
   const normalizedBase = baseUrl.replace(/\/$/, '')
@@ -123,17 +108,14 @@ async function requestInventario<T>(
   init: RequestInit,
   authToken?: string | null,
 ): Promise<T> {
+  void authToken
   const headers = new Headers(init.headers)
 
   if (!headers.has('Content-Type') && init.method && init.method !== 'GET') {
     headers.set('Content-Type', 'application/json')
   }
 
-  if (authToken) {
-    headers.set('Authorization', `Bearer ${authToken}`)
-  }
-
-  const response = await fetch(buildUrl(baseUrl, path), {
+  const response = await apiFetch(buildUrl(baseUrl, path), {
     ...init,
     headers,
   })
@@ -162,13 +144,10 @@ async function requestInventarioBlob(
   path: string,
   authToken?: string | null,
 ): Promise<Blob> {
+  void authToken
   const headers = new Headers()
 
-  if (authToken) {
-    headers.set('Authorization', `Bearer ${authToken}`)
-  }
-
-  const response = await fetch(buildUrl(baseUrl, path), {
+  const response = await apiFetch(buildUrl(baseUrl, path), {
     method: 'GET',
     headers,
   })
@@ -288,7 +267,7 @@ export function NovoInventarioPage({
 }: NovoInventarioPageProps) {
   const [isCompactLayout] = useMediaQuery('(max-width: 768px)')
   const message = useMessage()
-  const resolvedAuthToken = authToken ?? getStoredToken()
+  const resolvedAuthToken = authToken ?? undefined
   const [formValues, setFormValues] = useState<FormValues>({
     dataInventario: new Date(),
     depositoId: null,

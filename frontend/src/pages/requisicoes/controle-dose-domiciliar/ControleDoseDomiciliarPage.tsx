@@ -10,6 +10,7 @@ import { AppModal, DataState, PageSection, StatusBadge } from '../../../componen
 import { getErrorMessage, useMessage } from '../../../hooks/useMessage'
 import { useMask } from '../../../hooks/useMask'
 import { apiRequest } from '../../../lib/api'
+import { hasPermission } from '../../../lib/auth-permissions'
 import { formatDateForDisplay as formatCalendarDateForDisplay, parseCalendarDate } from '../../../lib/date'
 import '../../boname/BonameCrudPage.css'
 import '../../estoque/SolicitacoesEncerradasPage.css'
@@ -295,6 +296,7 @@ export function ControleDoseDomiciliarPage({
 
   const records = listQuery.data ?? EMPTY_CONTROLE_DDU_RECORDS
   const itens = itensQuery.data ?? EMPTY_CONTROLE_DDU_ITEMS
+  const canDeleteControleDdu = hasPermission('requisicoes.controle_ddu.excluir')
   const totalPages = Math.max(1, Math.ceil(records.length / pageSize))
   const currentPage = Math.min(activePage, totalPages)
   const pageStart = (currentPage - 1) * pageSize
@@ -729,7 +731,7 @@ export function ControleDoseDomiciliarPage({
               <Button
                 appearance="primary"
                 color="red"
-                disabled={!itensQuery.isPending && selectedItems.length === 0}
+                disabled={!canDeleteControleDdu || (!itensQuery.isPending && selectedItems.length === 0)}
                 loading={deleteItemMutation.isPending}
                 onClick={() => void handleRequestDeleteSelectedItems()}
               >

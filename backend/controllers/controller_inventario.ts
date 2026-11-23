@@ -4,6 +4,9 @@ import Inventarios, { eStatus, eTipo } from "../model/dao_inventarios.js";
 import ItensInventario, { iItensInventarioFields } from "../model/dao_itens_inventario.js";
 import Medicamentos from "../model/dao_medicamentos.js";
 import { iresdata } from "./interface_controllers.js";
+import Requisicoes from '../model/dao_requisicoes.js';
+import Entradas from '../model/dao_entradas.js';
+import Solicitacoes from "../model/dao_solicitacoes.js";
 import { Request, Response } from "express";
 import { applyControllerError } from "../utils/controllerError.js";
 import GeraNumero from "../utils/GeraNumero.js";
@@ -169,6 +172,9 @@ export default class Controller_Inventarios {
             const medicamentos = new Medicamentos(db.connection);
             const itens_inventarios = new ItensInventario(db.connection);
             const depositos = new Depositos(db.connection);
+            const requisicoes = new Requisicoes(db.connection);
+            const entradas = new Entradas(db.connection);
+            const solicitacoes = new Solicitacoes(db.connection);
 
             const dateinv = new Date(inv_date);
             const ano = dateinv.getFullYear();
@@ -192,6 +198,16 @@ export default class Controller_Inventarios {
             if (depositos.dep_bloqueado === 1) {
                 const error = new Error('Depósito bloqueado');
                 error.statusCode = 409;
+                throw error;
+            }
+
+            const requisicoes_nao_aprovadas: Boolean = await requisicoes.CheckRequisicoesNaoAprovadas(dep_id);
+            const entradas_nao_aprovadas: Boolean = await entradas.CheckEntradaNaoAprovadas(dep_id);
+            const solicitacoes_abertas: Boolean = await solicitacoes.CheckSolicitacoesAbertas(dep_id);
+
+            if (requisicoes_nao_aprovadas || entradas_nao_aprovadas || solicitacoes_abertas) {
+                const error = new Error(`Existe Requisicoes e/ou Entradas e/ou Solicitações \n para Aprovação no deposito ${depositos.dep_descr}. Verifique.`) as any
+                error.statusCode = 403;
                 throw error;
             }
 

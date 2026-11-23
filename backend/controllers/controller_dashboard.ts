@@ -139,10 +139,9 @@ export default class Controller_Dashboard {
                                      LEFT JOIN tb_entradas en ON en.ent_id = i.ite_ent_id
                                      WHERE m.med_bona_codigo = b.bona_codigo AND YEAR(en.ent_date) = :ano AND MONTH(en.ent_date) = :mes) as entrada,
                                      
-                                    (SELECT SUM(iv.iti_qtde_invent) FROM tb_itens_inventario iv
-                                      LEFT JOIN tb_inventarios v ON v.inv_num = iv.iti_inv_num
-                                      LEFT JOIN tb_medicamentos m ON m.med_id = iv.iti_med_id
-                                      WHERE m.med_bona_codigo = b.bona_codigo AND YEAR(v.inv_date) = :ano AND MONTH(v.inv_date) = :mes ) as estoque,
+                                    (SELECT COALESCE(SUM(e.est_saldo_disponivel),0) + COALESCE(SUM(e.est_saldo_bloqueado),0) FROM tb_estoque e
+                                        LEFT JOIN tb_medicamentos m ON m.med_id = e.est_med_id
+                                        WHERE m.med_bona_codigo = b.bona_codigo) as estoque,
                                      
                                     (SELECT COALESCE(SUM(ir.ite_qtde),0) FROM tb_itens_requisicoes ir 
                                        LEFT JOIN tb_medicamentos m ON m.med_id = ir.ite_med_id

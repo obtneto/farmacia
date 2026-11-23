@@ -1,15 +1,15 @@
 import { useRef, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Button, HStack, IconButton, Input, InputNumber, Pagination, Panel, Tooltip, useMediaQuery, Whisper } from 'rsuite'
+import { Button, HStack, IconButton, Input, Pagination, Panel, SelectPicker, Tooltip, useMediaQuery, Whisper } from 'rsuite'
 import SearchIcon from '@rsuite/icons/Search'
 import ReloadIcon from '@rsuite/icons/Reload'
-import PlusIcon from '@rsuite/icons/Plus'
 import EditIcon from '@rsuite/icons/Edit'
 import VisibleIcon from '@rsuite/icons/Visible'
 import { Table as AppTable, type TableColumn } from '../../components/Table'
 import { AppModal, DataState, PageSection } from '../../components/ui'
 import { useTablePagination } from '../../hook/useTablePagination'
 import { getErrorMessage, useMessage } from '../../hooks/useMessage'
+import { apiFetch } from '../../lib/api'
 import { getApiBaseUrl } from '../../lib/api-base-url'
 import '../boname/BonameCrudPage.css'
 
@@ -31,6 +31,11 @@ interface RawUsuarioRecord {
   per_descricao?: string | null
 }
 
+interface PerfilRecord {
+  per_id: number
+  per_descricao: string
+}
+
 interface ApiResponse<T> {
   data: T
   err: number
@@ -38,8 +43,7 @@ interface ApiResponse<T> {
   status: number
 }
 
-type FormErrors = Partial<Record<'usu_usuario' | 'usu_perfil_id', string>>
-type FormMode = 'create' | 'edit' | 'view'
+type FormMode = 'edit' | 'view'
 
 export interface UsuariosCrudPageProps {
   apiBaseUrl?: string
@@ -55,18 +59,8 @@ const DEFAULT_FORM_VALUES: UsuarioRecord = {
   per_descricao: '',
 }
 
-const LOCAL_STORAGE_TOKEN_KEYS = ['authToken', 'access_token', 'token', 'jwtToken']
 const PAGE_SIZE = 13
-const USUARIO_MAX_LENGTH = 120
 
-function getStoredToken(): string | null {
-  if (typeof window === 'undefined') return null
-  for (const key of LOCAL_STORAGE_TOKEN_KEYS) {
-    const value = window.localStorage.getItem(key)?.trim()
-    if (value) return value
-  }
-  return null
-}
 
 function buildUrl(baseUrl: string, path: string): string {
   return `${baseUrl.replace(/\/$/, '')}/${path.replace(/^\//, '')}`
@@ -88,19 +82,11 @@ function normalizeUsuarioRecord(record: RawUsuarioRecord): UsuarioRecord {
   }
 }
 
-function validateForm(values: UsuarioRecord): FormErrors {
-  const errors: FormErrors = {}
-  if (!values.usu_usuario.trim()) errors.usu_usuario = 'Informe o usuario.'
-  if (values.usu_usuario.length > USUARIO_MAX_LENGTH) errors.usu_usuario = `O usuario deve ter no maximo ${USUARIO_MAX_LENGTH} caracteres.`
-  if (!values.usu_perfil_id || values.usu_perfil_id < 1) errors.usu_perfil_id = 'Informe o perfil do usuario.'
-  return errors
-}
-
 async function requestUsuarios<T>(baseUrl: string, path: string, init: RequestInit, authToken?: string | null): Promise<T> {
+  void authToken
   const headers = new Headers(init.headers)
   if (!headers.has('Content-Type') && init.method && init.method !== 'GET') headers.set('Content-Type', 'application/json')
-  if (authToken) headers.set('Authorization', `Bearer ${authToken}`)
-  const response = await fetch(buildUrl(baseUrl, path), { ...init, headers })
+  const response = await apiFetch(buildUrl(baseUrl, path), { ...init, headers })
   let payload: ApiResponse<T> | null = null
   try {
     payload = (await response.json()) as ApiResponse<T>
@@ -132,6 +118,16 @@ async function buscarUsuario(baseUrl: string, usuario: string, authToken?: strin
   return normalizeUsuarioRecord(record)
 }
 
+async function listarPerfis(baseUrl: string, authToken?: string | null) {
+  const records = await requestUsuarios<PerfilRecord[]>(
+    baseUrl,
+    '/auth/listar_perfis',
+    { method: 'GET' },
+    authToken,
+  )
+  return records.map(({ per_id, per_descricao }) => ({ label: per_descricao, value: Number(per_id) }))
+}
+
 async function salvarUsuario(baseUrl: string, values: UsuarioRecord, authToken?: string | null): Promise<void> {
   await requestUsuarios<unknown>(
     baseUrl,
@@ -146,7 +142,7 @@ async function salvarUsuario(baseUrl: string, values: UsuarioRecord, authToken?:
 
 export function UsuariosCrudPage({ apiBaseUrl = getApiBaseUrl(), authToken }: UsuariosCrudPageProps) {
   const [isCompactLayout] = useMediaQuery('(max-width: 768px)')
-  const resolvedAuthToken = authToken ?? getStoredToken()
+  const resolvedAuthToken = authToken ?? undefined
   const message = useMessage()
   const queryClient = useQueryClient()
   const formRequestIdRef = useRef(0)
@@ -154,12 +150,17 @@ export function UsuariosCrudPage({ apiBaseUrl = getApiBaseUrl(), authToken }: Us
   const [submittedSearch, setSubmittedSearch] = useState('*')
   const [modalMode, setModalMode] = useState<FormMode | null>(null)
   const [formValues, setFormValues] = useState<UsuarioRecord>(DEFAULT_FORM_VALUES)
-  const [formErrors, setFormErrors] = useState<FormErrors>({})
+  const [perfilError, setPerfilError] = useState<string>()
   const [isFormLoading, setIsFormLoading] = useState(false)
 
   const listQuery = useQuery({
     queryKey: ['usuarios-list', apiBaseUrl, submittedSearch, resolvedAuthToken],
     queryFn: () => listarUsuarios(apiBaseUrl, submittedSearch, resolvedAuthToken),
+  })
+  const perfisQuery = useQuery({
+    queryKey: ['usuarios-perfis', apiBaseUrl, resolvedAuthToken],
+    queryFn: () => listarPerfis(apiBaseUrl, resolvedAuthToken),
+    enabled: modalMode !== null,
   })
   const saveMutation = useMutation({
     mutationFn: (values: UsuarioRecord) => salvarUsuario(apiBaseUrl, values, resolvedAuthToken),
@@ -175,6 +176,9 @@ export function UsuariosCrudPage({ apiBaseUrl = getApiBaseUrl(), authToken }: Us
   const pagination = useTablePagination(records, { initialLimit: PAGE_SIZE })
   const hasData = records.length > 0
   const isReadOnly = modalMode === 'view'
+  const perfilOptions = perfisQuery.data ?? []
+  const canEditProfile = modalMode === 'edit' && !isFormLoading && !saveMutation.isPending
+    && !perfisQuery.isError && perfilOptions.length > 0 && Boolean(formValues.usu_usuario.trim())
 
   const handleSearch = () => {
     setSubmittedSearch(normalizeSearchTerm(searchValue))
@@ -185,23 +189,15 @@ export function UsuariosCrudPage({ apiBaseUrl = getApiBaseUrl(), authToken }: Us
     formRequestIdRef.current += 1
     setModalMode(null)
     setFormValues(DEFAULT_FORM_VALUES)
-    setFormErrors({})
+    setPerfilError(undefined)
     setIsFormLoading(false)
   }
 
-  const handleOpenCreate = () => {
-    formRequestIdRef.current += 1
-    setModalMode('create')
-    setFormValues(DEFAULT_FORM_VALUES)
-    setFormErrors({})
-    setIsFormLoading(false)
-  }
-
-  const handleOpenRecordModal = async (mode: 'edit' | 'view', record: UsuarioRecord) => {
+  const handleOpenRecordModal = async (mode: FormMode, record: UsuarioRecord) => {
     const requestId = formRequestIdRef.current + 1
     formRequestIdRef.current = requestId
     setModalMode(mode)
-    setFormErrors({})
+    setPerfilError(undefined)
     setIsFormLoading(true)
     try {
       const payload = await buscarUsuario(apiBaseUrl, record.usu_usuario, resolvedAuthToken)
@@ -216,14 +212,13 @@ export function UsuariosCrudPage({ apiBaseUrl = getApiBaseUrl(), authToken }: Us
     }
   }
 
-  const handleSubmit = async () => {
-    const nextErrors = validateForm(formValues)
-    setFormErrors(nextErrors)
-    if (Object.keys(nextErrors).length > 0) {
-      await message.message({ icon: 'warning', title: 'Campos obrigatorios', text: 'Revise os campos destacados antes de salvar o registro.' })
+  const handleSubmit = () => {
+    if (!canEditProfile) return
+    if (!perfilOptions.some(({ value }) => value === formValues.usu_perfil_id)) {
+      setPerfilError('Selecione um perfil disponível.')
       return
     }
-    await saveMutation.mutateAsync(formValues)
+    saveMutation.mutate(formValues)
   }
 
   const renderRowActions = (rowData: UsuarioRecord, compact = false) => (
@@ -264,13 +259,12 @@ export function UsuariosCrudPage({ apiBaseUrl = getApiBaseUrl(), authToken }: Us
           <HStack spacing={10} wrap className="boname-page__toolbar-actions">
             <Button appearance="primary" startIcon={<SearchIcon />} onClick={handleSearch}>Buscar</Button>
             <Button appearance="ghost" startIcon={<ReloadIcon />} loading={listQuery.isFetching && !listQuery.isPending} onClick={() => { void listQuery.refetch() }}>Atualizar</Button>
-            <Button appearance="primary" color="green" startIcon={<PlusIcon />} onClick={handleOpenCreate}>Novo Usuario</Button>
           </HStack>
         </div>
       }>
         {listQuery.isPending ? <DataState state="loading" title="Carregando Usuarios..." description="Consultando o endpoint `GET /parametros/usuarios/listar/:pesq`." /> : null}
         {listQuery.isError ? <DataState state="error" title="Nao foi possivel listar os registros" description={listQuery.error instanceof Error ? listQuery.error.message : 'Erro ao listar usuarios.'} action={<Button appearance="primary" onClick={() => void listQuery.refetch()}>Tentar novamente</Button>} /> : null}
-        {!listQuery.isPending && !listQuery.isError && !hasData ? <DataState state="empty" title="Nenhum usuario encontrado" description="Cadastre um novo usuario para preencher a tabela." action={<Button appearance="primary" onClick={handleOpenCreate}>Cadastrar usuario</Button>} /> : null}
+        {!listQuery.isPending && !listQuery.isError && !hasData ? <DataState state="empty" title="Nenhum usuário encontrado" description="Os usuários são incluídos ao acessar o sistema pelo Active Directory." /> : null}
         {!listQuery.isPending && !listQuery.isError && hasData ? <>
           <div className="boname-page__table-content">
             {isCompactLayout ? <div className="boname-page__card-list">
@@ -285,14 +279,51 @@ export function UsuariosCrudPage({ apiBaseUrl = getApiBaseUrl(), authToken }: Us
         </> : null}
       </PageSection>
 
-      <AppModal open={modalMode !== null} backdrop="static" intent={modalMode === 'create' ? 'create' : modalMode === 'edit' ? 'edit' : 'view'} title={modalMode === 'create' ? 'Novo Usuario' : modalMode === 'edit' ? 'Editar Usuario' : 'Visualizar Usuario'} subtitle={modalMode === 'view' ? 'Consulta em modo leitura do cadastro selecionado.' : 'Preencha os dados cadastrais e confirme a gravacao.'} intentVisible={false} className="boname-page__record-modal" loading={isFormLoading} onClose={closeFormModal} size={isCompactLayout ? 'full' : 'md'} footer={modalMode === 'view' ? <Button appearance="primary" onClick={closeFormModal}>Fechar</Button> : <><Button appearance="subtle" onClick={closeFormModal}>Cancelar</Button><Button appearance="primary" loading={saveMutation.isPending} disabled={isFormLoading} onClick={() => { void handleSubmit() }}>Salvar</Button></>}>
+      <AppModal
+        open={modalMode !== null}
+        backdrop="static"
+        intent={modalMode ?? 'view'}
+        title={isReadOnly ? 'Visualizar Usuário' : 'Editar Usuário'}
+        intentVisible={false}
+        className="boname-page__record-modal"
+        loading={isFormLoading}
+        onClose={closeFormModal}
+        size={isCompactLayout ? 'full' : 'md'}
+        footer={isReadOnly ? <Button appearance="primary" onClick={closeFormModal}>Fechar</Button> : <>
+          <Button appearance="subtle" onClick={closeFormModal}>Cancelar</Button>
+          <Button appearance="primary" loading={saveMutation.isPending} disabled={!canEditProfile} onClick={handleSubmit}>Salvar</Button>
+        </>}
+      >
         <div className="boname-page__modal-shell"><section className="boname-page__form-panel" aria-label="Formulario de usuario"><div className="boname-page__form-grid">
           <div className="boname-page__field"><label htmlFor="usuario-id">ID</label><Input id="usuario-id" size="sm" className="boname-page__control" value={String(formValues.usu_id)} disabled /></div>
-          <div className="boname-page__field"><label htmlFor="usuario-login">Usuario</label><Input id="usuario-login" size="sm" maxLength={USUARIO_MAX_LENGTH} className={formErrors.usu_usuario ? 'boname-page__control boname-page__control--error' : 'boname-page__control'} value={formValues.usu_usuario} disabled={isReadOnly} onChange={(value) => { setFormValues((current) => ({ ...current, usu_usuario: value })); setFormErrors((current) => ({ ...current, usu_usuario: undefined })) }} />{formErrors.usu_usuario ? <span role="alert">{formErrors.usu_usuario}</span> : null}</div>
-          <div className="boname-page__field"><label htmlFor="usuario-perfil">ID do perfil</label><InputNumber id="usuario-perfil" min={1} size="sm" controls={false} className={formErrors.usu_perfil_id ? 'boname-page__control boname-page__control--error' : 'boname-page__control'} value={formValues.usu_perfil_id || undefined} disabled={isReadOnly} onChange={(value) => { setFormValues((current) => ({ ...current, usu_perfil_id: Number(value || 0) })); setFormErrors((current) => ({ ...current, usu_perfil_id: undefined })) }} />{formErrors.usu_perfil_id ? <span role="alert">{formErrors.usu_perfil_id}</span> : null}</div>
+          <div className="boname-page__field"><label htmlFor="usuario-login">Usuário</label><Input id="usuario-login" size="sm" className="boname-page__control" value={formValues.usu_usuario} disabled /></div>
           <div className="boname-page__field boname-page__field--full"><label htmlFor="usuario-nome-completo">Nome completo</label><Input id="usuario-nome-completo" size="sm" className="boname-page__control" value={formValues.usu_nome_completo} disabled /></div>
           <div className="boname-page__field boname-page__field--full"><label htmlFor="usuario-nome-usual">Nome usual</label><Input id="usuario-nome-usual" size="sm" className="boname-page__control" value={formValues.usu_nome_usual} disabled /></div>
-          <div className="boname-page__field boname-page__field--full"><label htmlFor="usuario-perfil-descricao">Perfil</label><Input id="usuario-perfil-descricao" size="sm" className="boname-page__control" value={formValues.per_descricao || 'Descricao indisponivel'} disabled /></div>
+          <div className="boname-page__field boname-page__field--full">
+            <label id="usuario-perfil-label">Perfil</label>
+            <SelectPicker
+              aria-labelledby="usuario-perfil-label"
+              aria-invalid={Boolean(perfilError)}
+              aria-describedby={perfilError ? 'usuario-perfil-erro' : undefined}
+              block
+              cleanable={false}
+              data={perfilOptions}
+              size="sm"
+              loading={perfisQuery.isPending}
+              placeholder="Selecione o perfil"
+              className={perfilError ? 'boname-page__control boname-page__control--error' : 'boname-page__control'}
+              value={formValues.usu_perfil_id || null}
+              renderValue={(value, item) => item?.label ?? `Perfil #${value}`}
+              disabled={!canEditProfile}
+              onChange={(value) => {
+                setFormValues((current) => ({ ...current, usu_perfil_id: value ?? 0 }))
+                setPerfilError(undefined)
+              }}
+            />
+            {perfilError ? <span id="usuario-perfil-erro" role="alert">{perfilError}</span> : null}
+            {perfisQuery.isError ? <span role="alert">Não foi possível carregar os perfis.</span> : null}
+            {perfisQuery.isSuccess && perfilOptions.length === 0 ? <span role="status">Nenhum perfil disponível.</span> : null}
+          </div>
         </div></section></div>
       </AppModal>
     </section>

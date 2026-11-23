@@ -313,12 +313,17 @@ export default class Controller_Notificacoes {
         notificationService.on('remove', sendRemove);
         notificationService.on('read', sendRead);
 
-        req.on('close', () => {
+        const expiresAt = typeof req.usuarioLogado === 'object' ? req.usuarioLogado.exp : undefined;
+        const expirationTimer = typeof expiresAt === 'number'
+            ? setTimeout(() => res.end(), Math.max(0, Math.min(2_147_483_647, expiresAt * 1000 - Date.now())))
+            : undefined;
+
+        res.once('close', () => {
+            clearTimeout(expirationTimer);
             notificationService.removeListener('notification', sendNotification);
             notificationService.removeListener('clear', sendClear);
             notificationService.removeListener('remove', sendRemove);
             notificationService.removeListener('read', sendRead);
-            res.end();
         });
 
     }
