@@ -68,7 +68,7 @@ export default class Usuarios extends BaseModel implements iUsuariosFields, iBas
 
     }
 
-    public async BuscarUsuario(usuario: string): Promise<iUsuariosFields> {
+    public async BuscarUsuario(usuario: string): Promise<iUsuariosFields | Boolean> {
 
         const query = `SELECT * FROM tb_usuarios WHERE usu_usuario = :usuario FOR UPDATE`
 
@@ -82,7 +82,7 @@ export default class Usuarios extends BaseModel implements iUsuariosFields, iBas
             this.populateFromInitial(this._initialFields)
         }
 
-        return  this._found ? this._fields as iUsuariosFields : this._found
+        return this._found ? this._fields as iUsuariosFields : this._found
     }
 
 

@@ -23,10 +23,12 @@ export interface NotificationRecord {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const notificationsFilePath = path.resolve(__dirname, '../utils/notificacoes.json');
+const automaticNotificationKeysFilePath = path.resolve(__dirname, '../utils/notificacoes_automaticas.json');
 
 class NotificationService extends EventEmitter {
 
     private notifications: NotificationRecord[] = [];
+    private automaticNotificationKeys = new Set<string>();
     private readonly maxHistory = 50;
     private persistQueue: Promise<void> = Promise.resolve();
 
@@ -34,6 +36,7 @@ class NotificationService extends EventEmitter {
         super();
         this.setMaxListeners(200);
         this.notifications = this.loadFromDisk();
+        this.automaticNotificationKeys = this.loadAutomaticNotificationKeys();
     }
 
     list(): NotificationRecord[] {
@@ -62,6 +65,27 @@ class NotificationService extends EventEmitter {
         this.notifications = [record, ...this.notifications].slice(0, this.maxHistory);
         await this.persist();
         this.emit('notification', record);
+
+        return record;
+    }
+
+    async publishAutomatic(
+        automaticKey: string,
+        notification: Pick<NotificationRecord, 'title' | 'description'> & Partial<Pick<NotificationRecord, 'id' | 'tone' | 'actionLabel' | 'actionSectionKey' | 'critical'>>
+    ): Promise<NotificationRecord | null> {
+        const key = automaticKey.trim();
+
+        if (!key) {
+            return null;
+        }
+
+        if (this.automaticNotificationKeys.has(key)) {
+            return notification.id ? this.findExistingNotification(notification.id) : null;
+        }
+
+        const record = await this.publish(notification);
+        this.automaticNotificationKeys.add(key);
+        await this.persistAutomaticNotificationKeys();
 
         return record;
     }
@@ -139,9 +163,30 @@ class NotificationService extends EventEmitter {
             .slice(0, this.maxHistory);
     }
 
+    private loadAutomaticNotificationKeys(): Set<string> {
+        if (!fs.existsSync(automaticNotificationKeysFilePath)) {
+            return new Set<string>();
+        }
+
+        const fileContent = fs.readFileSync(automaticNotificationKeysFilePath, 'utf8');
+        const parsedContent: unknown = JSON.parse(fileContent);
+
+        if (!Array.isArray(parsedContent)) {
+            return new Set<string>();
+        }
+
+        return new Set(parsedContent.filter((item): item is string => typeof item === 'string'));
+    }
+
     private async persist(): Promise<void> {
         const content = `${JSON.stringify(this.notifications, null, 2)}\n`;
         this.persistQueue = this.persistQueue.then(() => fs.promises.writeFile(notificationsFilePath, content, 'utf8'));
+        await this.persistQueue;
+    }
+
+    private async persistAutomaticNotificationKeys(): Promise<void> {
+        const content = `${JSON.stringify([...this.automaticNotificationKeys], null, 2)}\n`;
+        this.persistQueue = this.persistQueue.then(() => fs.promises.writeFile(automaticNotificationKeysFilePath, content, 'utf8'));
         await this.persistQueue;
     }
 }

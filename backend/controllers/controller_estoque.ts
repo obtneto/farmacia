@@ -8,6 +8,27 @@ import Estoque from "../model/dao_estoque.js";
 import { notificationService } from "./controller_notificacoes.js";
 import { RowDataPacket } from "mysql2";
 
+type NotificationShift = 'MANHA' | 'TARDE';
+
+function getAutomaticNotificationShift(now = new Date()): { date: string; shift: NotificationShift } | null {
+    const minutes = now.getHours() * 60 + now.getMinutes();
+    let shift: NotificationShift;
+
+    if (minutes >= 7 * 60 && minutes <= 13 * 60) {
+        shift = 'MANHA';
+    } else if (minutes > 13 * 60 && minutes <= 19 * 60) {
+        shift = 'TARDE';
+    } else {
+        return null;
+    }
+
+    const date = [now.getFullYear(), now.getMonth() + 1, now.getDate()]
+        .map((value, index) => index === 0 ? String(value).padStart(4, '0') : String(value).padStart(2, '0'))
+        .join('');
+
+    return { date, shift };
+}
+
 // Expoe consultas e ajustes de estoque controlados por deposito, medicamento e lote.
 export default class Controller_Estoque {
 
@@ -526,12 +547,14 @@ export default class Controller_Estoque {
 
             resdata.data = rows;
 
-            if (Array.isArray(rows) && rows.length > 0) {
+            const automaticNotificationShift = getAutomaticNotificationShift();
 
-                const notId = new Date().getDate().toString().padStart(2, '0') + new Date().getHours().toString().padStart(2, '0')
+            if (Array.isArray(rows) && rows.length > 0 && automaticNotificationShift) {
 
-                await notificationService.publish({
-                    id: `NOT-${notId}`,
+                const notId = `NOT-VALIDADE-${automaticNotificationShift.date}-${automaticNotificationShift.shift}`;
+
+                await notificationService.publishAutomatic(notId, {
+                    id: notId,
                     title: 'Alerta de Validade',
                     description: `${rows.length} lote${rows.length === 1 ? '' : 's'} com validade dentro do prazo de alerta ou vencidos.`,
                     tone: 'warning',
@@ -550,14 +573,14 @@ export default class Controller_Estoque {
 
             const [rows_inv] = await db.connection.query(query) as RowDataPacket[];
 
-            if (Array.isArray(rows_inv) && rows_inv.length > 0) {
+            if (Array.isArray(rows_inv) && rows_inv.length > 0 && automaticNotificationShift) {
 
-                const notId = new Date().getFullYear().toString().padStart(4, '0') + new Date().getDate().toString().padStart(2, '0')
+                const notId = `NOT-INVENTARIO-${automaticNotificationShift.date}-${automaticNotificationShift.shift}`;
 
                 if (rows_inv[0].qtde < 3) {
 
-                    await notificationService.publish({
-                        id: `NOT-${notId}`,
+                    await notificationService.publishAutomatic(notId, {
+                        id: notId,
                         title: 'Alerta de Inventário Mensal',
                         description: `Ocorreram apenas ${rows_inv[0].qtde} dos ${3} inventários previstos para o mês.`,
                         tone: 'info',
