@@ -147,12 +147,6 @@ export default class Controller_Locais {
             const local_tipo: string = String(req.body.local_tipo || null).toLocaleUpperCase().trim();
             const local_ativo: 0 | 1 = (req.body?.local_ativo || 0);
 
-            if (local_id === 0 || local_id === undefined) {
-                const error = new Error('ID Local inválido');
-                error.statusCode = 400;
-                throw error;
-            }
-
             if (!local_descr || local_descr === undefined) {
                 const error = new Error('Descrição do local não informada');
                 error.statusCode = 400;
@@ -174,12 +168,6 @@ export default class Controller_Locais {
             const locais = new Locais(db.connection);
 
             void await locais.BuscarPorId(local_id);
-
-            if (!locais.found) {
-                const error = new Error('Local não encontrado');
-                error.statusCode = 404;
-                throw error;
-            }
 
             locais.local_descr = local_descr.trim().toUpperCase();
             locais.local_ativo = local_ativo;

@@ -1,8 +1,9 @@
-import {Router} from 'express'
+import { Router } from 'express'
 import Controller_TiposMedicamentos from '../controllers/controller_tipos_medicamentos.js';
 
 const router = Router();
 
+router.get('/listar_sem_demanda/:pesq', Controller_TiposMedicamentos.ListarSemDemandas);
 router.get('/listar/:pesq', Controller_TiposMedicamentos.Listar);
 router.get('/listar-ativos/:pesq', Controller_TiposMedicamentos.ListarAtivos);
 router.get('/buscar/:tipo_id', Controller_TiposMedicamentos.Buscar);

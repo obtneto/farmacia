@@ -44,6 +44,43 @@ export default class Controller_TiposMedicamentos {
 
     }
 
+    static async ListarSemDemandas(req: Request, res: Response) {
+
+        const db: iDatabase = new Database();
+        const resdata: iresdata = {
+            err: 0,
+            msg: '',
+            status: 200,
+            data: {}
+        }
+
+        try {
+
+            const pesq: string = String(req.params.pesq || '*');
+
+            void await db.Connect();
+
+            if (!req.params.pesq && pesq !== '*') {
+                const error = new Error('Texto de pesquisa não informado');
+                error.statusCode = 400;
+                throw error;
+            }
+
+            const tiposMedicamentos = new TiposMedicamentos(db.connection);
+            resdata.data = await tiposMedicamentos.ListarSemDemandas(pesq) as iTiposMedicamentosFields[];
+
+        } catch (error: any) {
+
+            applyControllerError(resdata, error, 'Controller Tipos Medicamentos');
+
+        }
+
+        void await db.Disconnect();
+
+        res.status(resdata.status).json(resdata);
+
+    }
+
     static async ListarAtivos(req: Request, res: Response) {
 
         const db: iDatabase = new Database();

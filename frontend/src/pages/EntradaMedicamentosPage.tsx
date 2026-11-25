@@ -197,7 +197,7 @@ async function listarFornecedoresOptions(authToken?: string | null): Promise<For
 }
 
 async function listarTiposMedicamentosOptions(authToken?: string | null): Promise<TipoMedicamentoOptionRecord[]> {
-  return requestEntrada<TipoMedicamentoOptionRecord[]>('/parametros/tipos_medicamentos/listar/*', { method: 'GET' }, authToken)
+  return requestEntrada<TipoMedicamentoOptionRecord[]>('/parametros/tipos_medicamentos/listar_sem_demanda/*', { method: 'GET' }, authToken)
 }
 
 async function salvarEntrada(headerForm: HeaderForm, draftItems: DraftItemForm[], authToken?: string | null) {

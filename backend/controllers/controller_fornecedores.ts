@@ -213,8 +213,6 @@ export default class Controller_Fornecedores {
                 throw error;
             }
 
-            console.log(for_ativo)
-
             const fornecedores = new Fornecedores(db.connection);
 
             void await fornecedores.BuscarPorId(for_id);
