@@ -1,7 +1,7 @@
-import { Connection, Pool, PoolConnection, createPool } from 'mysql2/promise';
+import { Pool, PoolConnection, createPool } from 'mysql2/promise';
 
 export interface iDatabase {
-    connection: Connection,
+    connection: PoolConnection,
     Connect(dbname?: string): Promise<void>,
     Disconnect(): Promise<void>,
     Begin(): Promise<void>,
@@ -58,13 +58,13 @@ export default class Database implements iDatabase {
 
 
     // Exige que a conexao tenha sido inicializada antes de expor o driver.
-    public get connection(): Connection {
+    public get connection(): PoolConnection {
 
         if (!this.conn) {
             throw new Error('Conexão com banco de dados não inicializada!');
         }
 
-        return this.conn;
+        return this.conn as PoolConnection;
     }
 
     // Libera a conexao para reutilizacao e reseta o estado da transacao local.
