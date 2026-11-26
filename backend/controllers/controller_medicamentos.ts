@@ -218,9 +218,7 @@ export default class Controller_Medicamentos {
 
             const medicamentos = new Medicamentos(db.connection);
 
-            if (med_id > 0) {
-                void await medicamentos.BuscarPorId(med_id);
-            }
+            void await medicamentos.BuscarPorId(med_id);
 
             medicamentos.med_id = med_id;
             medicamentos.med_descr = med_descr.trim().toUpperCase();

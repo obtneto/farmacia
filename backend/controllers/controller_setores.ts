@@ -161,9 +161,7 @@ export default class Controller_Setores {
 
             const setores = new Setores(db.connection);
 
-            if (id_setor > 0) {
-                await setores.BuscarPorId(id_setor);
-            }
+            await setores.BuscarPorId(id_setor);
 
             if (id_setor > 0 && !setores.found) {
                 const error = new Error('Setor não encontrado');
