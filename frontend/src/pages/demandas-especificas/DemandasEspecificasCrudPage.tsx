@@ -34,6 +34,7 @@ export interface DemandaEspecificaRecord {
 export interface DemandaEspecificaItemRecord {
   isDraft?: boolean
   ite_dem_med_id: number
+  ite_dem_lote?: string | null
   ite_dem_med_qtde: number
   ite_dem_med_ativo?: number | null
   ite_id: number
@@ -1286,6 +1287,10 @@ export default function DemandasEspecificasCrudPage({
                             <dd>{formatText(rowData.ite_dem_med_qtde)}</dd>
                           </div>
                           <div>
+                            <dt>Lote</dt>
+                            <dd>{formatText(rowData.ite_dem_lote)}</dd>
+                          </div>
+                          <div>
                             <dt>ID Medic.</dt>
                             <dd>{formatText(rowData.ite_dem_med_id)}</dd>
                           </div>
@@ -1301,6 +1306,7 @@ export default function DemandasEspecificasCrudPage({
                         <div role="columnheader">ID</div>
                         <div role="columnheader">Medicamento</div>
                         <div role="columnheader">Descricao Comercial</div>
+                        <div role="columnheader">Lote</div>
                         <div role="columnheader">Qtde</div>
                         <div role="columnheader">Status</div>
                         <div role="columnheader">Acao</div>
@@ -1316,6 +1322,9 @@ export default function DemandasEspecificasCrudPage({
                             </div>
                             <div role="cell" className="demandas-especificas-page__modal-items-cell">
                               {formatText(rowData.med_descr_coml)}
+                            </div>
+                            <div role="cell" className="demandas-especificas-page__modal-items-cell">
+                              {formatText(rowData.ite_dem_lote)}
                             </div>
                             <div role="cell" className="demandas-especificas-page__modal-items-cell demandas-especificas-page__modal-items-cell--center">
                               {formatText(rowData.ite_dem_med_qtde)}

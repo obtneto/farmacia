@@ -102,7 +102,7 @@ export default class DemandasEspecificas extends BaseModel implements iBaseModel
 
     async ListarItensDemandas(dem_pac_id: number): Promise<RowDataPacket[]> {
 
-        const query = `SELECT ite_id,ite_dem_med_id,med_descr,med_descr_coml,ite_dem_med_qtde,ite_dem_med_ativo
+        const query = `SELECT ite_id,ite_dem_med_id,med_descr,med_descr_coml,ite_dem_lote,ite_dem_med_qtde,ite_dem_med_ativo
                        FROM tb_itens_demandas_especificas
                        LEFT JOIN tb_demandas_especificas ON dem_id = ite_dem_id
                        LEFT JOIN tb_medicamentos ON med_id = ite_dem_med_id
