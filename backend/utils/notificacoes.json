@@ -1,1 +1,24 @@
-[]
+[
+  {
+    "id": "NOT-INVENTARIO-20261126-MANHA",
+    "title": "Alerta de Inventário Mensal",
+    "description": "Ocorreram apenas 0 dos 3 inventários previstos para o mês.",
+    "tone": "info",
+    "read": true,
+    "createdAt": "2026-11-26T11:32:39.502Z",
+    "actionLabel": "Abrir pagina de Novos Inventários",
+    "actionSectionKey": "operacao/inventarios/novo",
+    "critical": false
+  },
+  {
+    "id": "NOT-VALIDADE-20261126-MANHA",
+    "title": "Alerta de Validade",
+    "description": "49 lotes com validade dentro do prazo de alerta ou vencidos.",
+    "tone": "warning",
+    "read": true,
+    "createdAt": "2026-11-26T11:32:39.492Z",
+    "actionLabel": "Abrir Alerta de Validade",
+    "actionSectionKey": "estoque/alerta_validade",
+    "critical": true
+  }
+]

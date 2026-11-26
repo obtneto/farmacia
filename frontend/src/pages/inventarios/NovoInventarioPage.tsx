@@ -284,7 +284,7 @@ export function NovoInventarioPage({
     queryKey: ['inventario-depositos', apiBaseUrl, resolvedAuthToken],
     queryFn: () => requestInventario<DepositoOptionRecord[]>(
       apiBaseUrl,
-      '/parametros/depositos/listar-ativos/*',
+      '/parametros/depositos/listar-ativos-inventario/:pesq',
       { method: 'GET' },
       resolvedAuthToken,
     ),

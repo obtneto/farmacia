@@ -1,5 +1,6 @@
 import { Connection, RowDataPacket } from 'mysql2/promise'
 import BaseModel, { iBaseModel } from './BaseModel.js'
+import settings from '../utils/settings.js'
 
 export interface iEstoqueFields {
   est_id: number
@@ -59,26 +60,52 @@ export default class Estoque extends BaseModel implements iEstoqueFields, iBaseM
 
   async ListarAtivos(pesq: string = '', dep_id: number, med_tipo_codigo: string): Promise<RowDataPacket[]> {
 
-    let query = `SELECT e.est_id AS id,e.est_id AS est_id,m.med_id AS medicamento_id,m.med_descr AS descricao,m.med_descr_coml AS descricao_comercial,
-                  m.med_und AS unidade, e.est_lote AS lote,e.est_saldo_bloqueado AS saldo_bloqueado,
-                  e.est_saldo_disponivel AS saldo_disponivel, e.est_validade AS validade,m.med_alert AS alerta_validade,
-                CASE
-                  WHEN DATEDIFF(e.est_validade, CURDATE()) < 0 THEN '-'
-                  ELSE DATEDIFF(e.est_validade, CURDATE())
-                END AS dias_para_validade
-                FROM tb_estoque e
-                LEFT JOIN tb_medicamentos m ON e.est_med_id = m.med_id
-                WHERE e.est_dep_id = :dep_id AND (COALESCE(e.est_saldo_disponivel,0) + COALESCE(e.est_saldo_bloqueado,0)) > 0
-                AND m.med_tipo_codigo = :med_tipo_codigo`
+    let query: string;
 
-    if (pesq !== '*') {
-      query += ` AND ( MATCH(m.med_descr, m.med_descr_coml) AGAINST(:pesq IN BOOLEAN MODE) ) OR 
-                      ( e.est_lote = :pesq)`
+    if (dep_id !== settings.dep_id_all) {
+
+      query = `SELECT e.est_id AS est_id,m.med_id AS medicamento_id,m.med_descr AS descricao,m.med_descr_coml AS descricao_comercial,
+                    m.med_und AS unidade, e.est_lote AS lote,e.est_saldo_bloqueado AS saldo_bloqueado,
+                    e.est_saldo_disponivel AS saldo_disponivel, e.est_validade AS validade,m.med_alert AS alerta_validade,
+                  CASE
+                    WHEN DATEDIFF(e.est_validade, CURDATE()) < 0 THEN '-'
+                    ELSE DATEDIFF(e.est_validade, CURDATE())
+                  END AS dias_para_validade
+                  FROM tb_estoque e
+                  LEFT JOIN tb_medicamentos m ON e.est_med_id = m.med_id
+                  WHERE e.est_dep_id = :dep_id AND (COALESCE(e.est_saldo_disponivel,0) + COALESCE(e.est_saldo_bloqueado,0)) > 0
+                  AND m.med_tipo_codigo = :med_tipo_codigo`
+
+      if (pesq !== '*') {
+        query += ` AND (m.med_descr LIKE :pesq OR e.est_lote LIKE :pesq )`
+      }
+
+    }
+    else {
+
+      query = `SELECT m.med_id AS medicamento_id,m.med_descr AS descricao,m.med_descr_coml AS descricao_comercial,
+                    m.med_und AS unidade, e.est_lote AS lote,SUM(COALESCE(e.est_saldo_bloqueado,0)) AS saldo_bloqueado,
+                    SUM(COALESCE(e.est_saldo_disponivel,0)) AS saldo_disponivel, e.est_validade AS validade,m.med_alert AS alerta_validade,
+                  CASE
+                    WHEN DATEDIFF(e.est_validade, CURDATE()) < 0 THEN '-'
+                    ELSE DATEDIFF(e.est_validade, CURDATE())
+                  END AS dias_para_validade
+                  FROM tb_estoque e
+                  LEFT JOIN tb_medicamentos m ON e.est_med_id = m.med_id
+                  WHERE (COALESCE(e.est_saldo_disponivel,0) + COALESCE(e.est_saldo_bloqueado,0)) > 0
+                  AND m.med_tipo_codigo = :med_tipo_codigo`
+
+      if (pesq !== '*') {
+        query += ` AND ( m.med_descr LIKE :pesq OR e.est_lote LIKE :pesq )`
+      }
+
+      query += ` GROUP BY m.med_id,m.med_descr,m.med_descr_coml,m.med_und,e.est_lote,e.est_validade,m.med_alert`
+
     }
 
-    const termoFormatado = pesq.trim().replace(/[+\-><()~*\"@]+/g, ' ').split(/\s+/).filter(palavra => palavra.length >= 3).map(palavra => `+${palavra}*`).join(' ');
+    //const termoFormatado = pesq.trim().replace(/[+\-><()~*\"@]+/g, ' ').split(/\s+/).filter(palavra => palavra.length >= 3).map(palavra => `+${palavra}*`).join(' ');
 
-    const [rows] = await this.ExecuteQuery(query, { dep_id, med_tipo_codigo, pesq: termoFormatado }) as [RowDataPacket[]]
+    const [rows] = await this.ExecuteQuery(query, { dep_id, med_tipo_codigo, pesq: '%' + pesq + '%' }) as [RowDataPacket[]]
 
     return rows as RowDataPacket[]
   }

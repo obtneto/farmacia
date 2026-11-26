@@ -558,7 +558,7 @@ export function MainLayout({
   const handleOpenNotification = (notification: HeaderNotification) => {
     markNotificationAsRead(notification)
 
-    if (notification.actionSectionKey) {
+    if (notification.actionSectionKey && isSectionAllowed(notification.actionSectionKey)) {
       onSidebarSelect?.(notification.actionSectionKey)
     }
   }
@@ -772,7 +772,7 @@ export function MainLayout({
                           const formattedTime = formatNotificationTime(notification.createdAt)
                           const isUnread = !notification.read
 
-                          if (notification.actionSectionKey) {
+                          if (notification.actionSectionKey && isSectionAllowed(notification.actionSectionKey)) {
                             return (
                               <Button
                                 appearance="subtle"

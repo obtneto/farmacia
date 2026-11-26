@@ -1,5 +1,6 @@
 import { Connection, RowDataPacket } from 'mysql2/promise';
 import BaseModel, { iBaseModel } from './BaseModel.js';
+import settings from '../utils/settings.js';
 
 export interface iDepositosFields {
     dep_id: number,
@@ -63,6 +64,19 @@ export default class Depositos extends BaseModel implements iDepositosFields, iB
                              WHERE dep_ativo = 1 AND dep_bloqueado = 0`;
 
         const [rows] = await this.ExecuteQuery(query) as RowDataPacket[];
+
+        return rows as iDepositosFields[];
+
+    }
+
+    public async ListarAtivosInventario(): Promise<iDepositosFields[]> {
+
+        const dep_id_all: number = settings.dep_id_all;
+
+        let query: string = `SELECT dep_id, dep_descr FROM tb_depositos 
+                             WHERE dep_ativo = 1 AND dep_bloqueado = 0 AND dep_id <> :dep_id_all`;
+
+        const [rows] = await this.ExecuteQuery(query, { dep_id_all }) as RowDataPacket[];
 
         return rows as iDepositosFields[];
 

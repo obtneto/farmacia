@@ -12,6 +12,7 @@ export type SettingsValue = number | string | boolean | null | iSettingsSelectOp
 export interface iSettings {
      local_id: number;
      tipo_req_id_devolucao: number;
+     dep_id_all: number,
      demandas: iSettingsSelectOption[];
      [key: string]: SettingsValue;
 }
@@ -23,6 +24,7 @@ const settingsDataPath = path.resolve(__dirname, 'settings.data.json');
 const defaultSettings: iSettings = {
      local_id: 5,
      tipo_req_id_devolucao: 2,
+     dep_id_all: 7,
      demandas: [
           {
                name: 'DEMANDAS ESPECIFICAS',

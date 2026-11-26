@@ -81,6 +81,43 @@ export default class Controller_Depositos {
         res.status(resdata.status).json(resdata);
 
     }
+
+    static async ListarAtivosInventario(req: Request, res: Response) {
+
+        const db: iDatabase = new Database();
+        const resdata: iresdata = {
+            err: 0,
+            msg: '',
+            status: 200,
+            data: {}
+        }
+
+        try {
+
+            const pesq: string = String(req.params.pesq || '*');
+
+            void await db.Connect();
+
+            if (!req.params.pesq && pesq !== '*') {
+                const error = new Error('Texto de pesquisa não informado');
+                error.statusCode = 400;
+                throw error;
+            }
+
+            const depositos = new Depositos(db.connection);
+            resdata.data = await depositos.ListarAtivosInventario() as iDepositosFields[];
+
+        } catch (error: any) {
+            applyControllerError(resdata, error, 'Controller Depositos');
+        }
+
+        void await db.Disconnect();
+
+        res.status(resdata.status).json(resdata);
+
+    }
+
+
     static async Buscar(req: Request, res: Response) {
 
         // Inicializa infraestrutura da requisicao e o envelope padrao da resposta.

@@ -330,6 +330,15 @@ export function EstoqueListPage({
     }))
     .sort((first, second) => first.label.localeCompare(second.label, 'pt-BR'))
 
+  const isTodosSelected = (depositosQuery.data ?? []).some((item) => (
+    Number(item.dep_id) === filterValues.depositoId
+    && item.dep_descr.trim().toLocaleLowerCase('pt-BR') === 'todos'
+  ))
+  const canAjustarSaldoSelecionado = canAjustarSaldo && !isTodosSelected
+  const saldoActionDisabledTitle = isTodosSelected
+    ? 'Indisponivel para o deposito Todos'
+    : 'Indisponivel para o grupo Estagiarios SisStock'
+
   const records = listQuery.data ?? []
   const totalPages = Math.max(1, Math.ceil(records.length / PAGE_SIZE))
   const currentPage = Math.min(activePage, totalPages)
@@ -347,6 +356,7 @@ export function EstoqueListPage({
   const saldoActionFieldLabel = saldoAction === 'bloquear' ? 'Quantidade a bloquear' : 'Quantidade a desbloquear'
   const saldoActionErrorLabel = saldoAction === 'bloquear' ? 'bloqueio' : 'desbloqueio'
   const canSubmitBlock =
+    canAjustarSaldoSelecionado &&
     selectedBlockItem !== null &&
     Number(selectedBlockItem.est_id || 0) > 0 &&
     blockQuantity !== null &&
@@ -406,7 +416,7 @@ export function EstoqueListPage({
   }
 
   const handleOpenBlockModal = (record: EstoqueRecord, action: AjustarSaldoAction) => {
-    if (!canAjustarSaldo) {
+    if (!canAjustarSaldoSelecionado) {
       return
     }
 
@@ -442,7 +452,7 @@ export function EstoqueListPage({
   }
 
   const handleSubmitBlock = async () => {
-    if (!canAjustarSaldo || !selectedBlockItem) {
+    if (!canAjustarSaldoSelecionado || !selectedBlockItem) {
       return
     }
 
@@ -658,8 +668,8 @@ export function EstoqueListPage({
                           appearance="subtle"
                           size="xs"
                           startIcon={<LockIcon />}
-                          disabled={!canAjustarSaldo || Number(rowData.saldo_disponivel || 0) <= 0}
-                          title={!canAjustarSaldo ? 'Indisponivel para o grupo Estagiarios SisStock' : undefined}
+                          disabled={!canAjustarSaldoSelecionado || Number(rowData.saldo_disponivel || 0) <= 0}
+                          title={!canAjustarSaldoSelecionado ? saldoActionDisabledTitle : undefined}
                           onClick={() => handleOpenBlockModal(rowData, 'bloquear')}
                         >
                           Bloquear Saldo
@@ -668,8 +678,8 @@ export function EstoqueListPage({
                           appearance="subtle"
                           size="xs"
                           startIcon={<UnlockIcon />}
-                          disabled={!canAjustarSaldo || Number(rowData.saldo_bloqueado || 0) <= 0}
-                          title={!canAjustarSaldo ? 'Indisponivel para o grupo Estagiarios SisStock' : undefined}
+                          disabled={!canAjustarSaldoSelecionado || Number(rowData.saldo_bloqueado || 0) <= 0}
+                          title={!canAjustarSaldoSelecionado ? saldoActionDisabledTitle : undefined}
                           onClick={() => handleOpenBlockModal(rowData, 'desbloquear')}
                         >
                           Desbloquear Saldo
@@ -764,8 +774,8 @@ export function EstoqueListPage({
                                 className="boname-page__action-icon boname-page__action-icon--edit"
                                 icon={<LockIcon />}
                                 aria-label="Bloquear saldo"
-                                disabled={!canAjustarSaldo || Number(rowData.saldo_disponivel || 0) <= 0}
-                                title={!canAjustarSaldo ? 'Indisponivel para o grupo Estagiarios SisStock' : undefined}
+                                disabled={!canAjustarSaldoSelecionado || Number(rowData.saldo_disponivel || 0) <= 0}
+                                title={!canAjustarSaldoSelecionado ? saldoActionDisabledTitle : undefined}
                                 onClick={() => handleOpenBlockModal(rowData, 'bloquear')}
                               />
                             </Whisper>
@@ -782,8 +792,8 @@ export function EstoqueListPage({
                                 className="boname-page__action-icon boname-page__action-icon--view"
                                 icon={<UnlockIcon />}
                                 aria-label="Desbloquear saldo"
-                                disabled={!canAjustarSaldo || Number(rowData.saldo_bloqueado || 0) <= 0}
-                                title={!canAjustarSaldo ? 'Indisponivel para o grupo Estagiarios SisStock' : undefined}
+                                disabled={!canAjustarSaldoSelecionado || Number(rowData.saldo_bloqueado || 0) <= 0}
+                                title={!canAjustarSaldoSelecionado ? saldoActionDisabledTitle : undefined}
                                 onClick={() => handleOpenBlockModal(rowData, 'desbloquear')}
                               />
                             </Whisper>

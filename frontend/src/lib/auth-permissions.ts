@@ -66,6 +66,8 @@ export function getAllowedRoutePaths(): string[] {
       path !== 'operacao/entradas/aprovacao' || profileId === 2
     ) && (
       path !== 'requisicoes/aprovacao' || profileId === 2
+    ) && (
+      path !== 'operacao/inventarios/novo'
     ))
   }
 

@@ -59,6 +59,8 @@ export default class Controller_Estoque {
 
             const estoque = new Estoque(db.connection);
 
+            //const termoFormatado = pesq.trim().replace(/[+\-><()~*\"@]+/g, ' ').split(/\s+/).filter(palavra => palavra.length >= 3).map(palavra => `+${palavra}*`).join(' ');
+
             const result = await estoque.ListarAtivos(pesq, dep_id, med_tipo_codigo);
 
             resdata.data = result;

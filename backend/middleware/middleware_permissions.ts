@@ -27,7 +27,7 @@ function isDemandEdit(req: Request): boolean {
 }
 
 function isDeniedForOperator(req: Request, profileId: number): boolean {
-    if (req.path === '/estoque/bloquear' || req.path === '/estoque/desbloquear') {
+    if (req.path.startsWith('/estoque/bloquear/') || req.path.startsWith('/estoque/desbloquear/')) {
         return true
     }
 
@@ -35,11 +35,15 @@ function isDeniedForOperator(req: Request, profileId: number): boolean {
         return true
     }
 
-    if (req.path.startsWith('/inventario/fechar/')) {
+    if (req.path.startsWith('/inventarios/fechar/') || req.path.startsWith('/inventario/fechar/')) {
         return true
     }
 
     if (profileId === 3 && (req.path === '/entradas/aprovar-entradas' || req.path.startsWith('/requisicoes/aprovar/'))) {
+        return true
+    }
+
+    if (req.path === '/controle-ddu/excluir-item') {
         return true
     }
 

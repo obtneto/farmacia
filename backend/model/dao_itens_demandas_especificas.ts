@@ -72,7 +72,7 @@ export default class ItensDemandasEspecificas extends BaseModel implements iIten
     public async BuscaItemDemanda(dem_id: number, med_id: number): Promise<RowDataPacket> {
 
         const query: string = `SELECT * FROM tb_itens_demandas_especificas                 
-                               WHERE ite_dem_id = :dem_id AND ite_dem_med_id = :med_id AND ite_dem_med_ativo = 1
+                               WHERE ite_dem_id = :dem_id AND ite_dem_med_id = :med_id AND ite_dem_med_ativo = 1 AND ite_dem_med_qtde > 0
                                ORDER BY ite_dem_id`;
 
         const [rows] = await this.ExecuteQuery(query, { dem_id, med_id }) as RowDataPacket[];
