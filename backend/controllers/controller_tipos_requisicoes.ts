@@ -109,9 +109,7 @@ export default class Controller_TiposRequicoes {
 
             const tiposRequisicoes = new TposRequisicoes(db.connection);
 
-            if (id_tipo > 0) {
-                await tiposRequisicoes.BuscarPorId(id_tipo);
-            }
+            await tiposRequisicoes.BuscarPorId(id_tipo);
 
             if (id_tipo > 0 && !tiposRequisicoes.found) {
                 const error = new Error('Tipo de requisição não encontrado');
